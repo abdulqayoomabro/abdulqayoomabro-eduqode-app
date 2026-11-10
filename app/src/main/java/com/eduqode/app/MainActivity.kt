@@ -27,6 +27,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -34,6 +35,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.webkit.ScriptHandler
+import androidx.webkit.WebViewCompat
+import androidx.webkit.WebViewFeature
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,11 +53,12 @@ class MainActivity : AppCompatActivity() {
 
         // Pages that belong to the website, not opened in an external app.
         private val OWN_HOSTS = setOf("lms.eduqode.com", "eduqode.com", "www.eduqode.com")
-
-        // Buying happens on the website only, never inside the app.
-        private val BLOCKED_PATH_PARTS = listOf("/cart", "/checkout", "/basket", "/my-cart")
-        private val BLOCKED_QUERY_PARTS = listOf("add-to-cart", "p=28301", "page_id=28301", "tutor_pay_now")
+        private val OWN_ORIGINS = setOf("https://lms.eduqode.com", "https://eduqode.com", "https://www.eduqode.com")
     }
+
+    // Blocked pages, page styling and the Google login switch come from GitHub (see RemoteConfig).
+    private lateinit var remote: RemoteConfig
+    private var styleScript: ScriptHandler? = null
 
     private lateinit var webView: WebView
     private lateinit var swipe: SwipeRefreshLayout
@@ -96,7 +102,13 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        remote = RemoteConfig(this)
         setupWebView()
+        installPageStyle()
+        remote.refresh {
+            installPageStyle()
+            injectPageStyle()
+        }
 
         swipe.setOnRefreshListener { webView.reload() }
         // Only pull-to-refresh when the page itself is scrolled to the top.
@@ -143,6 +155,55 @@ class MainActivity : AppCompatActivity() {
         val path = uri.path ?: ""
         return host == "accounts.google.com" ||
             (host.endsWith(".google.com") && (path.contains("oauth") || path.contains("signin")))
+    }
+
+    /** Uses the browser hand-off when it is switched on in remote/config.json, otherwise explains. */
+    private fun startGoogleLogin() {
+        val s = remote.settings
+        if (s.googleLoginMode == "handoff") {
+            openLoginInBrowser()
+        } else {
+            AlertDialog.Builder(this)
+                .setTitle(R.string.google_login_title)
+                .setMessage(s.googleLoginMessage)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+        }
+    }
+
+    /** JavaScript that adds (or updates) the app's <style> tag on EduQode pages. */
+    private fun styleJs(): String {
+        val css = JSONObject.quote(remote.settings.css)
+        return """
+            (function () {
+              var id = 'eduqode-app-style';
+              function apply() {
+                var el = document.getElementById(id);
+                if (!el) {
+                  el = document.createElement('style');
+                  el.id = id;
+                  (document.head || document.documentElement).appendChild(el);
+                }
+                if (el.textContent !== $css) el.textContent = $css;
+                if (document.body) document.body.classList.add('in-app');
+              }
+              if (document.documentElement) apply();
+              document.addEventListener('DOMContentLoaded', apply);
+            })();
+        """.trimIndent()
+    }
+
+    /** Runs the style script at the very start of every EduQode page, so buy buttons never flash. */
+    private fun installPageStyle() {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) return
+        styleScript?.remove()
+        styleScript = WebViewCompat.addDocumentStartJavaScript(webView, styleJs(), OWN_ORIGINS)
+    }
+
+    /** Fallback for older phones and for pages already open when new settings arrive. */
+    private fun injectPageStyle() {
+        val host = Uri.parse(webView.url ?: return).host ?: return
+        if (OWN_HOSTS.contains(host)) webView.evaluateJavascript(styleJs(), null)
     }
 
     /** Opens the website's login hand-off page in a Chrome tab, where Google login is allowed. */
@@ -193,13 +254,14 @@ class MainActivity : AppCompatActivity() {
                 if (isGoogleLogin(Uri.parse(url))) {
                     view.stopLoading()
                     if (view.canGoBack()) view.goBack()
-                    openLoginInBrowser()
+                    startGoogleLogin()
                     return
                 }
                 progress.visibility = View.VISIBLE
             }
 
             override fun onPageFinished(view: WebView, url: String) {
+                injectPageStyle()
                 firstLoadDone = true
                 progress.visibility = View.GONE
                 swipe.isRefreshing = false
@@ -259,7 +321,7 @@ class MainActivity : AppCompatActivity() {
             return true
         }
         if (isGoogleLogin(uri)) {
-            openLoginInBrowser()
+            startGoogleLogin()
             return true
         }
         val scheme = uri.scheme ?: return false
@@ -283,8 +345,9 @@ class MainActivity : AppCompatActivity() {
         if (!OWN_HOSTS.contains(host)) return false
         val path = (uri.path ?: "").lowercase()
         val query = (uri.query ?: "").lowercase()
-        return BLOCKED_PATH_PARTS.any { path.startsWith(it) || path.contains("$it/") } ||
-            BLOCKED_QUERY_PARTS.any { query.contains(it) }
+        val s = remote.settings
+        return s.blockedPathParts.any { path.startsWith(it) || path.contains("$it/") } ||
+            s.blockedQueryParts.any { query.contains(it) }
     }
 
     private fun showBlockedMessage() {

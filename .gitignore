@@ -7,3 +7,6 @@ local.properties
 .DS_Store
 *.keystore
 *.jks
+
+# Fixed test-only key so new test APKs install over old ones
+!app/debug.keystore

@@ -1,0 +1,6 @@
+{
+  "googleLogin": "off",
+  "googleLoginMessage": "Google login is not available in the app yet. Please log in with your email and password. If you signed up with Google, tap 'Forgot password' once to set a password.",
+  "blockedPathParts": ["/cart", "/checkout", "/basket", "/my-cart"],
+  "blockedQueryParts": ["add-to-cart", "p=28301", "page_id=28301", "tutor_pay_now"]
+}

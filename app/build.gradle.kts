@@ -11,8 +11,19 @@ android {
         applicationId = "com.eduqode.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = 3
+        versionName = "1.2"
+    }
+
+    // Test-only signing key kept in the repo, so each new test APK installs over the
+    // previous one without uninstalling. The Play Store release uses a separate private key.
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
     }
 
     buildTypes {

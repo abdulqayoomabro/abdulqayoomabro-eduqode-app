@@ -3,5 +3,6 @@
     <string name="app_name">EduQode</string>
     <string name="blocked_page">This page is not available in the app.</string>
     <string name="no_app_for_link">No app found to open this link.</string>
+    <string name="google_login_title">Google login</string>
     <string name="download_started">Downloading %1$s</string>
 </resources>
