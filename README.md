@@ -11,7 +11,7 @@ Android app for https://lms.eduqode.com (Tutor LMS).
 
 ## Getting the APK
 Every push to `main` builds a debug APK on GitHub Actions.
-Open the **Actions** tab, click the latest **Build APK** run, and download **EduQode-debug-apk** under Artifacts.
+On your phone, open the **Releases** page of this repo and download `EduQode-test.apk` from **EduQode test build**. (It is also attached under **Actions** > latest **Build APK** run > Artifacts.)
 
 ## Website side
 Paste `wordpress/eduqode-app-hide-buy.php` into the Code Snippets plugin to hide buy elements inside the app.
