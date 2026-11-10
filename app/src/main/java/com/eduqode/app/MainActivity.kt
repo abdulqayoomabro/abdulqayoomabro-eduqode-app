@@ -28,6 +28,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -39,6 +40,11 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val HOME_URL = "https://lms.eduqode.com/"
         const val APP_UA_TAG = "EduQodeApp/1.0"
+
+        // Google does not allow its login inside a WebView, so login runs in a browser tab
+        // and the website hands the session back to the app through eduqode://auth?token=...
+        const val LOGIN_HANDOFF_URL = "https://lms.eduqode.com/?eduqode_app_handoff=1"
+        private const val TOKEN_LOGIN_URL = "https://lms.eduqode.com/?eduqode_app_token="
 
         // Pages that belong to the website, not opened in an external app.
         private val OWN_HOSTS = setOf("lms.eduqode.com", "eduqode.com", "www.eduqode.com")
@@ -109,10 +115,43 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        if (savedInstanceState != null) {
-            webView.restoreState(savedInstanceState)
-        } else {
-            webView.loadUrl(HOME_URL)
+        val authUrl = authUrlFrom(intent)
+        when {
+            authUrl != null -> webView.loadUrl(authUrl)
+            savedInstanceState != null -> webView.restoreState(savedInstanceState)
+            else -> webView.loadUrl(HOME_URL)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        authUrlFrom(intent)?.let { webView.loadUrl(it) }
+    }
+
+    /** eduqode://auth?token=XYZ  ->  website URL that logs this app in with the one-time token. */
+    private fun authUrlFrom(intent: Intent?): String? {
+        val data = intent?.data ?: return null
+        if (data.scheme != "eduqode" || data.host != "auth") return null
+        val token = data.getQueryParameter("token")?.takeIf { it.matches(Regex("^[A-Za-z0-9]{20,64}$")) }
+            ?: return null
+        return TOKEN_LOGIN_URL + token
+    }
+
+    private fun isGoogleLogin(uri: Uri): Boolean {
+        val host = uri.host ?: return false
+        val path = uri.path ?: ""
+        return host == "accounts.google.com" ||
+            (host.endsWith(".google.com") && (path.contains("oauth") || path.contains("signin")))
+    }
+
+    /** Opens the website's login hand-off page in a Chrome tab, where Google login is allowed. */
+    private fun openLoginInBrowser() {
+        val uri = Uri.parse(LOGIN_HANDOFF_URL)
+        try {
+            CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(this, uri)
+        } catch (e: ActivityNotFoundException) {
+            openExternally(uri)
         }
     }
 
@@ -149,6 +188,12 @@ class MainActivity : AppCompatActivity() {
                     view.stopLoading()
                     showBlockedMessage()
                     if (view.canGoBack()) view.goBack() else view.loadUrl(HOME_URL)
+                    return
+                }
+                if (isGoogleLogin(Uri.parse(url))) {
+                    view.stopLoading()
+                    if (view.canGoBack()) view.goBack()
+                    openLoginInBrowser()
                     return
                 }
                 progress.visibility = View.VISIBLE
@@ -211,6 +256,10 @@ class MainActivity : AppCompatActivity() {
     private fun handleNavigation(uri: Uri): Boolean {
         if (isBlocked(uri)) {
             showBlockedMessage()
+            return true
+        }
+        if (isGoogleLogin(uri)) {
+            openLoginInBrowser()
             return true
         }
         val scheme = uri.scheme ?: return false
