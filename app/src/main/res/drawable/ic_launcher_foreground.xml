@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder icon: a white "E" with an accent dot. Replace with the EduQode logo later. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M38,34h30v8h-21v8h18v8h-18v8h21v8h-30z" />
+    <path android:fillColor="#F5A623"
+        android:pathData="M72,70m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0" />
+</vector>

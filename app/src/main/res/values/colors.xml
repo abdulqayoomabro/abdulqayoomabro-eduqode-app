@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Website theme-color is #000000. Change brand_accent to your logo colour. -->
+    <color name="brand_dark">#000000</color>
+    <color name="brand_accent">#F5A623</color>
+    <color name="icon_background">#000000</color>
+</resources>
