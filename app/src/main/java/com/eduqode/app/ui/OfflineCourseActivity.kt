@@ -48,7 +48,15 @@ class OfflineCourseActivity : AppCompatActivity() {
             inflateMenu(R.menu.sync_menu)
             setOnMenuItemClickListener {
                 if (it.itemId == R.id.action_sync) {
-                    if (repo.isOnline()) repo.syncNow()
+                    if (repo.isOnline()) {
+                        repo.syncNow()
+                        lifecycleScope.launch {
+                            val checked = repo.updateDownloadedCourse(courseId, force = true)
+                            android.widget.Toast.makeText(this@OfflineCourseActivity,
+                                if (checked) "Synced and checked for course updates" else "Progress synced", android.widget.Toast.LENGTH_SHORT).show()
+                            render()
+                        }
+                    }
                     else MaterialAlertDialogBuilder(this@OfflineCourseActivity)
                         .setMessage("You are offline. Your progress is saved on this phone and will sync automatically when you are online.")
                         .setPositiveButton(android.R.string.ok, null).show()
@@ -62,6 +70,10 @@ class OfflineCourseActivity : AppCompatActivity() {
                 .putExtra(LessonActivity.EXTRA_COURSE, courseId).putExtra(LessonActivity.EXTRA_COURSE_INFO, true))
         }
 
+        // Bring the course up to date with the website when online (new lessons, quizzes, changes).
+        lifecycleScope.launch {
+            if (repo.updateDownloadedCourse(courseId)) render()
+        }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 while (true) { render(); delay(2000) }

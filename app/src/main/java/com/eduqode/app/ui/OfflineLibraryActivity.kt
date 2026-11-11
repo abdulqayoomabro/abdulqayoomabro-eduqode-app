@@ -63,7 +63,7 @@ class OfflineLibraryActivity : AppCompatActivity() {
         wifi.isChecked = repo.wifiOnly
         wifi.setOnCheckedChangeListener { _, checked -> repo.wifiOnly = checked }
 
-        findViewById<SwipeRefreshLayout>(R.id.swipe).setOnRefreshListener { refreshFromServer() }
+        findViewById<SwipeRefreshLayout>(R.id.swipe).setOnRefreshListener { refreshFromServer(force = true) }
         findViewById<MaterialButton>(R.id.login_button).setOnClickListener {
             Ui.openWebsite(this, "${ApiClient.SITE}/dashboard/")
             finish()
@@ -85,7 +85,7 @@ class OfflineLibraryActivity : AppCompatActivity() {
         refreshFromServer()
     }
 
-    private fun refreshFromServer() {
+    private fun refreshFromServer(force: Boolean = false) {
         val swipe = findViewById<SwipeRefreshLayout>(R.id.swipe)
         lifecycleScope.launch {
             val state = Session.refresh(this@OfflineLibraryActivity)
@@ -94,6 +94,7 @@ class OfflineLibraryActivity : AppCompatActivity() {
             if (loggedIn && repo.isOnline()) {
                 runCatching { repo.refreshEnrolled() }
                 repo.syncNow()
+                repo.updateAllDownloaded(force)
             }
             swipe.isRefreshing = false
             render()

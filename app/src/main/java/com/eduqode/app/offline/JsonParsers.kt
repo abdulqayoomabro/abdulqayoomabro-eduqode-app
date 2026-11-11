@@ -85,7 +85,8 @@ object JsonParsers {
                     positionMs = pos?.optLong("position_ms") ?: 0,
                     durationMs = pos?.optLong("duration_ms") ?: 0,
                     positionAt = pos?.optLong("updated_at") ?: 0,
-                    quizJson = item.optJSONObject("quiz")?.toString() ?: ""
+                    quizJson = item.optJSONObject("quiz")?.toString() ?: "",
+                    onlineReason = item.str("online_reason")
                 )
             }
         }

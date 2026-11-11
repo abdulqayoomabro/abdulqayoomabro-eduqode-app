@@ -206,6 +206,23 @@ class OfflineE2ETest {
         step("PASS screens: My offline courses, download screen, course player, PDF viewer and main screen open")
     }
 
+    /** The teacher changes the course after it was downloaded: the app picks up the change by itself. */
+    @Test fun t03c_downloadedCourseUpdates(): Unit = runBlocking {
+        val uid = repo.userId
+        val l4 = ids.getLong("l4")
+        val q = ids.getLong("q")
+        assertEquals(null, repo.db.lesson(uid, l4))
+        assertFalse("quiz without questions starts online only", repo.db.lesson(uid, q)!!.isOfflineQuiz)
+        httpText("${ApiClient.SITE}/?e2e_action=update_course")
+
+        assertTrue("update checked", repo.updateDownloadedCourse(course, force = true))
+        assertNotNull("new lesson added to the offline pack", repo.db.lesson(uid, l4))
+        assertTrue(repo.lessonFile(course, l4).readText().contains("NEW-LESSON-MARKER"))
+        assertTrue("old quiz is now available offline", repo.db.lesson(uid, q)!!.isOfflineQuiz)
+        waitUntil("course downloaded again", 120_000) { repo.db.course(uid, course)!!.state == CourseState.DOWNLOADED }
+        step("PASS course update: new lesson and a quiz made offline appear without downloading the course again")
+    }
+
     @Test fun t04_goOffline() {
         network(false)
         assertFalse(repo.isOnline())

@@ -211,6 +211,39 @@ class OfflineRepository(context: Context) {
         }
     }
 
+    /**
+     * Brings a downloaded course up to date with the website: new or changed lessons, quizzes and
+     * files. Only what is new is downloaded. Runs at most every 15 minutes per course unless [force].
+     * Returns true when the course was checked.
+     */
+    suspend fun updateDownloadedCourse(courseId: Long, force: Boolean = false): Boolean = withContext(Dispatchers.IO) {
+        val c = db.course(userId, courseId) ?: return@withContext false
+        if (c.state !in setOf(CourseState.DOWNLOADED, CourseState.FAILED) || c.accessExpired || !isOnline()) return@withContext false
+        val key = "checked_${userId}_$courseId"
+        val now = System.currentTimeMillis()
+        if (!force && now - prefs.getLong(key, 0) < 15 * 60_000) return@withContext false
+        prefs.edit().putLong(key, now).apply()
+        try {
+            preparePackage(courseId)
+        } catch (e: ApiClient.ApiException) {
+            if (e.code == 403) db.setAccessExpired(userId, courseId, true)
+            return@withContext false
+        }
+        applySelection(courseId)
+        val waiting = db.files(userId, courseId).any { it.state == FileState.PENDING }
+        if (waiting) {
+            db.setCourseState(userId, courseId, CourseState.QUEUED)
+            DownloadWorker.enqueue(app, userId, courseId, wifiOnly)
+        }
+        true
+    }
+
+    /** Checks every downloaded course for updates (see [updateDownloadedCourse]). */
+    suspend fun updateAllDownloaded(force: Boolean = false) {
+        db.courses(userId).filter { it.state == CourseState.DOWNLOADED || it.state == CourseState.FAILED }
+            .forEach { runCatching { updateDownloadedCourse(it.id, force) } }
+    }
+
     fun pause(courseId: Long) {
         db.setCourseState(userId, courseId, CourseState.PAUSED)
         WorkManager.getInstance(app).cancelUniqueWork(DownloadWorker.workName(userId, courseId))
@@ -320,6 +353,9 @@ class OfflineRepository(context: Context) {
 
     /** Offline status of one lesson for the lesson list. */
     fun lessonAvailability(lesson: Lesson, files: List<StoredFile>): String {
+        if (lesson.type == "quiz" && lesson.quizJson.isEmpty()) {
+            return if (lesson.onlineReason.isNotBlank()) "Online only: ${lesson.onlineReason}" else "Online only"
+        }
         if (lesson.isOfflineQuiz) {
             val quiz = lesson.quiz ?: return "Online only"
             val left = QuizEngine.attemptsLeft(quiz.copy(attemptsUsed = lesson.quizAttemptsUsed), pendingQuizAttempts(lesson.id))

@@ -88,7 +88,8 @@ data class Lesson(
     val positionAt: Long,
     val quizJson: String = "",
     val quizAttemptsUsed: Int = 0,
-    val quizLastJson: String = ""
+    val quizLastJson: String = "",
+    val onlineReason: String = ""
 ) {
     val isLesson get() = type == "lesson"
     val isOfflineQuiz get() = type == "quiz" && quizJson.isNotEmpty()
@@ -182,7 +183,8 @@ data class PackageLesson(
     val positionMs: Long,
     val durationMs: Long,
     val positionAt: Long,
-    val quizJson: String = ""
+    val quizJson: String = "",
+    val onlineReason: String = ""
 )
 
 /** A downloadable video, as described by the server (see the plugin's video()). */

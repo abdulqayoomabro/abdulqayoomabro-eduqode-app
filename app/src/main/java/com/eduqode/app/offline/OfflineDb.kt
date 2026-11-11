@@ -13,7 +13,7 @@ import org.json.JSONObject
  * Every row belongs to one WordPress user, so two students on one phone never see each other's data.
  */
 class OfflineDb private constructor(context: Context) :
-    SQLiteOpenHelper(context.applicationContext, "offline.db", null, 2) {
+    SQLiteOpenHelper(context.applicationContext, "offline.db", null, 3) {
 
     companion object {
         @Volatile private var instance: OfflineDb? = null
@@ -74,11 +74,18 @@ class OfflineDb private constructor(context: Context) :
         )
         db.execSQL("CREATE INDEX events_user ON events(user_id)")
         upgradeTo2(db)
+        upgradeTo3(db)
+    }
+
+    /** Version 3: why a quiz is online only. */
+    private fun upgradeTo3(db: SQLiteDatabase) {
+        db.execSQL("ALTER TABLE lessons ADD COLUMN online_reason TEXT NOT NULL DEFAULT ''")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         // Only add to the schema; never drop student data.
         if (oldVersion < 2) upgradeTo2(db)
+        if (oldVersion < 3) upgradeTo3(db)
     }
 
     /** Version 2: offline quizzes. */
@@ -141,7 +148,8 @@ class OfflineDb private constructor(context: Context) :
         }.getOrDefault(emptyList()),
         selected = c.int("selected") == 1, completedAt = c.long("completed_at"),
         positionMs = c.long("position_ms"), durationMs = c.long("duration_ms"), positionAt = c.long("position_at"),
-        quizJson = c.str("quiz_json"), quizAttemptsUsed = c.int("quiz_attempts_used"), quizLastJson = c.str("quiz_last")
+        quizJson = c.str("quiz_json"), quizAttemptsUsed = c.int("quiz_attempts_used"), quizLastJson = c.str("quiz_last"),
+        onlineReason = c.str("online_reason")
     )
 
     private fun fileFrom(c: Cursor) = StoredFile(
@@ -267,6 +275,7 @@ class OfflineDb private constructor(context: Context) :
                     put("duration_ms", if (serverNewer) l.durationMs else old?.durationMs ?: 0)
                     put("position_at", if (serverNewer) l.positionAt else old?.positionAt ?: 0)
                     put("quiz_json", l.quizJson)
+                    put("online_reason", l.onlineReason)
                     val q = l.quizJson.takeIf { it.isNotEmpty() }?.let { runCatching { QuizEngine.parse(JSONObject(it)) }.getOrNull() }
                     put("quiz_attempts_used", q?.attemptsUsed ?: old?.quizAttemptsUsed ?: 0)
                     put("quiz_last", q?.lastAttempt?.let { a ->

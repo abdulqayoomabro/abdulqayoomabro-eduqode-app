@@ -93,7 +93,10 @@ class EduQode_App_Courses {
             $items    = array();
             $contents = tutor_utils()->get_course_contents_by_topic( $topic->ID, -1 );
             foreach ( $contents->posts as $i_index => $item ) {
-                $items[] = $item;
+                // Drafts and private items never go into an offline pack.
+                if ( 'publish' === $item->post_status ) {
+                    $items[] = $item;
+                }
             }
             $topics[] = array(
                 'post'  => $topic,

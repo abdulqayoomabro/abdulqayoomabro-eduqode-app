@@ -80,7 +80,7 @@ class EduQode_App_Admin {
         $course   = isset( $_GET['course'] ) ? absint( $_GET['course'] ) : 0;
         ?>
         <div class="wrap">
-            <h1>EduQode App</h1>
+            <h1>EduQode App <small style="font-size:13px;color:#646970">plugin version <?php echo esc_html( EDUQODE_APP_VERSION ); ?></small></h1>
             <?php if ( ! empty( $_GET['saved'] ) ) : ?>
                 <div class="notice notice-success is-dismissible"><p>Saved.</p></div>
             <?php endif; ?>
