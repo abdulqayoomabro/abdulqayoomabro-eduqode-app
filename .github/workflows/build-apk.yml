@@ -86,7 +86,7 @@ jobs:
       - name: Test results
         if: always()
         run: |
-          for f in $(find app/build/outputs/androidTest-results -name '*.xml' 2>/dev/null); do
+          find app/build/outputs/androidTest-results -name '*.xml' -print0 2>/dev/null | while IFS= read -r -d '' f; do
             python3 - "$f" <<'PY'
           import sys, xml.etree.ElementTree as ET
           r = ET.parse(sys.argv[1]).getroot()

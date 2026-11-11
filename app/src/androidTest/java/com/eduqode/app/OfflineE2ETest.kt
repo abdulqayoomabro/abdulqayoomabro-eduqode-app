@@ -23,7 +23,13 @@ import com.eduqode.app.offline.JsonParsers
 import com.eduqode.app.offline.OfflineRepository
 import com.eduqode.app.offline.Session
 import com.eduqode.app.offline.SyncState
+import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.RecyclerView
+import com.eduqode.app.ui.CourseDownloadActivity
 import com.eduqode.app.ui.LessonActivity
+import com.eduqode.app.ui.OfflineCourseActivity
+import com.eduqode.app.ui.OfflineLibraryActivity
+import com.eduqode.app.ui.PdfViewerActivity
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -166,6 +172,36 @@ class OfflineE2ETest {
             .run { try { inputStream.readBytes() } finally { disconnect() } }
         assertEquals("downloaded video is byte-for-byte identical", sha256(original), sha256(local.readBytes()))
         step("PASS resume: finished, ${local.length()} bytes, identical to the server file")
+    }
+
+    /** Every screen opens without crashing and shows the downloaded course. */
+    @Test fun t03b_allScreensOpen() {
+        fun <A : android.app.Activity> open(intent: Intent, check: (A) -> Unit) {
+            ActivityScenario.launch<A>(intent).use { s ->
+                Thread.sleep(3000)
+                assertEquals(Lifecycle.State.RESUMED, s.state)
+                s.onActivity { check(it) }
+            }
+        }
+        open<OfflineLibraryActivity>(Intent(context, OfflineLibraryActivity::class.java)) {
+            assertEquals("downloaded course listed", 1, it.findViewById<RecyclerView>(R.id.downloaded_list).adapter!!.itemCount)
+        }
+        open<CourseDownloadActivity>(Intent(context, CourseDownloadActivity::class.java).putExtra(CourseDownloadActivity.EXTRA_COURSE, course)) {
+            assertEquals("Open offline course shown", View.VISIBLE, it.findViewById<View>(R.id.btn_open).visibility)
+            assertEquals("4 items in the lesson list", 4, it.findViewById<RecyclerView>(R.id.lessons).adapter!!.itemCount)
+        }
+        open<OfflineCourseActivity>(Intent(context, OfflineCourseActivity::class.java).putExtra(OfflineCourseActivity.EXTRA_COURSE, course)) {
+            assertEquals(4, it.findViewById<RecyclerView>(R.id.lessons).adapter!!.itemCount)
+        }
+        val pdf = repo.localFile(course, repo.db.lesson(repo.userId, l1)!!.attachments.single().url)!!
+        open<PdfViewerActivity>(Intent(context, PdfViewerActivity::class.java)
+            .putExtra(PdfViewerActivity.EXTRA_PATH, pdf.path).putExtra(PdfViewerActivity.EXTRA_TITLE, "Notes")) {
+            assertEquals(1, it.findViewById<RecyclerView>(R.id.pages).adapter!!.itemCount)
+        }
+        open<MainActivity>(Intent(context, MainActivity::class.java)) {
+            assertEquals(View.VISIBLE, it.findViewById<View>(R.id.bottom_nav).visibility)
+        }
+        step("PASS screens: My offline courses, download screen, course player, PDF viewer and main screen open")
     }
 
     @Test fun t04_goOffline() {
