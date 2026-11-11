@@ -61,7 +61,7 @@ class OfflineE2ETest {
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val repo = OfflineRepository(context)
 
-    private fun step(msg: String) = Log.i(TAG, msg)
+    private fun step(msg: String) { Log.i(TAG, msg) }
 
     private fun waitUntil(what: String, timeoutMs: Long, check: () -> Boolean) {
         val end = System.currentTimeMillis() + timeoutMs
@@ -123,7 +123,7 @@ class OfflineE2ETest {
         step("PASS login: website login linked to the app, token stored")
     }
 
-    @Test fun t02_enrolledCourseAndPackage() = runBlocking {
+    @Test fun t02_enrolledCourseAndPackage(): Unit = runBlocking {
         val enrolled = repo.refreshEnrolled()
         assertTrue("enrolled course listed", enrolled.any { it.id == course })
         val s = repo.preparePackage(course)
@@ -286,7 +286,7 @@ class OfflineE2ETest {
         step("PASS YouTube: not downloaded, marked online only")
     }
 
-    @Test fun t13_removeDownloadKeepsEnrollment() = runBlocking {
+    @Test fun t13_removeDownloadKeepsEnrollment(): Unit = runBlocking {
         repo.removeDownload(course)
         assertFalse("files deleted", repo.courseDir(course).exists())
         assertEquals(CourseState.NONE, repo.db.course(repo.userId, course)!!.state)
