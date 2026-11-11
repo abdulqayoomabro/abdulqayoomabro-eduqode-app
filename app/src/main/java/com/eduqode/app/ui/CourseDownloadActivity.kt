@@ -47,7 +47,7 @@ class CourseDownloadActivity : AppCompatActivity() {
     private var pendingStart: Set<Long>? = null
     private var pendingAll = false
 
-    private val adapter = LessonAdapter(false, { l, f -> repo.lessonAvailability(l, f) }, { repo.isDone(it) }) { lesson ->
+    private val adapter = LessonAdapter(false) { lesson ->
         val c = repo.db.course(repo.userId, courseId)
         if ((c?.state == CourseState.DOWNLOADED || c?.state == CourseState.FAILED) && lesson.isOfflineQuiz) {
             startActivity(Intent(this, QuizActivity::class.java)
@@ -100,7 +100,11 @@ class CourseDownloadActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                while (true) { render(); delay(800) }
+                while (true) {
+                    render()
+                    val active = withContext(Dispatchers.IO) { repo.db.course(repo.userId, courseId)?.state }
+                    delay(if (active == CourseState.DOWNLOADING || active == CourseState.QUEUED || preparing) 1000 else 3000)
+                }
             }
         }
     }
@@ -138,9 +142,10 @@ class CourseDownloadActivity : AppCompatActivity() {
             val c = repo.db.course(uid, courseId)
             Quad(c, repo.db.lessons(uid, courseId), repo.db.files(uid, courseId), if (c != null) repo.summary(courseId) else null)
         }
+        val rows = withContext(Dispatchers.IO) { LessonAdapter.rows(lessons, files, repo::lessonAvailability, repo::isDone) }
         findViewById<TextView>(R.id.course_title).text = course?.title ?: ""
         findViewById<TextView>(R.id.course_desc).text = course?.excerpt ?: ""
-        adapter.submit(lessons, files)
+        adapter.submit(rows)
 
         val facts = findViewById<TextView>(R.id.facts)
         val note = findViewById<TextView>(R.id.video_note)

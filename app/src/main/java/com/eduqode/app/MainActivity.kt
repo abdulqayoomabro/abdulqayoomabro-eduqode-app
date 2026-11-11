@@ -151,8 +151,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         swipe.setOnRefreshListener { webView.reload() }
-        // Only pull-to-refresh when the page itself is scrolled to the top.
-        swipe.setOnChildScrollUpCallback { _, _ -> webView.canScrollVertically(-1) }
+        // Only pull-to-refresh when the page is at the top. Tutor's dashboard and lesson pages
+        // scroll inside inner panels (the page itself never scrolls), so the page tells the app
+        // on every touch whether the touched panel is scrolled or is a menu/popup.
+        swipe.setOnChildScrollUpCallback { _, _ -> webView.canScrollVertically(-1) || pageBlocksRefresh }
+        installTouchBridge()
+        bottomNav.findViewById<View>(R.id.nav_home)?.setOnLongClickListener { shareDiagnostics(); true }
+        warnIfOldWebView()
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -298,6 +303,71 @@ class MainActivity : AppCompatActivity() {
         if (OWN_HOSTS.contains(host)) webView.evaluateJavascript(styleJs(), null)
     }
 
+    /** True when the finger is on a scrolled inner panel or an open menu/popup of the page. */
+    @Volatile private var pageBlocksRefresh = false
+    private val jsErrors = ArrayDeque<String>()
+
+    private fun installTouchBridge() {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER) ||
+            !WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+            // Older WebView: pull-to-refresh only from the toolbar area is not possible, so turn it off
+            // rather than reloading pages by accident.
+            swipe.isEnabled = false
+            return
+        }
+        WebViewCompat.addWebMessageListener(webView, "eduqodeTouch", OWN_ORIGINS) { _, message, _, _, _ ->
+            pageBlocksRefresh = message.data == "1"
+        }
+        WebViewCompat.addDocumentStartJavaScript(webView, """
+            (function () {
+              if (window.__eduqodeTouch) return; window.__eduqodeTouch = true;
+              document.addEventListener('touchstart', function (e) {
+                var block = false, el = e.target;
+                while (el && el.nodeType === 1 && el !== document.body && el !== document.documentElement) {
+                  var st = getComputedStyle(el);
+                  if (el.scrollTop > 0 || st.position === 'fixed' || st.position === 'sticky' && el.scrollHeight > el.clientHeight) { block = true; break; }
+                  el = el.parentElement;
+                }
+                try { eduqodeTouch.postMessage(block ? '1' : '0'); } catch (x) {}
+              }, { capture: true, passive: true });
+            })();
+        """.trimIndent(), OWN_ORIGINS)
+    }
+
+    private fun webViewVersion(): String =
+        WebViewCompat.getCurrentWebViewPackage(this)?.let { "${it.packageName} ${it.versionName}" } ?: "unknown"
+
+    /** Tutor LMS 4 needs a recent browser engine; old "Android System WebView" breaks menus and buttons. */
+    private fun warnIfOldWebView() {
+        val pkg = WebViewCompat.getCurrentWebViewPackage(this) ?: return
+        val major = pkg.versionName?.substringBefore('.')?.toIntOrNull() ?: return
+        if (major >= 115) return
+        val prefs = getSharedPreferences("eduqode_main", MODE_PRIVATE)
+        if (prefs.getInt("webview_warned", 0) == major) return
+        prefs.edit().putInt("webview_warned", major).apply()
+        AlertDialog.Builder(this)
+            .setTitle("Please update Android System WebView")
+            .setMessage("This phone has an old web engine (version $major). Some buttons and menus of the website may not work until it is updated from the Play Store.")
+            .setPositiveButton("Update") { _, _ ->
+                openExternally(Uri.parse("market://details?id=${pkg.packageName}"))
+            }
+            .setNegativeButton("Later", null).show()
+    }
+
+    /** Long-press Home: shares technical details (no passwords or cookies) to help find website problems. */
+    private fun shareDiagnostics() {
+        val text = buildString {
+            append("EduQode app ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n")
+            append("Android ${android.os.Build.VERSION.RELEASE} · ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}\n")
+            append("WebView: ${webViewVersion()}\n")
+            append("Page: ${webView.url}\n\n")
+            append("Recent page errors:\n")
+            synchronized(jsErrors) { if (jsErrors.isEmpty()) append("(none)\n") else jsErrors.forEach { append(it).append('\n') } }
+        }
+        startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain")
+            .putExtra(Intent.EXTRA_SUBJECT, "EduQode app diagnostics").putExtra(Intent.EXTRA_TEXT, text), "Share diagnostics"))
+    }
+
     /** Opens the website's login hand-off page in a Chrome tab, where Google login is allowed. */
     private fun openLoginInBrowser() {
         val uri = Uri.parse(LOGIN_HANDOFF_URL)
@@ -377,6 +447,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         webView.webChromeClient = object : WebChromeClient() {
+            override fun onConsoleMessage(msg: android.webkit.ConsoleMessage): Boolean {
+                if (msg.messageLevel() == android.webkit.ConsoleMessage.MessageLevel.ERROR) {
+                    val line = "${msg.message()} (${msg.sourceId()?.substringAfterLast('/')?.take(60)}:${msg.lineNumber()}) @ ${webView.url?.take(120)}"
+                    synchronized(jsErrors) {
+                        if (jsErrors.lastOrNull() != line) jsErrors.addLast(line.take(400))
+                        while (jsErrors.size > 30) jsErrors.removeFirst()
+                    }
+                }
+                return super.onConsoleMessage(msg)
+            }
+
             override fun onProgressChanged(view: WebView, newProgress: Int) {
                 progress.progress = newProgress
                 if (newProgress >= 60) firstLoadDone = true

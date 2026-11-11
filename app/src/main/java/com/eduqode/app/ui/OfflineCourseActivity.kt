@@ -32,7 +32,7 @@ class OfflineCourseActivity : AppCompatActivity() {
     private var courseId = 0L
     private var expiredShown = false
     private val adapter by lazy {
-        LessonAdapter(true, { l, f -> repo.lessonAvailability(l, f) }, { repo.isDone(it) }) { open(it) }
+        LessonAdapter(true) { open(it) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,7 +76,7 @@ class OfflineCourseActivity : AppCompatActivity() {
         }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                while (true) { render(); delay(2000) }
+                while (true) { render(); delay(3000) }
             }
         }
     }
@@ -96,15 +96,18 @@ class OfflineCourseActivity : AppCompatActivity() {
             return
         }
         val lessons = withContext(Dispatchers.IO) { repo.db.lessons(uid, courseId) }
-        val files = withContext(Dispatchers.IO) { repo.db.files(uid, courseId) }
+        val rows = withContext(Dispatchers.IO) {
+            LessonAdapter.rows(lessons, repo.db.files(uid, courseId), repo::lessonAvailability, repo::isDone)
+        }
         findViewById<MaterialToolbar>(R.id.toolbar).title = c.title
         findViewById<TextView>(R.id.title).text = c.title
         findViewById<TextView>(R.id.desc).text = c.excerpt
-        adapter.submit(lessons, files)
+        adapter.submit(rows)
 
         val real = lessons.filter { it.isLesson }
         val items = lessons.filter { it.isLesson || it.type == "quiz" || it.isAssignment }
-        val done = withContext(Dispatchers.IO) { items.count { repo.isDone(it) } }
+        val doneIds = rows.filter { it.done }.map { it.lesson.id }.toSet()
+        val done = items.count { it.id in doneIds }
         findViewById<TextView>(R.id.progress_text).text = "$done of ${items.size} lessons, quizzes and assignments done"
         findViewById<LinearProgressIndicator>(R.id.progress)
             .setProgressCompat(if (items.isEmpty()) 0 else done * 100 / items.size, false)

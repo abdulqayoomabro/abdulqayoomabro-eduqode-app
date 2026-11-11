@@ -73,8 +73,8 @@ class OfflineLibraryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 while (true) {
-                    render()
-                    delay(1500)
+                    val active = render()
+                    delay(if (active) 1500 else 5000)
                 }
             }
         }
@@ -122,21 +122,42 @@ class OfflineLibraryActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun render() {
+    /** Disk sizes are slow to measure, so they are re-measured at most every 30 seconds. */
+    private var sizesAt = 0L
+    private var usedCache = 0L
+    private val diskCache = HashMap<Long, Long>()
+
+    /** Refreshes the screen; returns true while a download is running (so it refreshes faster). */
+    private suspend fun render(): Boolean {
         val uid = repo.userId
         val data = withContext(Dispatchers.IO) {
             val courses = if (uid > 0 && repo.auth.isLoggedIn) repo.db.courses(uid) else emptyList()
             val thumbs = courses.associate { c ->
                 c.id to repo.db.files(uid, c.id).firstOrNull { it.kind == FileKind.THUMBNAIL && it.state == "done" }?.let { File(it.localPath) }
             }
-            Triple(courses, thumbs, Pair(repo.usedBytes(), repo.freeBytes()))
+            val now = System.currentTimeMillis()
+            if (now - sizesAt > 30_000) {
+                sizesAt = now
+                usedCache = repo.usedBytes()
+                diskCache.clear()
+                courses.filter { it.state != CourseState.NONE }.forEach { diskCache[it.id] = repo.courseBytesOnDisk(it.id) }
+            }
+            val extras = courses.filter { it.state != CourseState.NONE }.associate { c ->
+                val lessons = repo.db.lessons(uid, c.id)
+                val active = c.state == CourseState.DOWNLOADING || c.state == CourseState.QUEUED || c.state == CourseState.PAUSED
+                val s = if (active) repo.summary(c.id) else null
+                c.id to Extra(lessons.count { it.isLesson && it.selected }, lessons.count { it.isLesson },
+                    maxOf(c.doneBytes, diskCache[c.id] ?: 0L), s?.doneBytes ?: 0L, s?.totalBytes ?: 0L)
+            }
+            Triple(Triple(courses, thumbs, extras), Pair(usedCache, repo.freeBytes()), Unit)
         }
-        val (courses, thumbs, storage) = data
+        val (main, storage) = data
+        val (courses, thumbs, extras) = main
         val down = courses.filter { it.state != CourseState.NONE }
         val avail = courses.filter { it.state == CourseState.NONE && !it.accessExpired }
 
-        downloaded.submit(down, thumbs)
-        available.submit(avail, thumbs)
+        downloaded.submit(down, thumbs, extras)
+        available.submit(avail, thumbs, emptyMap())
         findViewById<View>(R.id.downloaded_empty).visibility = if (down.isEmpty()) View.VISIBLE else View.GONE
         findViewById<TextView>(R.id.available_empty).apply {
             visibility = if (avail.isEmpty()) View.VISIBLE else View.GONE
@@ -155,7 +176,10 @@ class OfflineLibraryActivity : AppCompatActivity() {
             pending > 0 -> "$pending progress update(s) waiting to sync" + if (!repo.isOnline()) " (will sync when you are online)" else ""
             else -> "All progress synced" + (repo.auth.userName.takeIf { it.isNotBlank() }?.let { " · $it" } ?: "")
         }
+        return down.any { it.state == CourseState.DOWNLOADING || it.state == CourseState.QUEUED }
     }
+
+    private data class Extra(val selected: Int, val total: Int, val bytes: Long, val doneBytes: Long, val totalBytes: Long)
 
     private val OfflineRepository.userName get() = auth.userName
 
@@ -175,7 +199,7 @@ class OfflineLibraryActivity : AppCompatActivity() {
             .setMessage("This deletes the downloaded files of “${c.title}” from this phone only. Your enrollment and your progress on your account stay as they are.")
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton("Remove") { _, _ ->
-                lifecycleScope.launch { repo.removeDownload(c.id); render() }
+                lifecycleScope.launch { repo.removeDownload(c.id); sizesAt = 0; render() }
             }.show()
     }
 
@@ -197,9 +221,14 @@ class OfflineLibraryActivity : AppCompatActivity() {
     private inner class CourseAdapter(private val downloadedList: Boolean) : RecyclerView.Adapter<CourseAdapter.Holder>() {
         private var items: List<Course> = emptyList()
         private var thumbs: Map<Long, File?> = emptyMap()
+        private var extras: Map<Long, Extra> = emptyMap()
+        private var online = false
 
-        fun submit(list: List<Course>, t: Map<Long, File?>) {
-            items = list; thumbs = t; notifyDataSetChanged()
+        fun submit(list: List<Course>, t: Map<Long, File?>, e: Map<Long, Extra>) {
+            val nowOnline = repo.isOnline()
+            if (list == items && t == thumbs && e == extras && nowOnline == online) return
+            items = list; thumbs = t; extras = e; online = nowOnline
+            notifyDataSetChanged()
         }
 
         inner class Holder(v: View) : RecyclerView.ViewHolder(v) {
@@ -232,15 +261,13 @@ class OfflineLibraryActivity : AppCompatActivity() {
                 h.progress.visibility = View.GONE
                 h.secondary.visibility = View.GONE; h.secondary2.visibility = View.GONE
                 h.primary.text = getString(R.string.download_offline_pack)
-                h.primary.isEnabled = repo.isOnline()
+                h.primary.isEnabled = online
                 h.primary.setOnClickListener { openDownload(c) }
                 return
             }
 
-            val lessons = repo.db.lessons(c.userId, c.id)
-            val selected = lessons.count { it.isLesson && it.selected }
-            val total = lessons.count { it.isLesson }
-            h.line1.text = "$selected of $total lessons downloaded · ${OfflineLogic.formatBytes(maxOf(c.doneBytes, repo.courseBytesOnDisk(c.id)))}" +
+            val x = extras[c.id] ?: Extra(0, 0, c.doneBytes, 0, 0)
+            h.line1.text = "${x.selected} of ${x.total} lessons downloaded · ${OfflineLogic.formatBytes(x.bytes)}" +
                 (if (c.downloadedAt > 0) " · ${Ui.date(this@OfflineLibraryActivity, c.downloadedAt)}" else "")
             h.line2.text = "${c.progress}% complete · ${Ui.syncLabel(c)}"
             h.status.text = Ui.stateLabel(c)
@@ -248,10 +275,9 @@ class OfflineLibraryActivity : AppCompatActivity() {
 
             val active = c.state == CourseState.DOWNLOADING || c.state == CourseState.QUEUED
             if (active || c.state == CourseState.PAUSED) {
-                val s = repo.summary(c.id)
                 h.progress.visibility = View.VISIBLE
-                h.progress.isIndeterminate = s.totalBytes <= 0
-                if (s.totalBytes > 0) h.progress.setProgressCompat((s.doneBytes * 100 / s.totalBytes).toInt(), true)
+                h.progress.isIndeterminate = x.totalBytes <= 0
+                if (x.totalBytes > 0) h.progress.setProgressCompat((x.doneBytes * 100 / x.totalBytes).toInt(), true)
             } else {
                 h.progress.visibility = View.GONE
             }
