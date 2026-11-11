@@ -11,7 +11,7 @@ Android app for https://lms.eduqode.com (Tutor LMS).
 
 ## Offline learning (version 2)
 Download enrolled courses, study without internet, progress syncs to Tutor LMS when back online.
-Setup, how it works, and the REST API: see [docs/OFFLINE.md](docs/OFFLINE.md).
+Setup, how it works, and the REST API: [docs/OFFLINE.md](docs/OFFLINE.md). Test results: [docs/TESTING.md](docs/TESTING.md).
 Needs the WordPress plugin `eduqode-app-connector` version 2 (zip on the Releases page).
 
 ## Getting the APK
