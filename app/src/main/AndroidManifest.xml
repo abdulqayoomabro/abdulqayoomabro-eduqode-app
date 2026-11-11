@@ -15,10 +15,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:usesCleartextTraffic="${cleartext}"
-        android:theme="@style/Theme.EduQode.Splash">
+        android:theme="@style/Theme.EduQode">
 
         <activity
             android:name=".MainActivity"
+            android:theme="@style/Theme.EduQode.Splash"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
             android:launchMode="singleTask">
