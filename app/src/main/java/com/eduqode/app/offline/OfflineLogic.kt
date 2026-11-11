@@ -6,6 +6,9 @@ import java.util.Locale
 /** Small pure functions used by the offline system. Covered by unit tests. */
 object OfflineLogic {
 
+    /** Download links like "stream.php?f=x.mp4" are not saved with a script extension. */
+    private val scriptExtensions = setOf("php", "asp", "aspx", "jsp", "cgi", "html", "htm")
+
     /** Stable file name for a URL, so the same file is never stored twice in a course. */
     fun fileNameFor(url: String, fallbackExt: String = "bin"): String {
         val digest = MessageDigest.getInstance("SHA-1").digest(url.toByteArray())
@@ -13,7 +16,7 @@ object OfflineLogic {
         val path = url.substringBefore('?').substringBefore('#')
         val last = path.substringAfterLast('/')
         val ext = last.substringAfterLast('.', "").lowercase(Locale.ROOT)
-            .takeIf { it.isNotEmpty() && it.length <= 5 && it.all { c -> c.isLetterOrDigit() } }
+            .takeIf { it.isNotEmpty() && it.length <= 5 && it.all { c -> c.isLetterOrDigit() } && it !in scriptExtensions }
             ?: fallbackExt
         return "$hash.$ext"
     }

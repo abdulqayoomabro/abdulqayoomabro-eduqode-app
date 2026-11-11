@@ -16,8 +16,8 @@ import java.net.URLEncoder
 class ApiClient(context: Context) {
 
     companion object {
-        const val SITE = "https://lms.eduqode.com"
-        private const val REST = "$SITE/?rest_route=/eduqode/v1"
+        val SITE: String = BuildConfig.SITE_URL
+        private val REST = "$SITE/?rest_route=/eduqode/v1"
         val USER_AGENT = "EduQodeApp/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE})"
     }
 
@@ -53,8 +53,7 @@ class ApiClient(context: Context) {
 
     private fun call(path: String, method: String = "GET", body: JSONObject? = null): JSONObject {
         val token = auth.token ?: throw ApiException(401, "Please log in.")
-        val sep = if (path.contains('?')) "&" else "&"
-        val conn = open("$REST$path${sep}_=${System.currentTimeMillis()}", method)
+        val conn = open("$REST$path&_=${System.currentTimeMillis()}", method)
         try {
             conn.setRequestProperty("X-EduQode-Token", token)
             if (body != null) {

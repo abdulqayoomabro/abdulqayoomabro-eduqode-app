@@ -29,6 +29,75 @@ jobs:
           name: plugin-test-results
           path: ${{ runner.temp }}/wp/results.txt
 
+  e2e:
+    name: End-to-end test on an Android emulator (real WordPress + Tutor LMS)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_sqlite, sqlite3, mbstring, gd
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - name: Install ffmpeg (makes a playable test video)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Enable KVM for the emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Build test WordPress + Tutor LMS site
+        run: tests/plugin/setup_and_run.sh "$RUNNER_TEMP/wp"
+      - name: Start test site for the emulator
+        run: tests/e2e/start_site.sh "$RUNNER_TEMP/wp"
+      - name: Run the app on an emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: |
+            adb logcat -c
+            gradle connectedAndroidTest -Pe2e --stacktrace || (adb logcat -d -s EduQodeE2E:I TestRunner:* AndroidRuntime:E WM-WorkerWrapper:* | tail -300; exit 1)
+            adb logcat -d -s EduQodeE2E:I
+      - name: Check the website (Tutor LMS) after the test
+        run: |
+          WP="php $RUNNER_TEMP/wp/wp-cli.phar --allow-root --path=$RUNNER_TEMP/wp/site"
+          IDS=$(cat "$RUNNER_TEMP/wp/site/e2e-ids.json"); echo "$IDS"
+          L3=$(echo "$IDS" | python3 -c "import json,sys;print(json.load(sys.stdin)['l3'])")
+          C=$(echo "$IDS" | python3 -c "import json,sys;print(json.load(sys.stdin)['course'])")
+          U=$(echo "$IDS" | python3 -c "import json,sys;print(json.load(sys.stdin)['student'])")
+          DONE=$($WP eval "echo tutor_utils()->is_completed_lesson($L3, $U) ? 'yes' : 'no';")
+          ENR=$($WP eval "echo tutor_utils()->is_enrolled($C, $U) ? 'yes' : 'no';")
+          PCT=$($WP eval "echo tutor_utils()->get_course_completed_percent($C, $U);")
+          echo "Lesson completed offline is completed on the website: $DONE"
+          echo "Student still enrolled after removing the download: $ENR"
+          echo "Course progress on the website: $PCT%"
+          [ "$DONE" = "yes" ] && [ "$ENR" = "yes" ]
+      - name: Test results
+        if: always()
+        run: |
+          for f in $(find app/build/outputs/androidTest-results -name '*.xml' 2>/dev/null); do
+            python3 - "$f" <<'PY'
+          import sys, xml.etree.ElementTree as ET
+          r = ET.parse(sys.argv[1]).getroot()
+          for tc in r.iter('testcase'):
+              failed = tc.find('failure') is not None
+              print(('FAIL  ' if failed else 'PASS  ') + tc.get('name'))
+              if failed: print('      ' + (tc.find('failure').get('message') or '')[:300])
+          PY
+          done
+          tail -5 "$RUNNER_TEMP/wp/e2e-server.log" || true
+
   build:
     runs-on: ubuntu-latest
     steps:

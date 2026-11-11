@@ -131,6 +131,7 @@ class OfflineLogicTest {
         assertTrue(a.endsWith(".mp4"))
         assertNotEquals(a, OfflineLogic.fileNameFor("https://x.com/b/video.mp4"))
         assertTrue(OfflineLogic.fileNameFor("https://x.com/download", "bin").endsWith(".bin"))
+        assertTrue(OfflineLogic.fileNameFor("https://x.com/stream.php?f=a.mp4", "mp4").endsWith(".mp4"))
     }
 
     @Test fun imagesPointToLocalCopies() {

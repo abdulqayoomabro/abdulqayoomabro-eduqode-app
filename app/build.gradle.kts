@@ -13,6 +13,9 @@ android {
         targetSdk = 36
         versionCode = 4
         versionName = "2.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "SITE_URL", "\"https://lms.eduqode.com\"")
+        manifestPlaceholders["cleartext"] = "false"
     }
 
     // Test-only signing key kept in the repo, so each new test APK installs over the
@@ -37,6 +40,14 @@ android {
     }
 
     buildTypes {
+        // Only for automated end-to-end tests on an emulator against a local test WordPress
+        // (10.0.2.2 is the computer running the emulator). Never published.
+        create("e2e") {
+            initWith(getByName("debug"))
+            buildConfigField("String", "SITE_URL", "\"http://10.0.2.2:8099\"")
+            manifestPlaceholders["cleartext"] = "true"
+            matchingFallbacks += listOf("debug")
+        }
         release {
             signingConfigs.findByName("upload")?.let { signingConfig = it }
             isMinifyEnabled = false
@@ -60,6 +71,7 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
+    testBuildType = if (project.hasProperty("e2e")) "e2e" else "debug"
 }
 
 dependencies {
@@ -81,4 +93,16 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")
+
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test:core-ktx:1.6.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+}
+
+// Print every unit test result in the build log.
+tasks.withType<Test>().configureEach {
+    testLogging {
+        events("passed", "failed", "skipped")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
 }
