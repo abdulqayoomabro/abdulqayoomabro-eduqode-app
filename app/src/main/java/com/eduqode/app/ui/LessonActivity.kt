@@ -145,7 +145,7 @@ class LessonActivity : AppCompatActivity() {
         val l = repo.db.lesson(repo.userId, lessonId) ?: run { finish(); return }
         lesson = l
         findViewById<MaterialToolbar>(R.id.toolbar).apply { title = l.title; subtitle = l.topicTitle }
-        repo.recordLessonOpened(courseId, l.id)
+        if (l.isLesson) repo.recordLessonOpened(courseId, l.id)
 
         if (repo.lessonFile(courseId, l.id).exists()) loadPage("lesson_${l.id}.html")
         else findViewById<WebView>(R.id.content).loadDataWithBaseURL(null, "<p style='padding:16px;font-family:sans-serif'>This lesson has no text.</p>", "text/html", "utf-8", null)
@@ -293,7 +293,7 @@ class LessonActivity : AppCompatActivity() {
     // ---------- navigation and completion ----------
 
     private fun setupNavigation(l: Lesson) {
-        val all = repo.db.lessons(repo.userId, courseId).filter { it.isLesson }
+        val all = repo.db.lessons(repo.userId, courseId).filter { it.isReadable }
         val i = all.indexOfFirst { it.id == l.id }
         val prev = all.getOrNull(i - 1)
         val next = all.getOrNull(i + 1)
@@ -309,6 +309,16 @@ class LessonActivity : AppCompatActivity() {
     }
 
     private fun updateCompleteButton() {
+        val l = lesson
+        if (l != null && l.isAssignment) {
+            // Assignments are submitted on the website (answers and files go to the teacher there).
+            findViewById<MaterialButton>(R.id.btn_complete).apply {
+                text = if (l.completedAt > 0) "Submitted ✓ · open on website" else "Submit on the website"
+                isEnabled = repo.isOnline()
+                setOnClickListener { Ui.openWebsite(this@LessonActivity, l.permalink) }
+            }
+            return
+        }
         val done = (lesson?.completedAt ?: 0) > 0
         findViewById<MaterialButton>(R.id.btn_complete).apply {
             text = if (done) "Completed ✓" else "Mark as complete"

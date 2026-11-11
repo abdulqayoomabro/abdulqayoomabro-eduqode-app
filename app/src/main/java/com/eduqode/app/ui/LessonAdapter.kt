@@ -17,6 +17,7 @@ import com.eduqode.app.offline.StoredFile
 class LessonAdapter(
     private val studyMode: Boolean,
     private val availability: (Lesson, List<StoredFile>) -> String,
+    private val isDone: (Lesson) -> Boolean = { it.completedAt > 0 },
     private val onClick: (Lesson) -> Unit
 ) : RecyclerView.Adapter<LessonAdapter.Holder>() {
 
@@ -52,6 +53,7 @@ class LessonAdapter(
         val status = availability(l, files)
         val kind = when {
             l.type == "quiz" -> "Quiz"
+            l.isAssignment -> "Assignment"
             l.hasVideo -> "Video lesson"
             else -> "Lesson"
         }
@@ -59,15 +61,15 @@ class LessonAdapter(
 
         val mine = files.filter { it.lessonId == l.id }
         if (studyMode) {
-            h.icon.setImageResource(if (l.completedAt > 0) R.drawable.ic_check else R.drawable.ic_circle)
+            h.icon.setImageResource(if (isDone(l)) R.drawable.ic_check else R.drawable.ic_circle)
             h.percent.text = if (l.durationMs > 0 && l.positionMs > 0 && l.completedAt == 0L)
                 "${(l.positionMs * 100 / l.durationMs).coerceIn(0, 100)}%" else ""
         } else {
-            h.icon.setImageResource(if (l.completedAt > 0) R.drawable.ic_check else R.drawable.ic_circle)
+            h.icon.setImageResource(if (isDone(l)) R.drawable.ic_check else R.drawable.ic_circle)
             val total = mine.sumOf { maxOf(it.expectedBytes, it.doneBytes) }
             val done = mine.sumOf { if (it.state == FileState.DONE) maxOf(it.expectedBytes, it.doneBytes) else it.doneBytes }
             h.percent.text = when {
-                !l.isLesson || !l.selected -> ""
+                !l.isReadable || !l.selected -> ""
                 mine.isEmpty() -> "✓"
                 mine.all { it.state == FileState.DONE } -> "✓ ${OfflineLogic.formatBytes(total)}"
                 total > 0 -> "${(done * 100 / total).coerceIn(0, 100)}%"
@@ -76,7 +78,8 @@ class LessonAdapter(
         }
         val color = when {
             status.startsWith("Download failed") -> R.color.error_red
-            status.startsWith("Available") -> R.color.ok_green
+            status.startsWith("Available") || status.startsWith("Passed") || status.startsWith("Submitted") -> R.color.ok_green
+            status.startsWith("Not passed") -> R.color.error_red
             else -> R.color.text_secondary
         }
         h.subtitle.setTextColor(ContextCompat.getColor(ctx, color))

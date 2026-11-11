@@ -18,17 +18,13 @@ Needs the WordPress plugin `eduqode-app-connector` version 2 (zip on the Release
 Every push to `main` builds a debug APK on GitHub Actions.
 On your phone, open the **Releases** page of this repo and download `EduQode-test.apk` from **EduQode test build**. (It is also attached under **Actions** > latest **Build APK** run > Artifacts.)
 
-## Changing the app from GitHub (no new APK needed)
-Edit these files on GitHub; every installed app picks the change up on its next start:
-- `remote/config.json`: pages blocked in the app, and the Google login switch
-- `remote/inject.css`: styling added to EduQode pages inside the app (for example hiding prices and buy buttons)
+## Changing the app without a new APK
+WordPress admin → **Settings → EduQode App → App settings**: Google login on/off, pages blocked in the app,
+and the CSS that hides prices and buy buttons inside the app. Installed apps pick changes up on their next start.
 
 ## Google login
-Google does not allow its login inside an app's web view. To turn it on:
-1. Upload `eduqode-app-connector.zip` in WordPress (Plugins > Add New > Upload Plugin) and activate it.
-2. In `remote/config.json` change `"googleLogin": "off"` to `"googleLogin": "handoff"`.
-
-Until then the app shows a short message asking users to log in with email and password.
+Google does not allow its login inside an app's web view. The plugin hands the login back from a browser tab.
+Turn it on in Settings → EduQode App → App settings.
 
 ## Before Play Store
 - Replace the placeholder icon in `app/src/main/res/drawable/ic_launcher_foreground.xml` with the real logo

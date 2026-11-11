@@ -47,12 +47,12 @@ class CourseDownloadActivity : AppCompatActivity() {
     private var pendingStart: Set<Long>? = null
     private var pendingAll = false
 
-    private val adapter = LessonAdapter(false, { l, f -> repo.lessonAvailability(l, f) }) { lesson ->
+    private val adapter = LessonAdapter(false, { l, f -> repo.lessonAvailability(l, f) }, { repo.isDone(it) }) { lesson ->
         val c = repo.db.course(repo.userId, courseId)
         if ((c?.state == CourseState.DOWNLOADED || c?.state == CourseState.FAILED) && lesson.isOfflineQuiz) {
             startActivity(Intent(this, QuizActivity::class.java)
                 .putExtra(QuizActivity.EXTRA_COURSE, courseId).putExtra(QuizActivity.EXTRA_QUIZ, lesson.id))
-        } else if ((c?.state == CourseState.DOWNLOADED || c?.state == CourseState.FAILED) && lesson.isLesson) {
+        } else if ((c?.state == CourseState.DOWNLOADED || c?.state == CourseState.FAILED) && lesson.isReadable) {
             startActivity(Intent(this, LessonActivity::class.java)
                 .putExtra(LessonActivity.EXTRA_COURSE, courseId).putExtra(LessonActivity.EXTRA_LESSON, lesson.id))
         }

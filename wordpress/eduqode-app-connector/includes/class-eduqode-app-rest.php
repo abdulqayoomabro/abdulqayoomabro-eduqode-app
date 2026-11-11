@@ -30,6 +30,15 @@ class EduQode_App_Rest {
 
         register_rest_route(
             self::NS,
+            '/app-config',
+            array(
+                'methods'             => 'GET',
+                'callback'            => array( 'EduQode_App_Config', 'data' ),
+                'permission_callback' => '__return_true',
+            )
+        );
+        register_rest_route(
+            self::NS,
             '/me',
             array(
                 'methods'             => 'GET',

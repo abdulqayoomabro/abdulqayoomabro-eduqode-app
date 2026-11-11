@@ -62,12 +62,20 @@ e2e_question($quiz, 'multiple_choice', 'Even numbers', 2, 3, [['2', 1], ['3', 0]
 e2e_question($quiz, 'fill_in_the_blank', 'Fill', 1, 4, [['The sky is {dash}', 0, 'blue']]);
 e2e_question($quiz, 'ordering', 'Count up', 1, 5, [['1', 0], ['2', 0], ['3', 0]]);
 
+// Assignment with a dataset (Tutor LMS Pro style).
+file_put_contents("$dir/data.csv", "x,y\n1,2\n3,4\n");
+$csv_id = wp_insert_attachment(['post_title' => 'Dataset', 'post_mime_type' => 'text/csv'], "$dir/data.csv");
+$asg = wp_insert_post(['post_type' => 'tutor_assignments', 'post_status' => 'publish', 'post_title' => 'Dataset exercise', 'post_parent' => $t1, 'menu_order' => 5,
+    'post_content' => '<p>ASSIGNMENT-MARKER Analyse the dataset.</p>']);
+update_post_meta($asg, '_tutor_assignment_attachments', [$csv_id]);
+update_post_meta($asg, 'assignment_option', ['total_mark' => 10, 'pass_mark' => 5]);
+
 // Published during the test, to check that downloaded courses pick up new content.
 $l4 = wp_insert_post(['post_type' => 'lesson', 'post_status' => 'draft', 'post_title' => 'Lesson added later', 'post_parent' => $t1, 'menu_order' => 6,
     'post_content' => '<p>NEW-LESSON-MARKER</p>']);
 
 $student = wp_insert_user(['user_login' => 'e2estudent', 'user_pass' => 'e2estudent', 'user_email' => 'e2e@b.co', 'role' => 'subscriber', 'display_name' => 'E2E Student']);
 tutor_utils()->do_enroll($course, 0, $student);
-$ids = compact('course', 'l1', 'l2', 'l3', 'l4', 'q', 'quiz', 'student');
+$ids = compact('course', 'l1', 'l2', 'l3', 'l4', 'q', 'quiz', 'asg', 'student');
 file_put_contents(ABSPATH . 'e2e-ids.json', json_encode($ids));
 echo json_encode($ids), "\n";

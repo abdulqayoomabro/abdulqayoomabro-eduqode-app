@@ -47,6 +47,10 @@ class EduQode_App_Admin {
             update_option( 'eduqode_app_test_lesson_ids', $ids );
         }
 
+        if ( 'app' === $section ) {
+            EduQode_App_Config::save( $_POST );
+        }
+
         if ( 'videos' === $section && $course && isset( $_POST['video'] ) && is_array( $_POST['video'] ) && eduqode_app_tutor_ready() ) {
             foreach ( wp_unslash( $_POST['video'] ) as $lesson_id => $url ) {
                 $lesson_id = absint( $lesson_id );
@@ -114,6 +118,42 @@ class EduQode_App_Admin {
                     </tr>
                 </table>
                 <?php submit_button( 'Save settings' ); ?>
+            </form>
+
+            <hr>
+            <h2>App settings</h2>
+            <p>The Android app reads these settings each time it starts (no app update needed).</p>
+            <?php $cfg = EduQode_App_Config::data(); ?>
+            <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+                <?php wp_nonce_field( 'eduqode_app_save' ); ?>
+                <input type="hidden" name="action" value="eduqode_app_save">
+                <input type="hidden" name="section" value="app">
+                <table class="form-table" role="presentation">
+                    <tr>
+                        <th scope="row">Google login in the app</th>
+                        <td>
+                            <select name="google_login">
+                                <option value="off" <?php selected( $cfg['config']['googleLogin'], 'off' ); ?>>Off (show a message)</option>
+                                <option value="handoff" <?php selected( $cfg['config']['googleLogin'], 'handoff' ); ?>>On (log in through a browser tab)</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Pages blocked in the app</th>
+                        <td><textarea name="blocked_paths" rows="4" class="large-text code"><?php echo esc_textarea( implode( "\n", $cfg['config']['blockedPathParts'] ) ); ?></textarea>
+                            <p class="description">One per line, e.g. /cart. Links containing these open nowhere in the app.</p></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Blocked link parameters</th>
+                        <td><textarea name="blocked_query" rows="3" class="large-text code"><?php echo esc_textarea( implode( "\n", $cfg['config']['blockedQueryParts'] ) ); ?></textarea></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">CSS added to pages in the app</th>
+                        <td><textarea name="app_css" rows="10" class="large-text code"><?php echo esc_textarea( $cfg['css'] ); ?></textarea>
+                            <p class="description">Used to hide prices and buy buttons inside the app. Applies only inside the app.</p></td>
+                    </tr>
+                </table>
+                <?php submit_button( 'Save app settings' ); ?>
             </form>
 
             <hr>

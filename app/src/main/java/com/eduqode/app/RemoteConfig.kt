@@ -9,20 +9,15 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /**
- * App settings that can be changed from GitHub without a new APK.
- *
- * The app ships with defaults in assets/remote/. On every start it quietly downloads
- * remote/config.json and remote/inject.css from the GitHub repo, saves them, and uses
- * them from then on. Edit those two files on GitHub and every installed app picks
- * the change up on its next start (GitHub may take up to ~5 minutes to serve it).
- *
- * Only settings and page styling come from GitHub, never app code, as Google Play requires.
+ * App settings that can be changed without a new APK: Settings > EduQode App > App settings on the website.
+ * The app ships with defaults in assets/remote/, downloads the latest settings on every start, saves them,
+ * and uses the saved copy when offline. Only settings and page styling come from the website, never app code.
  */
 class RemoteConfig(private val context: Context) {
 
     companion object {
-        private const val BASE =
-            "https://raw.githubusercontent.com/abdulqayoomabro/abdulqayoomabro-eduqode-app/main/remote/"
+        /** Settings > EduQode App > App settings on the website (EduQode App Connector 2.2+). */
+        private val ENDPOINT = "${BuildConfig.SITE_URL.trimEnd('/')}/?rest_route=/eduqode/v1/app-config"
         private const val CONFIG = "config.json"
         private const val CSS = "inject.css"
     }
@@ -72,10 +67,11 @@ class RemoteConfig(private val context: Context) {
     /** Downloads the latest settings in the background; calls [onChanged] on the main thread if anything changed. */
     fun refresh(onChanged: (Settings) -> Unit) {
         Thread {
-            val config = download(CONFIG)
-            val css = download(CSS)
-            // Only accept a config that is valid JSON, so a typo on GitHub cannot break the app.
-            val configOk = config != null && runCatching { JSONObject(config) }.isSuccess
+            val body = download()?.let { runCatching { JSONObject(it) }.getOrNull() }
+            val config = body?.optJSONObject("config")?.toString()
+            val css = body?.optString("css", null)
+            // Only accept valid settings, so a mistake on the website cannot break the app.
+            val configOk = config != null
             var changed = false
             if (configOk) changed = save(CONFIG, config!!) || changed
             if (css != null) changed = save(CSS, css) || changed
@@ -94,8 +90,8 @@ class RemoteConfig(private val context: Context) {
         return true
     }
 
-    private fun download(name: String): String? = runCatching {
-        val conn = (URL(BASE + name).openConnection() as HttpURLConnection).apply {
+    private fun download(): String? = runCatching {
+        val conn = (URL("$ENDPOINT&_=${System.currentTimeMillis()}").openConnection() as HttpURLConnection).apply {
             connectTimeout = 8000
             readTimeout = 8000
             useCaches = false

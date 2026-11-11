@@ -75,7 +75,7 @@ check "sync: last lesson applied" "$(st e3)" "applied"
 check "sync: non-enrolled course rejected" "$(st e4)" "rejected/no_access"
 check "sync: quiz cannot be completed offline" "$(st e5)" "rejected/not_a_lesson"
 check "sync: lesson from another course rejected" "$(st e6)" "rejected/not_in_course"
-check "sync: progress percent = Tutor's own (1 of 3 lessons + 4 quizzes)" "$(echo "$r" | python3 -c "import json,sys;print(json.load(sys.stdin)['progress'][0]['percent'])")" "14"
+check "sync: progress percent = Tutor's own (1 of 3 lessons + 4 quizzes + 1 assignment)" "$(echo "$r" | python3 -c "import json,sys;print(json.load(sys.stdin)['progress'][0]['percent'])")" "13"
 
 r=$(api -X POST -H "Content-Type: application/json" -d "$body" "$B/?rest_route=/eduqode/v1/sync")
 check "sync: same events again are duplicates" "$(st e1),$(st e2)" "duplicate,duplicate"
@@ -161,6 +161,14 @@ check "wrong answer graded 0 and failed" "$(att q3-a | python3 -c "import json,s
 check "attempt limit respected (second attempt refused)" "$(att q3-b | cut -d'|' -f1,2)" "rejected|attempts_exceeded"
 prog=$(api "$B/?rest_route=/eduqode/v1/courses/$C/progress")
 check "progress lists quiz attempts" "$(echo "$prog" | python3 -c "import json,sys;d=json.load(sys.stdin)['quizzes'];print(d['$QUIZ2']['attempts_used'], d['$QUIZ3']['attempts_used'])")" "1 1"
+
+# ---- Assignments and app settings ----
+ASG=$(echo "$ids" | python3 -c "import json,sys;print(json.load(sys.stdin)['asg'])")
+check "assignment readable offline with its dataset" "$(python3 -c "
+import json; p=json.load(open('package2.json')); a=[i for t in p['topics'] for i in t['items'] if i['id']==$ASG][0]
+print(a['type'], a['online_only'], 'ASSIGNMENT-MARKER' in a['content_html'], [x['mime'] for x in a['attachments']], float(a['assignment']['total_mark']), a['assignment']['submitted'])")" "assignment False True ['text/csv'] 10.0 False"
+cfg=$(curl -s "$B/?rest_route=/eduqode/v1/app-config")
+check "app settings served without login" "$(echo "$cfg" | python3 -c "import json,sys;d=json.load(sys.stdin);print(d['config']['googleLogin'], '/cart' in d['config']['blockedPathParts'], 'in-app' in d['css'])")" "off True True"
 
 # Tutor LMS Pro-style rules
 WPR="php ../wp/wp-cli.phar --allow-root --path=../wp/site"

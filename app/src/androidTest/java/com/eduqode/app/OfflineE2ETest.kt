@@ -137,7 +137,7 @@ class OfflineE2ETest {
         assertEquals(3, s.lessons)
         assertEquals("one lesson has an offline video", 1, s.offlineVideos)
         assertEquals(2, s.videos)
-        assertEquals(1, s.resources)
+        assertEquals("PDF + assignment dataset", 2, s.resources)
         assertEquals(2, s.quizzes)
         assertEquals("one quiz can be taken offline", 1, s.offlineQuizzes)
         assertTrue("size estimated (${s.totalBytes})", s.totalBytes > 5_000_000)
@@ -190,10 +190,10 @@ class OfflineE2ETest {
         }
         open<CourseDownloadActivity>(Intent(context, CourseDownloadActivity::class.java).putExtra(CourseDownloadActivity.EXTRA_COURSE, course)) {
             assertEquals("Open offline course shown", View.VISIBLE, it.findViewById<View>(R.id.btn_open).visibility)
-            assertEquals("5 items in the lesson list", 5, it.findViewById<RecyclerView>(R.id.lessons).adapter!!.itemCount)
+            assertEquals("6 items in the lesson list", 6, it.findViewById<RecyclerView>(R.id.lessons).adapter!!.itemCount)
         }
         open<OfflineCourseActivity>(Intent(context, OfflineCourseActivity::class.java).putExtra(OfflineCourseActivity.EXTRA_COURSE, course)) {
-            assertEquals(5, it.findViewById<RecyclerView>(R.id.lessons).adapter!!.itemCount)
+            assertEquals(6, it.findViewById<RecyclerView>(R.id.lessons).adapter!!.itemCount)
         }
         val pdf = repo.localFile(course, repo.db.lesson(repo.userId, l1)!!.attachments.single().url)!!
         open<PdfViewerActivity>(Intent(context, PdfViewerActivity::class.java)
@@ -287,7 +287,20 @@ class OfflineE2ETest {
                 assertEquals(View.VISIBLE, it.findViewById<View>(R.id.attachments_box).visibility)
             }
         }
-        step("PASS lesson screens: MP4 lesson shows player, YouTube lesson shows Online Only + PDF")
+        val asg = Intent(context, LessonActivity::class.java)
+            .putExtra(LessonActivity.EXTRA_COURSE, course).putExtra(LessonActivity.EXTRA_LESSON, ids.getLong("asg"))
+        ActivityScenario.launch<LessonActivity>(asg).use { s ->
+            Thread.sleep(1500)
+            s.onActivity {
+                assertEquals("dataset listed", View.VISIBLE, it.findViewById<View>(R.id.attachments_box).visibility)
+                val b = it.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_complete)
+                assertEquals("Submit on the website", b.text.toString())
+                assertFalse("submit needs internet", b.isEnabled)
+            }
+        }
+        assertTrue(repo.lessonFile(course, ids.getLong("asg")).readText().contains("ASSIGNMENT-MARKER"))
+        assertNotNull("dataset file downloaded", repo.localFile(course, repo.db.lesson(repo.userId, ids.getLong("asg"))!!.attachments.single().url))
+        step("PASS lesson screens: MP4 lesson shows player, YouTube lesson shows Online Only + PDF, assignment + dataset offline")
     }
 
     @Test fun t08_completeLessonOffline() {
@@ -345,6 +358,8 @@ class OfflineE2ETest {
         quizAttemptId = attemptId
         assertEquals("pending", repo.db.quizAttempt(uid, attemptId)!!.state)
         assertEquals(1, repo.quizAttemptsLeft(repo.db.lesson(uid, quizId)!!))
+        assertTrue("quiz shows as done in the course list", repo.isDone(repo.db.lesson(uid, quizId)!!))
+        assertTrue(repo.quizResultLabel(repo.db.lesson(uid, quizId)!!)!!.startsWith("Passed 4/6"))
         step("PASS offline quiz: screen opens, result 4/6 (pass) shown on the phone, attempt queued")
     }
 

@@ -65,8 +65,17 @@ $quiz4 = wp_insert_post(['post_type' => 'tutor_quiz', 'post_status' => 'publish'
 eq_question($quiz4, 'h5p', 'H5P item', 1, 1, []);
 file_put_contents(sys_get_temp_dir() . '/eduqode_quiz_ids.json', json_encode(['quiz2' => $quiz2, 'quiz3' => $quiz3, 'quiz4' => $quiz4, 'Q' => $Q, 'Q3' => $Q3]));
 
+// Tutor LMS Pro style assignment with a dataset file.
+file_put_contents($up['path'] . '/sales.csv', "month,sales\njan,10\nfeb,12\n");
+$csv = wp_insert_attachment(['post_title' => 'Sales data', 'post_mime_type' => 'text/csv'], $up['path'] . '/sales.csv');
+$asg = wp_insert_post(['post_type' => 'tutor_assignments', 'post_status' => 'publish', 'post_title' => 'Dataset exercise', 'post_parent' => $t2, 'menu_order' => 4,
+    'post_content' => '<p>Analyse ASSIGNMENT-MARKER the attached data.</p>']);
+update_post_meta($asg, '_tutor_assignment_attachments', [$csv]);
+update_post_meta($asg, 'assignment_option', ['total_mark' => 10, 'pass_mark' => 5, 'upload_files_limit' => 2, 'upload_file_size_limit' => 5, 'time_duration' => ['value' => 2, 'time' => 'days']]);
+file_put_contents(sys_get_temp_dir() . '/eduqode_asg_id.txt', (string) $asg);
+
 $student = wp_insert_user(['user_login'=>'student','user_pass'=>'student','user_email'=>'s@b.co','role'=>'subscriber','display_name'=>'Ali Student']);
 tutor_utils()->do_enroll($course, 0, $student);
 update_option('eduqode_app_test_video_url', 'https://test.example.com/test.mp4');
 update_option('eduqode_app_test_lesson_ids', (string) $l1);
-echo json_encode(array_merge(compact('course','t1','t2','l1','l2','l3','q','other','ol','student','pdf','mp4'), ['quizzes' => json_decode(file_get_contents(sys_get_temp_dir() . '/eduqode_quiz_ids.json'), true)])), "\n";
+echo json_encode(array_merge(compact('course','t1','t2','l1','l2','l3','q','other','ol','student','pdf','mp4'), ['quizzes' => json_decode(file_get_contents(sys_get_temp_dir() . '/eduqode_quiz_ids.json'), true), 'asg' => (int) file_get_contents(sys_get_temp_dir() . '/eduqode_asg_id.txt')])), "\n";

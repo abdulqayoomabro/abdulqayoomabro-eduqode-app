@@ -40,6 +40,8 @@ cat > site/wp-content/mu-plugins/eduqode-test-rules.php <<'PHP'
 add_filter('tutor_validate_lesson_complete', function ($ok, $user_id, $lesson_id) {
     return (int) get_option('eduqode_test_block_lesson') === (int) $lesson_id ? false : $ok;
 }, 10, 3);
+// Tutor LMS Pro's Assignments addon adds its post type to course contents the same way.
+add_filter('tutor_course_contents_post_types', function ($types) { $types[] = 'tutor_assignments'; return $types; });
 class EduQode_Test_ContentDrip {   // same hook and method name as Tutor LMS Pro 4.0.1 ContentDrip
     public function is_lock_lesson($id) { return (int) get_option('eduqode_test_drip_lesson') === (int) $id; }
     public function check_if_lesson_is_locked($s) { return $s; }

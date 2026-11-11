@@ -93,6 +93,9 @@ data class Lesson(
 ) {
     val isLesson get() = type == "lesson"
     val isOfflineQuiz get() = type == "quiz" && quizJson.isNotEmpty()
+    val isAssignment get() = type == "assignment"
+    /** Lessons and assignments: content the student reads in the lesson screen. */
+    val isReadable get() = isLesson || isAssignment
     val quiz: Quiz? by lazy { if (quizJson.isEmpty()) null else runCatching { QuizEngine.parse(org.json.JSONObject(quizJson)) }.getOrNull() }
     val hasVideo get() = videoOnlineProvider.isNotEmpty() || videoOfflineUrl.isNotEmpty()
     val videoOfflineCapable get() = videoOfflineUrl.isNotEmpty()

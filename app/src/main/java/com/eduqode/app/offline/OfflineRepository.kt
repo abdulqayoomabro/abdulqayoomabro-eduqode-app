@@ -106,7 +106,7 @@ class OfflineRepository(context: Context) {
 
         val htmlPresent = HashSet<Long>()
         pkg.lessons.forEach { l ->
-            if (l.type == "lesson") {
+            if (l.type == "lesson" || l.type == "assignment") {
                 // Images are small and may be shared by lessons, so they belong to the course (lesson 0).
                 val names = l.images.associateWith { OfflineLogic.fileNameFor(it, "img") }
                 l.images.forEach { addFile(0, FileKind.IMAGE, it, "Image", "image/*", 0, "img") }
@@ -309,6 +309,28 @@ class OfflineRepository(context: Context) {
 
     // ---------- offline quizzes ----------
 
+    /** True once the student has taken the quiz (on this phone or on the website). */
+    fun quizTaken(lesson: Lesson): Boolean =
+        lesson.quizAttemptsUsed > 0 || db.quizAttempts(userId, lesson.id).any { it.state != "rejected" }
+
+    /** Latest result, e.g. "Passed 4/6" (phone attempt first, else the website's last attempt). */
+    fun quizResultLabel(lesson: Lesson): String? {
+        val local = db.quizAttempts(userId, lesson.id).firstOrNull { it.state != "rejected" }
+        val (earned, total, result) = when {
+            local != null -> Triple(local.serverEarned ?: local.earned, local.serverTotal ?: local.total, local.serverResult.ifBlank { local.result })
+            lesson.quizLastJson.isNotEmpty() -> runCatching {
+                QuizEngine.attemptSummary(org.json.JSONObject(lesson.quizLastJson)).let { Triple(it.earned, it.total, it.result.ifBlank { it.status }) }
+            }.getOrNull() ?: return null
+            else -> return null
+        }
+        fun n(d: Double) = if (d % 1.0 == 0.0) d.toLong().toString() else String.format(java.util.Locale.US, "%.1f", d)
+        val word = when (result) { "pass" -> "Passed"; "fail" -> "Not passed"; else -> "Awaiting review" }
+        return "$word ${n(earned)}/${n(total)}"
+    }
+
+    /** Lesson, quiz or assignment is done (for the ✓ in the course list and progress). */
+    fun isDone(lesson: Lesson): Boolean = lesson.completedAt > 0 || (lesson.type == "quiz" && quizTaken(lesson))
+
     /** Attempts taken on this phone that the website has not confirmed yet. */
     fun pendingQuizAttempts(quizId: Long): Int = db.quizAttempts(userId, quizId).count { it.state == "pending" }
 
@@ -353,13 +375,23 @@ class OfflineRepository(context: Context) {
 
     /** Offline status of one lesson for the lesson list. */
     fun lessonAvailability(lesson: Lesson, files: List<StoredFile>): String {
+        if (lesson.isAssignment) {
+            val mine = files.filter { it.lessonId == lesson.id }
+            return when {
+                mine.any { it.state == FileState.FAILED } -> "Download failed"
+                mine.any { it.state != FileState.DONE && it.state != FileState.SKIPPED } -> "Downloading"
+                lesson.completedAt > 0 -> "Submitted · instructions and files offline"
+                else -> "Instructions and files offline · submit on the website"
+            }
+        }
         if (lesson.type == "quiz" && lesson.quizJson.isEmpty()) {
             return if (lesson.onlineReason.isNotBlank()) "Online only: ${lesson.onlineReason}" else "Online only"
         }
         if (lesson.isOfflineQuiz) {
             val quiz = lesson.quiz ?: return "Online only"
             val left = QuizEngine.attemptsLeft(quiz.copy(attemptsUsed = lesson.quizAttemptsUsed), pendingQuizAttempts(lesson.id))
-            return "Available offline" + when (left) {
+            val last = quizResultLabel(lesson)
+            return (if (last != null) "$last · " else "") + "Available offline" + when (left) {
                 null -> ""
                 0 -> " · no attempts left"
                 else -> " · $left attempt(s) left"

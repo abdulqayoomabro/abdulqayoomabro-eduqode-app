@@ -257,9 +257,9 @@ class EduQode_App_Courses {
         return array( $html, array_values( array_unique( $images ) ) );
     }
 
-    private static function attachments( $lesson_id ) {
+    private static function attachments( $lesson_id, $meta_key = '_tutor_attachments' ) {
         $list = array();
-        foreach ( (array) tutor_utils()->get_attachments( $lesson_id ) as $att ) {
+        foreach ( (array) tutor_utils()->get_attachments( $lesson_id, $meta_key ) as $att ) {
             $att = (array) $att;
             if ( empty( $att['url'] ) ) {
                 continue;
@@ -299,10 +299,11 @@ class EduQode_App_Courses {
                 if ( ! apply_filters( 'eduqode_app_include_lesson', $include, $item->ID, $user_id, $course_id ) ) {
                     continue;
                 }
-                $is_lesson = $item->post_type === tutor()->lesson_post_type;
-                $entry     = array(
+                $is_lesson     = $item->post_type === tutor()->lesson_post_type;
+                $is_assignment = 'tutor_assignments' === $item->post_type;
+                $entry         = array(
                     'id'           => (int) $item->ID,
-                    'type'         => $is_lesson ? 'lesson' : ( 'tutor_quiz' === $item->post_type ? 'quiz' : $item->post_type ),
+                    'type'         => $is_lesson ? 'lesson' : ( 'tutor_quiz' === $item->post_type ? 'quiz' : ( $is_assignment ? 'assignment' : $item->post_type ) ),
                     'title'        => html_entity_decode( get_the_title( $item ), ENT_QUOTES, 'UTF-8' ),
                     'order'        => $order,
                     'permalink'    => get_permalink( $item ),
@@ -319,6 +320,25 @@ class EduQode_App_Courses {
                     $entry['attachments']  = self::attachments( $item->ID );
                     $entry['video']        = self::video( $item->ID, $user_id );
                     $entry['position']     = $sync->position( $item->ID );
+                } elseif ( $is_assignment ) {
+                    // Tutor LMS Pro assignment: instructions and files (e.g. datasets) can be read offline;
+                    // the work is submitted on the website.
+                    list( $html, $images )  = self::lesson_html( $item );
+                    $submitted              = tutor_utils()->is_assignment_submitted( $item->ID, $user_id );
+                    $entry['online_only']   = false;
+                    $entry['content_html']  = $html;
+                    $entry['images']        = $images;
+                    $entry['attachments']   = self::attachments( $item->ID, '_tutor_assignment_attachments' );
+                    $entry['completed_at']  = $submitted ? 1 : 0;
+                    $entry['assignment']    = array(
+                        'total_mark'      => (float) tutor_utils()->get_assignment_option( $item->ID, 'total_mark', 0 ),
+                        'pass_mark'       => (float) tutor_utils()->get_assignment_option( $item->ID, 'pass_mark', 0 ),
+                        'time_value'      => (int) tutor_utils()->get_assignment_option( $item->ID, 'time_duration.value', 0 ),
+                        'time_unit'       => (string) tutor_utils()->get_assignment_option( $item->ID, 'time_duration.time', '' ),
+                        'max_files'       => (int) tutor_utils()->get_assignment_option( $item->ID, 'upload_files_limit', 0 ),
+                        'max_file_mb'     => (int) tutor_utils()->get_assignment_option( $item->ID, 'upload_file_size_limit', 0 ),
+                        'submitted'       => (bool) $submitted,
+                    );
                 } elseif ( 'tutor_quiz' === $item->post_type ) {
                     $reason = '';
                     $images = array();
