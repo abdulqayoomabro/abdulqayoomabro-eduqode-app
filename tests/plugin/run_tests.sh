@@ -171,6 +171,9 @@ $WPR option update eduqode_test_block_lesson 0 >/dev/null
 $WPR option update eduqode_test_hide_lesson $L3 >/dev/null
 check "rule: lesson left out of the offline pack by filter" "$(api "$B/?rest_route=/eduqode/v1/courses/$C/package" | python3 -c "import json,sys;print($L3 in [i['id'] for t in json.load(sys.stdin)['topics'] for i in t['items']])")" "False"
 $WPR option update eduqode_test_hide_lesson 0 >/dev/null
+$WPR option update eduqode_test_drip_lesson $L3 >/dev/null
+check "content drip: lesson not released yet is left out" "$(api "$B/?rest_route=/eduqode/v1/courses/$C/package" | python3 -c "import json,sys;print($L3 in [i['id'] for t in json.load(sys.stdin)['topics'] for i in t['items']])")" "False"
+$WPR option update eduqode_test_drip_lesson 0 >/dev/null
 
 # Website (Tutor LMS itself) sees the offline completion, and Tutor's redirect hook is restored
 WPC="php ../wp/wp-cli.phar --allow-root --path=../wp/site"

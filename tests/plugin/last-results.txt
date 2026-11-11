@@ -53,6 +53,7 @@ PASS  attempt limit respected (second attempt refused)
 PASS  progress lists quiz attempts
 PASS  rule: completion refused by a Tutor rule is reported
 PASS  rule: lesson left out of the offline pack by filter
+PASS  content drip: lesson not released yet is left out
 PASS  website: Tutor marks lesson completed
 PASS  website: Tutor best watched time updated (s)
 PASS  website: enrollment intact
@@ -61,4 +62,4 @@ PASS  re-login on same device: old token stops working
 PASS  re-login on same device: new token works
 PASS  revoked token no longer works
 ----
-passed: 62  failed: 0
+passed: 63  failed: 0

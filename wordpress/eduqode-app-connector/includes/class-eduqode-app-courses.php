@@ -19,6 +19,30 @@ class EduQode_App_Courses {
         return '0' !== get_option( 'eduqode_app_offline_enabled', '1' );
     }
 
+    /**
+     * Tutor LMS Pro "Content Drip": a lesson or quiz that is not released yet for this student
+     * (by date, or X days after enrolling) is left out of the offline pack, the same as on the website.
+     * Uses Tutor Pro's own ContentDrip::is_lock_lesson() (Tutor LMS Pro 4.0.1).
+     */
+    public static function is_drip_locked( $content_id ) {
+        static $drip = false;
+        if ( false === $drip ) {
+            $drip = null;
+            global $wp_filter;
+            if ( ! empty( $wp_filter['tutor_lesson_show_mark_as_complete'] ) ) {
+                foreach ( $wp_filter['tutor_lesson_show_mark_as_complete']->callbacks as $callbacks ) {
+                    foreach ( $callbacks as $cb ) {
+                        $fn = $cb['function'];
+                        if ( is_array( $fn ) && is_object( $fn[0] ) && method_exists( $fn[0], 'is_lock_lesson' ) ) {
+                            $drip = $fn[0];
+                        }
+                    }
+                }
+            }
+        }
+        return $drip ? (bool) $drip->is_lock_lesson( $content_id ) : false;
+    }
+
     /** Enrolled students, plus admins and the course's own instructors (for testing). */
     public static function can_access( $course_id, $user_id ) {
         $course_id = (int) $course_id;
@@ -268,7 +292,8 @@ class EduQode_App_Courses {
                  * Leave a lesson out of offline packs (for example content that is not released yet).
                  * Filter: eduqode_app_include_lesson( true, $lesson_id, $user_id, $course_id ).
                  */
-                if ( ! apply_filters( 'eduqode_app_include_lesson', true, $item->ID, $user_id, $course_id ) ) {
+                $include = ! self::is_drip_locked( $item->ID );
+                if ( ! apply_filters( 'eduqode_app_include_lesson', $include, $item->ID, $user_id, $course_id ) ) {
                     continue;
                 }
                 $is_lesson = $item->post_type === tutor()->lesson_post_type;
