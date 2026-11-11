@@ -16,6 +16,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
@@ -24,6 +25,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.webkit.WebViewAssetLoader
@@ -47,6 +49,7 @@ import java.io.File
  * One lesson, offline: downloaded video (with seek, pause and resume position), lesson text with
  * images, PDFs and other resources, previous/next, and "Mark as complete" (saved on the phone, synced later).
  */
+@OptIn(UnstableApi::class)
 class LessonActivity : AppCompatActivity() {
 
     companion object {

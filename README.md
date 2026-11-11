@@ -9,6 +9,11 @@ Android app for https://lms.eduqode.com (Tutor LMS).
 - Full-screen video, file upload for assignments, downloads, pull-to-refresh
 - Shows already-visited pages from cache when offline, plus a "No internet" screen
 
+## Offline learning (version 2)
+Download enrolled courses, study without internet, progress syncs to Tutor LMS when back online.
+Setup, how it works, and the REST API: see [docs/OFFLINE.md](docs/OFFLINE.md).
+Needs the WordPress plugin `eduqode-app-connector` version 2 (zip on the Releases page).
+
 ## Getting the APK
 Every push to `main` builds a debug APK on GitHub Actions.
 On your phone, open the **Releases** page of this repo and download `EduQode-test.apk` from **EduQode test build**. (It is also attached under **Actions** > latest **Build APK** run > Artifacts.)
