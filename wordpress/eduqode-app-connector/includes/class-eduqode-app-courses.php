@@ -291,6 +291,17 @@ class EduQode_App_Courses {
                     $entry['attachments']  = self::attachments( $item->ID );
                     $entry['video']        = self::video( $item->ID, $user_id );
                     $entry['position']     = $sync->position( $item->ID );
+                } elseif ( 'tutor_quiz' === $item->post_type ) {
+                    $reason = '';
+                    $images = array();
+                    $quiz   = EduQode_App_Quiz::package( $item->ID, $user_id, $reason, $images );
+                    if ( $quiz ) {
+                        $entry['online_only'] = false;
+                        $entry['quiz']        = $quiz;
+                        $entry['images']      = array_values( array_unique( array_filter( $images, array( __CLASS__, 'valid_url' ) ) ) );
+                    } else {
+                        $entry['online_reason'] = $reason;
+                    }
                 }
                 $items[] = $entry;
             }

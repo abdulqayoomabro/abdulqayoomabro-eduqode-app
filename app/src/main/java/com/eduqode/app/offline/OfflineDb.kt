@@ -13,7 +13,7 @@ import org.json.JSONObject
  * Every row belongs to one WordPress user, so two students on one phone never see each other's data.
  */
 class OfflineDb private constructor(context: Context) :
-    SQLiteOpenHelper(context.applicationContext, "offline.db", null, 1) {
+    SQLiteOpenHelper(context.applicationContext, "offline.db", null, 2) {
 
     companion object {
         @Volatile private var instance: OfflineDb? = null
@@ -73,10 +73,29 @@ class OfflineDb private constructor(context: Context) :
                 sending INTEGER NOT NULL DEFAULT 0, attempts INTEGER NOT NULL DEFAULT 0, last_error TEXT NOT NULL DEFAULT '')"""
         )
         db.execSQL("CREATE INDEX events_user ON events(user_id)")
+        upgradeTo2(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // Version 1 is the first schema. Future versions add ALTER TABLE steps here; never drop student data.
+        // Only add to the schema; never drop student data.
+        if (oldVersion < 2) upgradeTo2(db)
+    }
+
+    /** Version 2: offline quizzes. */
+    private fun upgradeTo2(db: SQLiteDatabase) {
+        db.execSQL("ALTER TABLE lessons ADD COLUMN quiz_json TEXT NOT NULL DEFAULT ''")
+        db.execSQL("ALTER TABLE lessons ADD COLUMN quiz_attempts_used INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE lessons ADD COLUMN quiz_last TEXT NOT NULL DEFAULT ''")
+        db.execSQL("ALTER TABLE events ADD COLUMN payload TEXT NOT NULL DEFAULT ''")
+        db.execSQL(
+            """CREATE TABLE quiz_attempts (
+                id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, course_id INTEGER NOT NULL, quiz_id INTEGER NOT NULL,
+                started_at INTEGER NOT NULL, ended_at INTEGER NOT NULL, responses TEXT NOT NULL, question_ids TEXT NOT NULL,
+                earned REAL NOT NULL, total REAL NOT NULL, result TEXT NOT NULL,
+                state TEXT NOT NULL DEFAULT 'pending', server_earned REAL, server_total REAL,
+                server_result TEXT NOT NULL DEFAULT '', reason TEXT NOT NULL DEFAULT '')"""
+        )
+        db.execSQL("CREATE INDEX quiz_attempts_quiz ON quiz_attempts(user_id, quiz_id)")
     }
 
     // ---------- helpers ----------
@@ -121,7 +140,8 @@ class OfflineDb private constructor(context: Context) :
             }
         }.getOrDefault(emptyList()),
         selected = c.int("selected") == 1, completedAt = c.long("completed_at"),
-        positionMs = c.long("position_ms"), durationMs = c.long("duration_ms"), positionAt = c.long("position_at")
+        positionMs = c.long("position_ms"), durationMs = c.long("duration_ms"), positionAt = c.long("position_at"),
+        quizJson = c.str("quiz_json"), quizAttemptsUsed = c.int("quiz_attempts_used"), quizLastJson = c.str("quiz_last")
     )
 
     private fun fileFrom(c: Cursor) = StoredFile(
@@ -246,6 +266,13 @@ class OfflineDb private constructor(context: Context) :
                     put("position_ms", if (serverNewer) l.positionMs else old?.positionMs ?: 0)
                     put("duration_ms", if (serverNewer) l.durationMs else old?.durationMs ?: 0)
                     put("position_at", if (serverNewer) l.positionAt else old?.positionAt ?: 0)
+                    put("quiz_json", l.quizJson)
+                    val q = l.quizJson.takeIf { it.isNotEmpty() }?.let { runCatching { QuizEngine.parse(JSONObject(it)) }.getOrNull() }
+                    put("quiz_attempts_used", q?.attemptsUsed ?: old?.quizAttemptsUsed ?: 0)
+                    put("quiz_last", q?.lastAttempt?.let { a ->
+                        JSONObject().put("attempt_id", a.attemptId).put("status", a.status).put("total", a.total)
+                            .put("earned", a.earned).put("result", a.result).toString()
+                    } ?: old?.quizLastJson ?: "")
                 }
                 db.insertWithOnConflict("lessons", null, v, SQLiteDatabase.CONFLICT_REPLACE)
             }
@@ -377,12 +404,56 @@ class OfflineDb private constructor(context: Context) :
             "user_id=? AND course_id=? AND state IN ('failed','downloading')", arrayOf("$userId", "$courseId"))
     }
 
+    // ---------- quiz attempts ----------
+
+    fun setQuizServerState(userId: Long, quizId: Long, attemptsUsed: Int, lastJson: String) {
+        writableDatabase.update("lessons", ContentValues().apply {
+            put("quiz_attempts_used", attemptsUsed); put("quiz_last", lastJson)
+        }, "user_id=? AND id=?", arrayOf("$userId", "$quizId"))
+    }
+
+    fun addQuizAttempt(userId: Long, a: LocalQuizAttempt) {
+        writableDatabase.insert("quiz_attempts", null, ContentValues().apply {
+            put("id", a.id); put("user_id", userId); put("course_id", a.courseId); put("quiz_id", a.quizId)
+            put("started_at", a.startedAt); put("ended_at", a.endedAt); put("responses", a.responsesJson)
+            put("question_ids", JSONArray(a.questionIds).toString()); put("earned", a.earned); put("total", a.total)
+            put("result", a.result); put("state", a.state)
+        })
+    }
+
+    private fun attemptFrom(c: Cursor) = LocalQuizAttempt(
+        id = c.str("id"), courseId = c.long("course_id"), quizId = c.long("quiz_id"), startedAt = c.long("started_at"),
+        endedAt = c.long("ended_at"), responsesJson = c.str("responses"),
+        questionIds = runCatching { JSONArray(c.str("question_ids")).let { a -> (0 until a.length()).map { a.getLong(it) } } }.getOrDefault(emptyList()),
+        earned = c.getDouble(c.getColumnIndexOrThrow("earned")), total = c.getDouble(c.getColumnIndexOrThrow("total")),
+        result = c.str("result"), state = c.str("state"),
+        serverEarned = c.getColumnIndexOrThrow("server_earned").let { if (c.isNull(it)) null else c.getDouble(it) },
+        serverTotal = c.getColumnIndexOrThrow("server_total").let { if (c.isNull(it)) null else c.getDouble(it) },
+        serverResult = c.str("server_result"), reason = c.str("reason")
+    )
+
+    fun quizAttempts(userId: Long, quizId: Long): List<LocalQuizAttempt> =
+        query("SELECT * FROM quiz_attempts WHERE user_id=? AND quiz_id=? ORDER BY ended_at DESC", arrayOf("$userId", "$quizId"), ::attemptFrom)
+
+    fun quizAttempt(userId: Long, id: String): LocalQuizAttempt? =
+        query("SELECT * FROM quiz_attempts WHERE user_id=? AND id=?", arrayOf("$userId", id), ::attemptFrom).firstOrNull()
+
+    fun updateQuizAttempt(id: String, state: String, server: QuizAttemptSummary?, reason: String) {
+        writableDatabase.update("quiz_attempts", ContentValues().apply {
+            put("state", state); put("reason", reason)
+            if (server != null) {
+                put("server_earned", server.earned); put("server_total", server.total); put("server_result", server.result)
+            }
+        }, "id=?", arrayOf(id))
+    }
+
     // ---------- events (sync queue) ----------
 
     fun addEvent(userId: Long, e: PendingEvent) {
         writableDatabase.insertWithOnConflict("events", null, ContentValues().apply {
             put("id", e.id); put("user_id", userId); put("course_id", e.courseId); put("lesson_id", e.lessonId)
             put("type", e.type); put("client_time", e.clientTime); put("position_ms", e.positionMs); put("duration_ms", e.durationMs)
+            put("payload", e.payload)
         }, SQLiteDatabase.CONFLICT_IGNORE)
     }
 
@@ -408,7 +479,7 @@ class OfflineDb private constructor(context: Context) :
 
     fun pendingEvents(userId: Long, limit: Int = 200): List<PendingEvent> = query(
         "SELECT * FROM events WHERE user_id=? ORDER BY client_time LIMIT $limit", arrayOf("$userId")
-    ) { c -> PendingEvent(c.str("id"), c.long("course_id"), c.long("lesson_id"), c.str("type"), c.long("client_time"), c.long("position_ms"), c.long("duration_ms")) }
+    ) { c -> PendingEvent(c.str("id"), c.long("course_id"), c.long("lesson_id"), c.str("type"), c.long("client_time"), c.long("position_ms"), c.long("duration_ms"), c.str("payload")) }
 
     fun pendingCount(userId: Long, courseId: Long): Int =
         query("SELECT COUNT(*) FROM events WHERE user_id=? AND course_id=?", arrayOf("$userId", "$courseId")) { it.getInt(0) }.first()

@@ -76,8 +76,21 @@ class EduQode_App_Sync {
                 }
             }
         }
+        $quizzes = array();
+        foreach ( EduQode_App_Courses::structure( $course_id ) as $topic ) {
+            foreach ( $topic['items'] as $item ) {
+                if ( 'tutor_quiz' === $item->post_type ) {
+                    $attempts                       = EduQode_App_Quiz::attempts( $item->ID, $this->user_id );
+                    $quizzes[ (string) $item->ID ] = array(
+                        'attempts_used' => count( $attempts ),
+                        'last_attempt'  => $attempts ? EduQode_App_Quiz::attempt_summary( $attempts[0] ) : null,
+                    );
+                }
+            }
+        }
         return array(
             'course_id'   => (int) $course_id,
+            'quizzes'     => (object) $quizzes,
             'percent'     => (int) tutor_utils()->get_course_completed_percent( $course_id, $this->user_id ),
             'completed'   => (object) $completed,
             'positions'   => (object) $positions,
@@ -114,10 +127,22 @@ class EduQode_App_Sync {
                 continue;
             }
 
-            list( $status, $reason ) = $this->apply_one( $event );
+            $data = null;
+            if ( isset( $event['type'] ) && 'quiz_attempt' === $event['type'] ) {
+                if ( ! EduQode_App_Courses::can_access( (int) ( $event['course_id'] ?? 0 ), $this->user_id ) ) {
+                    list( $status, $reason ) = array( 'rejected', 'no_access' );
+                } else {
+                    list( $status, $reason, $data ) = EduQode_App_Quiz::record_attempt( $event, $this->user_id );
+                }
+            } else {
+                list( $status, $reason ) = $this->apply_one( $event );
+            }
             $result = array( 'id' => $id, 'status' => $status );
             if ( $reason ) {
                 $result['reason'] = $reason;
+            }
+            if ( $data ) {
+                $result['attempt'] = $data;
             }
             $results[] = $result;
 

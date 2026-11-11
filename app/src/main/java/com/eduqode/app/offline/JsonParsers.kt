@@ -84,7 +84,8 @@ object JsonParsers {
                     completedAt = item.optLong("completed_at"),
                     positionMs = pos?.optLong("position_ms") ?: 0,
                     durationMs = pos?.optLong("duration_ms") ?: 0,
-                    positionAt = pos?.optLong("updated_at") ?: 0
+                    positionAt = pos?.optLong("updated_at") ?: 0,
+                    quizJson = item.optJSONObject("quiz")?.toString() ?: ""
                 )
             }
         }
@@ -106,6 +107,13 @@ object JsonParsers {
                 }
             }
         }
+        val quizzes = HashMap<Long, Pair<Int, String>>()
+        p.optJSONObject("quizzes")?.let { obj ->
+            obj.keys().forEach { k ->
+                val v = obj.optJSONObject(k) ?: return@forEach
+                k.toLongOrNull()?.let { quizzes[it] = v.optInt("attempts_used") to (v.optJSONObject("last_attempt")?.toString() ?: "") }
+            }
+        }
         val last = p.optJSONObject("last_lesson")
         return ServerProgress(
             courseId = p.getLong("course_id"),
@@ -113,22 +121,26 @@ object JsonParsers {
             completed = completed,
             positions = positions,
             lastLessonId = last?.optLong("lesson_id") ?: 0,
-            lastLessonAt = last?.optLong("updated_at") ?: 0
+            lastLessonAt = last?.optLong("updated_at") ?: 0,
+            quizzes = quizzes
         )
     }
 
     data class SyncResponse(
         val results: Map<String, Pair<String, String>>,   // event id -> (status, reason)
         val progress: List<ServerProgress>,
-        val noAccess: List<Long>
+        val noAccess: List<Long>,
+        val attempts: Map<String, QuizAttemptSummary> = emptyMap()   // quiz event id -> attempt saved by Tutor
     )
 
     fun syncResponse(json: JSONObject): SyncResponse {
         val results = HashMap<String, Pair<String, String>>()
+        val attempts = HashMap<String, QuizAttemptSummary>()
         json.optJSONArray("results")?.let { arr ->
             for (i in 0 until arr.length()) {
                 val r = arr.getJSONObject(i)
                 results[r.str("id")] = r.str("status") to r.str("reason")
+                r.optJSONObject("attempt")?.let { attempts[r.str("id")] = QuizEngine.attemptSummary(it) }
             }
         }
         val progress = json.optJSONArray("progress")?.let { arr ->
@@ -137,7 +149,7 @@ object JsonParsers {
         val noAccess = json.optJSONArray("no_access")?.let { arr ->
             (0 until arr.length()).map { arr.optLong(it) }
         } ?: emptyList()
-        return SyncResponse(results, progress, noAccess)
+        return SyncResponse(results, progress, noAccess, attempts)
     }
 
     fun eventsBody(events: List<PendingEvent>, deviceId: String, courseIds: Collection<Long>): JSONObject {
@@ -152,6 +164,10 @@ object JsonParsers {
                 if (e.type == EventType.VIDEO_POSITION) {
                     put("position_ms", e.positionMs)
                     put("duration_ms", e.durationMs)
+                }
+                if (e.payload.isNotEmpty()) {
+                    val extra = JSONObject(e.payload)
+                    extra.keys().forEach { k -> put(k, extra.get(k)) }
                 }
             })
         }

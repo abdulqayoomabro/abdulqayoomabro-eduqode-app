@@ -62,6 +62,7 @@ class OfflineE2ETest {
         private val l1 get() = ids.getLong("l1")   // YouTube lesson with image + PDF
         private val l2 get() = ids.getLong("l2")   // lesson with an authorized MP4
         private val l3 get() = ids.getLong("l3")   // text lesson, completed offline
+        private var quizAttemptId = ""
     }
 
     private val context: Context = ApplicationProvider.getApplicationContext()
@@ -137,10 +138,11 @@ class OfflineE2ETest {
         assertEquals("one lesson has an offline video", 1, s.offlineVideos)
         assertEquals(2, s.videos)
         assertEquals(1, s.resources)
-        assertEquals(1, s.quizzes)
+        assertEquals(2, s.quizzes)
+        assertEquals("one quiz can be taken offline", 1, s.offlineQuizzes)
         assertTrue("size estimated (${s.totalBytes})", s.totalBytes > 5_000_000)
         assertTrue(repo.lessonFile(course, l1).readText().contains("OFFLINE-TEXT-MARKER"))
-        step("PASS package: 3 lessons, 2 videos (1 offline), 1 PDF, 1 quiz, ${s.totalBytes} bytes")
+        step("PASS package: 3 lessons, 2 videos (1 offline), 1 PDF, 2 quizzes (1 offline), ${s.totalBytes} bytes")
     }
 
     @Test fun t03_downloadPauseResume() {
@@ -188,10 +190,10 @@ class OfflineE2ETest {
         }
         open<CourseDownloadActivity>(Intent(context, CourseDownloadActivity::class.java).putExtra(CourseDownloadActivity.EXTRA_COURSE, course)) {
             assertEquals("Open offline course shown", View.VISIBLE, it.findViewById<View>(R.id.btn_open).visibility)
-            assertEquals("4 items in the lesson list", 4, it.findViewById<RecyclerView>(R.id.lessons).adapter!!.itemCount)
+            assertEquals("5 items in the lesson list", 5, it.findViewById<RecyclerView>(R.id.lessons).adapter!!.itemCount)
         }
         open<OfflineCourseActivity>(Intent(context, OfflineCourseActivity::class.java).putExtra(OfflineCourseActivity.EXTRA_COURSE, course)) {
-            assertEquals(4, it.findViewById<RecyclerView>(R.id.lessons).adapter!!.itemCount)
+            assertEquals(5, it.findViewById<RecyclerView>(R.id.lessons).adapter!!.itemCount)
         }
         val pdf = repo.localFile(course, repo.db.lesson(repo.userId, l1)!!.attachments.single().url)!!
         open<PdfViewerActivity>(Intent(context, PdfViewerActivity::class.java)
@@ -284,11 +286,56 @@ class OfflineE2ETest {
         step("PASS offline completion: saved on the phone, 3 updates queued, nothing lost")
     }
 
+    @Test fun t08b_takeQuizOffline() {
+        val uid = repo.userId
+        val quizId = ids.getLong("quiz")
+        val lesson = repo.db.lesson(uid, quizId)!!
+        val quiz = lesson.quiz!!
+        assertEquals(2, repo.quizAttemptsLeft(lesson))
+
+        // The quiz screen opens offline and starts.
+        val intent = Intent(context, com.eduqode.app.ui.QuizActivity::class.java)
+            .putExtra(com.eduqode.app.ui.QuizActivity.EXTRA_COURSE, course).putExtra(com.eduqode.app.ui.QuizActivity.EXTRA_QUIZ, quizId)
+        ActivityScenario.launch<com.eduqode.app.ui.QuizActivity>(intent).use { sc ->
+            Thread.sleep(1500)
+            sc.onActivity {
+                val start = it.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_right)
+                assertEquals("Start quiz", start.text.toString())
+                start.performClick()
+            }
+            Thread.sleep(800)
+            sc.onActivity {
+                val first = it.findViewById<android.widget.LinearLayout>(R.id.content).getChildAt(0) as android.widget.TextView
+                assertTrue(first.text.toString().startsWith("Question 1 of 5"))
+            }
+        }
+
+        // Answers: all correct except the multiple-choice question (2 marks) -> 4 of 6.
+        val responses = quiz.questions.associate { q ->
+            q.id to when (q.type) {
+                "true_false", "single_choice" -> com.eduqode.app.offline.QuizResponse.Choice(q.answers.first { it.isCorrect }.id)
+                "multiple_choice" -> com.eduqode.app.offline.QuizResponse.Choices(setOf(q.answers.first { it.isCorrect }.id))
+                "fill_in_the_blank" -> com.eduqode.app.offline.QuizResponse.Blanks(listOf("Blue"))
+                else -> com.eduqode.app.offline.QuizResponse.Sequence(q.answers.sortedBy { it.order }.map { it.id })
+            }
+        }
+        val questions = com.eduqode.app.offline.QuizEngine.pickQuestions(quiz)
+        val result = com.eduqode.app.offline.QuizEngine.result(quiz, questions, responses)
+        assertEquals(4.0, result.earned, 0.0)
+        assertEquals(6.0, result.total, 0.0)
+        assertEquals("pass", result.result)
+        val attemptId = repo.saveQuizAttempt(course, quizId, System.currentTimeMillis() - 60_000, questions, responses, result)
+        quizAttemptId = attemptId
+        assertEquals("pending", repo.db.quizAttempt(uid, attemptId)!!.state)
+        assertEquals(1, repo.quizAttemptsLeft(repo.db.lesson(uid, quizId)!!))
+        step("PASS offline quiz: screen opens, result 4/6 (pass) shown on the phone, attempt queued")
+    }
+
     @Test fun t09_progressIsOnDisk() {
         // Read the database file directly, the way the app would after a restart.
         val db = SQLiteDatabase.openDatabase(context.getDatabasePath("offline.db").path, null, SQLiteDatabase.OPEN_READONLY)
         db.use {
-            it.rawQuery("SELECT COUNT(*) FROM events", null).use { c -> c.moveToFirst(); assertEquals(3, c.getInt(0)) }
+            it.rawQuery("SELECT COUNT(*) FROM events", null).use { c -> c.moveToFirst(); assertEquals(4, c.getInt(0)) }
             it.rawQuery("SELECT completed_at FROM lessons WHERE id=?", arrayOf("$l3")).use { c -> c.moveToFirst(); assertTrue(c.getLong(0) > 0) }
         }
         step("PASS persistence: progress and queue are in the database file")
@@ -301,7 +348,12 @@ class OfflineE2ETest {
         waitUntil("automatic sync", 180_000) { repo.db.pendingEvents(uid).isEmpty() }
         waitUntil("course marked synced", 30_000) { repo.db.course(uid, course)!!.syncState == SyncState.SYNCED }
         assertTrue(repo.db.course(uid, course)!!.lastSyncAt > 0)
-        step("PASS automatic sync: queue emptied after reconnecting")
+        val attempt = repo.db.quizAttempt(uid, quizAttemptId)!!
+        assertEquals("synced", attempt.state)
+        assertEquals("Tutor gave the same marks as the phone", 4.0, attempt.serverEarned!!, 0.0)
+        assertEquals(6.0, attempt.serverTotal!!, 0.0)
+        assertEquals("pass", attempt.serverResult)
+        step("PASS automatic sync: queue emptied after reconnecting; Tutor graded the offline quiz 4/6 pass, same as the phone")
     }
 
     @Test fun t11_websiteHasTheProgress() {

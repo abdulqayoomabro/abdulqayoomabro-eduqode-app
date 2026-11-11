@@ -116,6 +116,11 @@ class OfflineCourseActivity : AppCompatActivity() {
     }
 
     private fun open(l: Lesson) {
+        if (l.isOfflineQuiz) {
+            startActivity(Intent(this, QuizActivity::class.java)
+                .putExtra(QuizActivity.EXTRA_COURSE, courseId).putExtra(QuizActivity.EXTRA_QUIZ, l.id))
+            return
+        }
         if (!l.isLesson) {
             // Quizzes stay online so answers are never stored in the app.
             if (repo.isOnline()) Ui.openWebsite(this, l.permalink)

@@ -68,6 +68,16 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
                     throw e
                 }
 
+                // Offline quiz attempts: keep Tutor LMS's official result next to the phone's result.
+                events.filter { it.type == EventType.QUIZ_ATTEMPT }.forEach { e ->
+                    val (status, reason) = response.results[e.id] ?: return@forEach
+                    when (status) {
+                        "applied" -> db.updateQuizAttempt(e.id, "synced", response.attempts[e.id], "")
+                        "duplicate", "already" -> db.updateQuizAttempt(e.id, "synced", null, "")
+                        "rejected" -> db.updateQuizAttempt(e.id, "rejected", null, reason)
+                    }
+                }
+
                 // Finished events leave the queue; anything the server did not answer stays for next time.
                 val finished = events.filter { e -> response.results[e.id]?.let { OfflineLogic.isFinal(it.first) } == true }
                 db.deleteEvents(finished.map { it.id })
@@ -143,6 +153,7 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
             u.position?.let { db.savePosition(userId, u.lessonId, it.positionMs, it.durationMs, it.updatedAt) }
         }
         db.setCourseProgress(userId, p.courseId, p.percent)
+        p.quizzes.forEach { (quizId, state) -> db.setQuizServerState(userId, quizId, state.first, state.second) }
         db.applyServerLastLesson(userId, p.courseId, p.lastLessonId, p.lastLessonAt)
     }
 }

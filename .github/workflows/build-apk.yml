@@ -82,7 +82,10 @@ jobs:
           echo "Lesson completed offline is completed on the website: $DONE"
           echo "Student still enrolled after removing the download: $ENR"
           echo "Course progress on the website: $PCT%"
-          [ "$DONE" = "yes" ] && [ "$ENR" = "yes" ]
+          QZ=$(echo "$IDS" | python3 -c "import json,sys;print(json.load(sys.stdin)['quiz'])")
+          ATT=$($WP eval "global \$wpdb; \$a=\$wpdb->get_row(\"SELECT COUNT(*) n, MAX(earned_marks) e, MAX(total_marks) t, MAX(result) r FROM {\$wpdb->prefix}tutor_quiz_attempts WHERE quiz_id=$QZ AND user_id=$U\"); printf(\"%d %.1f/%.1f %s\", \$a->n, \$a->e, \$a->t, \$a->r);")
+          echo "Offline quiz attempt in Tutor LMS (count, marks, result): $ATT"
+          [ "$DONE" = "yes" ] && [ "$ENR" = "yes" ] && [ "$ATT" = "1 4.0/6.0 pass" ]
       - name: Test results
         if: always()
         run: |

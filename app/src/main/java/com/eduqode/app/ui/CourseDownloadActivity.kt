@@ -49,7 +49,10 @@ class CourseDownloadActivity : AppCompatActivity() {
 
     private val adapter = LessonAdapter(false, { l, f -> repo.lessonAvailability(l, f) }) { lesson ->
         val c = repo.db.course(repo.userId, courseId)
-        if (c?.state == CourseState.DOWNLOADED || c?.state == CourseState.FAILED) {
+        if ((c?.state == CourseState.DOWNLOADED || c?.state == CourseState.FAILED) && lesson.isOfflineQuiz) {
+            startActivity(Intent(this, QuizActivity::class.java)
+                .putExtra(QuizActivity.EXTRA_COURSE, courseId).putExtra(QuizActivity.EXTRA_QUIZ, lesson.id))
+        } else if ((c?.state == CourseState.DOWNLOADED || c?.state == CourseState.FAILED) && lesson.isLesson) {
             startActivity(Intent(this, LessonActivity::class.java)
                 .putExtra(LessonActivity.EXTRA_COURSE, courseId).putExtra(LessonActivity.EXTRA_LESSON, lesson.id))
         }
@@ -146,7 +149,7 @@ class CourseDownloadActivity : AppCompatActivity() {
                 append("Lessons: ${summary.lessons}\n")
                 append("Videos: ${summary.videos} (${summary.offlineVideos} can play offline)\n")
                 append("Downloadable resources: ${summary.resources}\n")
-                if (summary.quizzes > 0) append("Quizzes: ${summary.quizzes} (online only)\n")
+                if (summary.quizzes > 0) append("Quizzes: ${summary.quizzes} (${summary.offlineQuizzes} can be taken offline)\n")
                 append("Estimated download: ${OfflineLogic.formatBytes(summary.totalBytes)}")
                 if (summary.unknownSizeFiles > 0) append(" + ${summary.unknownSizeFiles} file(s) of unknown size")
                 append("\nFree space on phone: ${OfflineLogic.formatBytes(summary.freeBytes)}")

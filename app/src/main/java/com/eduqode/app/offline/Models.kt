@@ -36,6 +36,7 @@ object EventType {
     const val LESSON_COMPLETE = "lesson_complete"
     const val VIDEO_POSITION = "video_position"
     const val LESSON_ACCESS = "lesson_access"
+    const val QUIZ_ATTEMPT = "quiz_attempt"
 }
 
 data class Course(
@@ -84,9 +85,14 @@ data class Lesson(
     val completedAt: Long,
     val positionMs: Long,
     val durationMs: Long,
-    val positionAt: Long
+    val positionAt: Long,
+    val quizJson: String = "",
+    val quizAttemptsUsed: Int = 0,
+    val quizLastJson: String = ""
 ) {
     val isLesson get() = type == "lesson"
+    val isOfflineQuiz get() = type == "quiz" && quizJson.isNotEmpty()
+    val quiz: Quiz? by lazy { if (quizJson.isEmpty()) null else runCatching { QuizEngine.parse(org.json.JSONObject(quizJson)) }.getOrNull() }
     val hasVideo get() = videoOnlineProvider.isNotEmpty() || videoOfflineUrl.isNotEmpty()
     val videoOfflineCapable get() = videoOfflineUrl.isNotEmpty()
 }
@@ -113,7 +119,27 @@ data class PendingEvent(
     val type: String,
     val clientTime: Long,
     val positionMs: Long,
-    val durationMs: Long
+    val durationMs: Long,
+    val payload: String = ""
+)
+
+/** An offline quiz attempt stored on the phone. */
+data class LocalQuizAttempt(
+    val id: String,
+    val courseId: Long,
+    val quizId: Long,
+    val startedAt: Long,
+    val endedAt: Long,
+    val responsesJson: String,
+    val questionIds: List<Long>,
+    val earned: Double,
+    val total: Double,
+    val result: String,
+    val state: String,            // pending, synced, rejected
+    val serverEarned: Double?,
+    val serverTotal: Double?,
+    val serverResult: String,
+    val reason: String
 )
 
 /** Parsed offline pack from GET /courses/{id}/package. */
@@ -155,7 +181,8 @@ data class PackageLesson(
     val completedAt: Long,
     val positionMs: Long,
     val durationMs: Long,
-    val positionAt: Long
+    val positionAt: Long,
+    val quizJson: String = ""
 )
 
 /** A downloadable video, as described by the server (see the plugin's video()). */
@@ -168,7 +195,8 @@ data class ServerProgress(
     val completed: Map<Long, Long>,
     val positions: Map<Long, ServerPosition>,
     val lastLessonId: Long,
-    val lastLessonAt: Long
+    val lastLessonAt: Long,
+    val quizzes: Map<Long, Pair<Int, String>> = emptyMap()   // quiz id -> (attempts used, last attempt JSON)
 )
 
 data class ServerPosition(val positionMs: Long, val durationMs: Long, val updatedAt: Long)

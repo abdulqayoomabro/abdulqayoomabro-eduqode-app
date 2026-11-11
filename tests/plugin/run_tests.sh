@@ -75,7 +75,7 @@ check "sync: last lesson applied" "$(st e3)" "applied"
 check "sync: non-enrolled course rejected" "$(st e4)" "rejected/no_access"
 check "sync: quiz cannot be completed offline" "$(st e5)" "rejected/not_a_lesson"
 check "sync: lesson from another course rejected" "$(st e6)" "rejected/not_in_course"
-check "sync: progress percent = Tutor's own (1 of 3 lessons + 1 quiz)" "$(echo "$r" | python3 -c "import json,sys;print(json.load(sys.stdin)['progress'][0]['percent'])")" "25"
+check "sync: progress percent = Tutor's own (1 of 3 lessons + 4 quizzes)" "$(echo "$r" | python3 -c "import json,sys;print(json.load(sys.stdin)['progress'][0]['percent'])")" "14"
 
 r=$(api -X POST -H "Content-Type: application/json" -d "$body" "$B/?rest_route=/eduqode/v1/sync")
 check "sync: same events again are duplicates" "$(st e1),$(st e2)" "duplicate,duplicate"
@@ -93,6 +93,74 @@ check "progress: last lesson" "$(echo "$prog" | python3 -c "import json,sys;prin
 
 r=$(api -X POST -H "Content-Type: application/json" -d '{"events":[],"course_ids":['$C','$OTHER']}' "$B/?rest_route=/eduqode/v1/sync")
 check "pull: enrolled course progress + no_access list" "$(echo "$r" | python3 -c "import json,sys;d=json.load(sys.stdin);print(len(d['progress']),d.get('no_access'))")" "1 [$OTHER]"
+
+# ---- Offline quizzes ----
+WPC="php ../wp/wp-cli.phar --allow-root --path=../wp/site"
+QZ=$(echo "$ids" | python3 -c "import json,sys;print(json.dumps(json.load(sys.stdin)['quizzes']))")
+QUIZ2=$(echo "$QZ" | python3 -c "import json,sys;print(json.load(sys.stdin)['quiz2'])")
+QUIZ3=$(echo "$QZ" | python3 -c "import json,sys;print(json.load(sys.stdin)['quiz3'])")
+QUIZ4=$(echo "$QZ" | python3 -c "import json,sys;print(json.load(sys.stdin)['quiz4'])")
+api "$B/?rest_route=/eduqode/v1/courses/$C/package" > package2.json
+python3 - "$QUIZ2" "$QUIZ3" "$QUIZ4" > quiz_pkg_checks.txt <<'PY'
+import json,sys
+q2,q3,q4=map(int,sys.argv[1:])
+p=json.load(open('package2.json'))
+items={i['id']:i for t in p['topics'] for i in t['items']}
+z=items[q2].get('quiz') or {}
+out=[]
+out.append(("quiz with supported types is offline", items[q2]['online_only'], False))
+out.append(("quiz question types in order", [q['type'] for q in z.get('questions',[])], ['true_false','single_choice','multiple_choice','fill_in_the_blank','ordering','matching','image_answering','short_answer']))
+out.append(("quiz settings: 10 min, unlimited, pass 50%", (z.get('time_limit_seconds'), z.get('attempts_allowed'), z.get('passing_grade')), (600, 0, 50.0)))
+out.append(("correct answers included (instant result)", [a['is_correct'] for a in z['questions'][1]['answers']], [False, True, False]))
+out.append(("fill-in-the-blank answers included", z['questions'][3]['answers'][0]['match'], 'easy|fun'))
+out.append(("image of image-answering question listed", len(items[q2].get('images',[])), 1))
+out.append(("one-attempt quiz allows 1", items[q3]['quiz']['attempts_allowed'], 1))
+out.append(("quiz with an H5P question stays online", (items[q4]['online_only'], 'quiz' in items[q4]), (True, False)))
+for name,got,exp in out:
+    print(("PASS  " if got==exp else "FAIL  ")+name+("" if got==exp else f"  (expected: {exp}, got: {got})"))
+PY
+cat quiz_pkg_checks.txt; pass=$((pass+$(grep -c ^PASS quiz_pkg_checks.txt))); fail=$((fail+$(grep -c ^FAIL quiz_pkg_checks.txt)))
+
+# Correct answers in Tutor's own format, built from the package.
+ATTEMPT=$(python3 - "$QUIZ2" "$C" "$now" <<'PY'
+import json,sys
+q2,c,now=int(sys.argv[1]),int(sys.argv[2]),int(sys.argv[3])
+p=json.load(open('package2.json'))
+z=[i for t in p['topics'] for i in t['items'] if i['id']==q2][0]['quiz']
+ans={}
+for q in z['questions']:
+    A=q['answers']; t=q['type']
+    if t in ('true_false','single_choice'): ans[q['id']]=[a['id'] for a in A if a['is_correct']][0]
+    elif t=='multiple_choice': ans[q['id']]=[a['id'] for a in A if a['is_correct']]
+    elif t=='fill_in_the_blank': ans[q['id']]=['Easy',' fun ']
+    elif t in ('ordering','matching','image_matching'): ans[q['id']]={'answers':[a['id'] for a in sorted(A,key=lambda a:a['order'])]}
+    elif t=='image_answering': ans[q['id']]={'answer_id':{str(a['id']):'lahore' for a in A}}
+    else: ans[q['id']]='Because it is readable.'
+ev={'id':'quiz-1','type':'quiz_attempt','course_id':c,'lesson_id':q2,'quiz_id':q2,'started_at':now-120000,'client_time':now-60000,
+    'question_ids':[q['id'] for q in z['questions']],'answers':ans}
+print(json.dumps({'events':[ev]}))
+PY
+)
+r=$(api -X POST -H "Content-Type: application/json" -d "$ATTEMPT" "$B/?rest_route=/eduqode/v1/sync")
+att() { echo "$r" | python3 -c "import json,sys;d=json.load(sys.stdin);a=[x for x in d['results'] if x['id']=='$1'][0];print(a['status']+'|'+a.get('reason','')+'|'+json.dumps(a.get('attempt')))"; }
+IFS='|' read -r ST RS AJ <<< "$(att quiz-1)"
+check "quiz attempt recorded through Tutor LMS" "$ST" "applied"
+check "Tutor graded: 8 of 10 marks (short answer waits for teacher)" "$(echo "$AJ" | python3 -c "import json,sys;a=json.loads(sys.stdin.read());print(float(a['earned']), float(a['total']))")" "8.0 10.0"
+check "attempt marked for teacher review" "$(echo "$AJ" | python3 -c "import json,sys;print(json.loads(sys.stdin.read())['status'])")" "review_required"
+r=$(api -X POST -H "Content-Type: application/json" -d "$ATTEMPT" "$B/?rest_route=/eduqode/v1/sync")
+check "same quiz attempt sent again is not saved twice" "$(att quiz-1 | cut -d'|' -f1)" "duplicate"
+check "Tutor has exactly 1 attempt and 8 answers saved" "$($WPC eval 'global $wpdb; echo $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}tutor_quiz_attempts WHERE quiz_id='$QUIZ2'"), " ", $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}tutor_quiz_attempt_answers WHERE quiz_id='$QUIZ2'");' 2>/dev/null)" "1 8"
+check "offline start/end times kept" "$($WPC eval 'global $wpdb; $a=$wpdb->get_row("SELECT attempt_started_at s, attempt_ended_at e FROM {$wpdb->prefix}tutor_quiz_attempts WHERE quiz_id='$QUIZ2'"); echo strtotime($a->e)-strtotime($a->s);' 2>/dev/null)" "60"
+
+Q3ID=$(echo "$QZ" | python3 -c "import json,sys;print(json.load(sys.stdin)['Q3'][0])")
+Q3WRONG=$(echo "$QZ" | python3 -c "import json,sys;print(json.load(sys.stdin)['Q3'][1][1])")
+one='{"events":[{"id":"q3-a","type":"quiz_attempt","course_id":'$C',"quiz_id":'$QUIZ3',"started_at":'$((now-5000))',"client_time":'$now',"question_ids":['$Q3ID'],"answers":{"'$Q3ID'":'$Q3WRONG'}},
+ {"id":"q3-b","type":"quiz_attempt","course_id":'$C',"quiz_id":'$QUIZ3',"started_at":'$((now-4000))',"client_time":'$((now+1))',"question_ids":['$Q3ID'],"answers":{"'$Q3ID'":'$Q3WRONG'}}]}'
+r=$(api -X POST -H "Content-Type: application/json" -d "$one" "$B/?rest_route=/eduqode/v1/sync")
+check "wrong answer graded 0 and failed" "$(att q3-a | python3 -c "import json,sys;s=sys.stdin.read().split('|',2);a=json.loads(s[2]);print(s[0],float(a['earned']),a['result'])")" "applied 0.0 fail"
+check "attempt limit respected (second attempt refused)" "$(att q3-b | cut -d'|' -f1,2)" "rejected|attempts_exceeded"
+prog=$(api "$B/?rest_route=/eduqode/v1/courses/$C/progress")
+check "progress lists quiz attempts" "$(echo "$prog" | python3 -c "import json,sys;d=json.load(sys.stdin)['quizzes'];print(d['$QUIZ2']['attempts_used'], d['$QUIZ3']['attempts_used'])")" "1 1"
 
 # Tutor LMS Pro-style rules
 WPR="php ../wp/wp-cli.phar --allow-root --path=../wp/site"

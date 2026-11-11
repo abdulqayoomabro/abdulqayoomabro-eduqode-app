@@ -75,6 +75,7 @@ class OfflineRepository(context: Context) {
         val offlineVideos: Int,
         val resources: Int,
         val quizzes: Int,
+        val offlineQuizzes: Int,
         val totalBytes: Long,
         val doneBytes: Long,
         val unknownSizeFiles: Int,
@@ -116,6 +117,9 @@ class OfflineRepository(context: Context) {
                 VideoProviders.downloadUrl(l.videoOffline)?.let { url ->
                     addFile(l.id, FileKind.VIDEO, url, l.title, l.videoOffline?.mime ?: "video/mp4", l.videoOffline?.sizeBytes ?: 0, "mp4")
                 }
+            } else if (l.quizJson.isNotEmpty()) {
+                // Pictures used in offline quiz questions.
+                l.images.forEach { addFile(0, FileKind.IMAGE, it, "Quiz image", "image/*", 0, "img") }
             }
         }
         db.savePackage(uid, pkg, htmlPresent)
@@ -170,6 +174,7 @@ class OfflineRepository(context: Context) {
             offlineVideos = lessons.count { it.isLesson && it.videoOfflineCapable },
             resources = lessons.sumOf { it.attachments.size },
             quizzes = lessons.count { it.type == "quiz" },
+            offlineQuizzes = lessons.count { it.isOfflineQuiz },
             totalBytes = files.sumOf { maxOf(it.expectedBytes, it.doneBytes) },
             doneBytes = files.filter { it.state == FileState.DONE }.sumOf { maxOf(it.expectedBytes, it.doneBytes) } +
                 files.filter { it.state != FileState.DONE }.sumOf { it.doneBytes },
@@ -269,6 +274,39 @@ class OfflineRepository(context: Context) {
 
     fun syncNow() = SyncWorker.enqueueNow(app)
 
+    // ---------- offline quizzes ----------
+
+    /** Attempts taken on this phone that the website has not confirmed yet. */
+    fun pendingQuizAttempts(quizId: Long): Int = db.quizAttempts(userId, quizId).count { it.state == "pending" }
+
+    /** Attempts left, counting the website and unsent attempts on this phone (null = unlimited). */
+    fun quizAttemptsLeft(lesson: Lesson): Int? {
+        val quiz = lesson.quiz ?: return 0
+        return QuizEngine.attemptsLeft(quiz.copy(attemptsUsed = lesson.quizAttemptsUsed), pendingQuizAttempts(lesson.id))
+    }
+
+    /** Saves a finished attempt on the phone and queues it for Tutor LMS. Returns its id. */
+    fun saveQuizAttempt(
+        courseId: Long, quizId: Long, startedAt: Long, questions: List<QuizQuestion>,
+        responses: Map<Long, QuizResponse>, result: QuizResult
+    ): String {
+        val id = UUID.randomUUID().toString()
+        val now = System.currentTimeMillis()
+        db.addQuizAttempt(userId, LocalQuizAttempt(
+            id = id, courseId = courseId, quizId = quizId, startedAt = startedAt, endedAt = now,
+            responsesJson = QuizEngine.responsesToJson(responses).toString(), questionIds = questions.map { it.id },
+            earned = result.earned, total = result.total, result = result.result, state = "pending",
+            serverEarned = null, serverTotal = null, serverResult = "", reason = ""
+        ))
+        db.addEvent(userId, PendingEvent(
+            id, courseId, quizId, EventType.QUIZ_ATTEMPT, now, 0, 0,
+            QuizEngine.attemptPayload(quizId, startedAt, questions, responses).toString()
+        ))
+        db.setSyncState(userId, courseId, SyncState.PENDING)
+        SyncWorker.enqueueNow(app)
+        return id
+    }
+
     // ---------- local files for a lesson ----------
 
     fun localFile(courseId: Long, url: String): File? {
@@ -282,6 +320,15 @@ class OfflineRepository(context: Context) {
 
     /** Offline status of one lesson for the lesson list. */
     fun lessonAvailability(lesson: Lesson, files: List<StoredFile>): String {
+        if (lesson.isOfflineQuiz) {
+            val quiz = lesson.quiz ?: return "Online only"
+            val left = QuizEngine.attemptsLeft(quiz.copy(attemptsUsed = lesson.quizAttemptsUsed), pendingQuizAttempts(lesson.id))
+            return "Available offline" + when (left) {
+                null -> ""
+                0 -> " · no attempts left"
+                else -> " · $left attempt(s) left"
+            }
+        }
         if (!lesson.isLesson) return "Online only"
         val mine = files.filter { it.lessonId == lesson.id }
         if (!lesson.selected) return "Not downloaded"
