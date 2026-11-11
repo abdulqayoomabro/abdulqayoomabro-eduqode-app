@@ -9,7 +9,7 @@ WP="php $WORK/wp-cli.phar --allow-root --path=$WORK/site"
 mkdir -p "$WORK/site/wp-content/uploads/e2e"
 if [ ! -f "$WORK/site/wp-content/uploads/e2e/big.mp4" ]; then
   # 30-second playable video at a fixed 3 Mbit/s (about 11 MB), so a download takes several seconds.
-  ffmpeg -loglevel error -y -f lavfi -i testsrc=duration=30:size=640x360:rate=25 \
+  "${FFMPEG:-ffmpeg}" -loglevel error -y -f lavfi -i testsrc=duration=30:size=640x360:rate=25 \
     -c:v libx264 -x264-params nal-hrd=cbr -b:v 3M -minrate 3M -maxrate 3M -bufsize 1M \
     -pix_fmt yuv420p -movflags +faststart -f mp4 "$WORK/site/wp-content/uploads/e2e/big.mp4"
 fi

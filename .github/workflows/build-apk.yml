@@ -46,8 +46,12 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.14.3'
-      - name: Install ffmpeg (makes a playable test video)
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Get ffmpeg (makes a playable test video)
+        timeout-minutes: 5
+        run: |
+          # A ready-made ffmpeg from PyPI (apt mirrors can hang for a long time).
+          pip install --quiet imageio-ffmpeg
+          echo "FFMPEG=$(python3 -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" >> "$GITHUB_ENV"
       - name: Enable KVM for the emulator
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -56,6 +60,7 @@ jobs:
       - name: Build test WordPress + Tutor LMS site
         run: tests/plugin/setup_and_run.sh "$RUNNER_TEMP/wp"
       - name: Start test site for the emulator
+        timeout-minutes: 5
         run: tests/e2e/start_site.sh "$RUNNER_TEMP/wp"
       - name: Run the app on an emulator
         uses: reactivecircus/android-emulator-runner@v2
