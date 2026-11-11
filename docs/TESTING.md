@@ -1,4 +1,4 @@
-# Testing report — offline learning (app 2.0, plugin 2.0.0)
+# Testing report — offline learning (app 2.0, plugin 2.1.0)
 
 Every result below comes from tests that were actually run. They run again automatically on
 every push (GitHub Actions → **Build APK**). Last full run: all jobs green.
@@ -7,9 +7,9 @@ every push (GitHub Actions → **Build APK**). Last full run: all jobs green.
 
 | Suite | Where it runs | Result |
 |---|---|---|
-| Plugin end-to-end tests (`tests/plugin`) | Real WordPress 6.8.3 + Tutor LMS 4.2.1 (official sources), SQLite | **45 / 45 passed** |
+| Plugin end-to-end tests (`tests/plugin`) | Real WordPress 6.8.3 + Tutor LMS 4.2.1 (official sources), SQLite | **63 / 63 passed** |
 | App unit tests (`app/src/test`) | JVM, including a real local HTTP server for download/resume | **27 / 27 passed** |
-| Emulator end-to-end test (`app/src/androidTest`) | Android 14 emulator ↔ real WordPress + Tutor LMS test site with a real 11 MB MP4 and a real PDF | **14 / 14 passed**, then Tutor LMS checked from the server side |
+| Emulator end-to-end test (`app/src/androidTest`) | Android 14 emulator ↔ real WordPress + Tutor LMS test site with a real 11 MB MP4 and a real PDF | **15 / 15 passed**, then Tutor LMS checked from the server side |
 
 ## The 20 tests from the brief
 
@@ -44,6 +44,13 @@ every push (GitHub Actions → **Build APK**). Last full run: all jobs green.
 * A Tutor rule that refuses a completion (like Tutor LMS Pro rules) is reported, and the app then shows the lesson as not completed with a message.
 * Tutor's own "redirect to next lesson" hook is paused during sync and restored after.
 * All plugin answers are sent with `Cache-Control: no-store`.
+
+## Offline quizzes (plugin 2.1.0)
+
+* Phone result and Tutor LMS result compared on the emulator: both **4/6, pass**; the attempt appears in Tutor LMS like a website attempt.
+* Plugin tests: every supported question type graded by Tutor itself (8/10 + short answer "review required"), duplicates ignored, attempt limit enforced, quizzes with H5P questions stay online.
+* App grading rules unit-tested against a real course pack (14 tests).
+* Content Drip: locked lessons are left out of offline packs; also checked by hand against Tutor LMS Pro 4.0.1 on a local site (not in the public test suite, since Tutor Pro is a paid plugin).
 
 ## Bugs found by testing and fixed
 
