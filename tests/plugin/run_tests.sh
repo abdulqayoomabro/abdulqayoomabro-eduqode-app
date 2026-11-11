@@ -190,6 +190,9 @@ check "website: Tutor best watched time updated (s)" "$($WPC eval 'echo (int) tu
 check "website: enrollment intact" "$($WPC eval 'echo tutor_utils()->is_enrolled('$C', 2) ? "yes" : "no";' 2>/dev/null)" "yes"
 check "website: Tutor redirect hook restored after sync" "$($WPC eval 'global $wp_filter; $n=0; foreach (($wp_filter["tutor_lesson_completed_after"]->callbacks ?? []) as $cbs) foreach ($cbs as $cb) if (is_array($cb["function"]) && $cb["function"][1]==="tutor_lesson_completed_after") $n++; echo $n;' 2>/dev/null)" "1"
 
+# Speed optimizers (SiteGround) must leave Tutor's scripts alone
+check "optimizer: Tutor scripts excluded from SiteGround minify/combine" "$($WPC eval 'do_action("wp_enqueue_scripts"); $h = apply_filters("sgo_js_minify_exclude", array("x")); $c = apply_filters("sgo_javascript_combine_exclude", array()); $t = array_filter($h, function($x){ return 0 === strpos($x, "tutor"); }); echo (in_array("x", $h) && count($t) > 0 && count(array_intersect($t, $c)) === count($t)) ? "yes" : "no";' 2>/dev/null)" "yes"
+
 # Same device logging in again replaces its old token
 OLD=$TOKEN
 resp=$(curl -s -b $J -A "$UA" -X POST -d "device_id=dev-1&device_name=Pixel" "$B/?eduqode_app=issue_token")
