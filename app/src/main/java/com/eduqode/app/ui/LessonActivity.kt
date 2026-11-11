@@ -206,8 +206,10 @@ class LessonActivity : AppCompatActivity() {
         if (l.hasVideo) {
             onlineOnly.visibility = View.VISIBLE
             val provider = VideoProviders.label(l.videoOnlineProvider)
+            findViewById<TextView>(R.id.online_only_text).text =
+                if (l.videoOfflineUrl.isNotEmpty()) "Video not downloaded yet" else "Online Only — Internet Required"
             findViewById<TextView>(R.id.online_only_sub).text = when {
-                l.videoOfflineUrl.isNotEmpty() -> "This video is not downloaded. Connect to the internet or download the lesson."
+                l.videoOfflineUrl.isNotEmpty() -> "Open the course's download screen and tap “Download new content” while online."
                 else -> "This video is on $provider and can only be watched with internet. The rest of this lesson is available offline."
             }
             findViewById<MaterialButton>(R.id.btn_watch_online).apply {

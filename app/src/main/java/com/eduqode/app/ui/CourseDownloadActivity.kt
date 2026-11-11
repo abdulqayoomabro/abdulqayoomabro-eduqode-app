@@ -202,7 +202,12 @@ class CourseDownloadActivity : AppCompatActivity() {
         button(R.id.btn_download_selected).text = if (state == CourseState.DOWNLOADED) "Change downloaded lessons" else "Download selected lessons"
         show(R.id.btn_open, state == CourseState.DOWNLOADED || state == CourseState.FAILED)
         show(R.id.btn_pause, active)
-        show(R.id.btn_resume, state == CourseState.PAUSED)
+        // New content on the website (for example an offline video link added later) for a downloaded course.
+        val updates = files.filter { it.state == FileState.PENDING }
+        val hasUpdates = state == CourseState.DOWNLOADED && updates.isNotEmpty()
+        show(R.id.btn_resume, state == CourseState.PAUSED || hasUpdates)
+        button(R.id.btn_resume).text = if (hasUpdates)
+            "Download new content (${updates.size} file(s), ${OfflineLogic.formatBytes(updates.sumOf { it.expectedBytes })})" else "Resume"
         show(R.id.btn_retry, state == CourseState.FAILED)
         show(R.id.btn_cancel, active || state == CourseState.PAUSED)
         show(R.id.btn_remove, state == CourseState.DOWNLOADED || state == CourseState.FAILED)
