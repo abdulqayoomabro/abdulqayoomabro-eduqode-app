@@ -119,6 +119,7 @@ class EduQode_App_Admin {
             <hr>
             <h2>Offline video links</h2>
             <p>YouTube and Vimeo videos stay online-only. To make a lesson's video available offline, paste a direct MP4 link that you own (your server, Bunny, S3, ...). Videos uploaded to Tutor as "HTML5 (mp4)" are offline automatically.</p>
+            <p><strong>Google Drive:</strong> paste the share link of the video file (not a folder), shared as "Anyone with the link". Good for testing and small groups; Drive blocks a file for about 24 hours when it is downloaded too many times.</p>
             <?php if ( eduqode_app_tutor_ready() ) : ?>
                 <form method="get">
                     <input type="hidden" name="page" value="<?php echo esc_attr( self::SLUG ); ?>">
@@ -161,6 +162,12 @@ class EduQode_App_Admin {
                                     $video  = EduQode_App_Courses::video( $item->ID, get_current_user_id() );
                                     $online = $video['online'] ? $video['online']['provider'] : 'none';
                                     $status = $video['offline'] ? 'Offline (' . $video['offline']['origin'] . ')' : ( $video['online'] ? 'Online only' : 'No video' );
+                                    $link   = (string) get_post_meta( $item->ID, EduQode_App_Courses::VIDEO_META, true );
+                                    if ( false !== strpos( $link, 'drive.google.com/drive/folders' ) ) {
+                                        $status = 'Folder link: paste the video file link instead';
+                                    } elseif ( false !== strpos( $link, 'google.com' ) ) {
+                                        $status .= ' · Google Drive';
+                                    }
                                     printf(
                                         '<tr><td>%1$d</td><td>%2$s</td><td>%3$s</td><td><input type="url" class="large-text" name="video[%1$d]" value="%4$s" placeholder="https://.../lesson.mp4"></td><td>%5$s</td></tr>',
                                         (int) $item->ID,

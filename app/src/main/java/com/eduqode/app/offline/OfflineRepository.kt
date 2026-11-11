@@ -140,7 +140,7 @@ class OfflineRepository(context: Context) {
             .map { f ->
                 async(Dispatchers.IO) {
                     gate.withPermit {
-                        val size = headSize(f.url)
+                        val size = headSize(OfflineLogic.directDownloadUrl(f.url))
                         if (size > 0) db.updateFile(f.id, ContentValues().apply { put("expected_bytes", size) })
                     }
                 }

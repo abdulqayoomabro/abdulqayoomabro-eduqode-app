@@ -55,6 +55,15 @@ class FileDownloader(private val userAgent: String) {
                 code !in 200..299 -> return Outcome.Failed("Server answered $code")
             }
 
+            // A web page instead of a file: wrong link, file not shared publicly, or (Google Drive)
+            // the file's daily download limit was reached.
+            if (conn.contentType?.lowercase()?.startsWith("text/html") == true) {
+                return Outcome.Failed(
+                    if (url.contains("google.com")) "Google Drive did not send the file. Check it is shared with “Anyone with the link”, or try again tomorrow (Drive download limit)."
+                    else "The link opens a web page, not a file."
+                )
+            }
+
             var append = false
             if (code == 206) {
                 append = OfflineLogic.contentRangeStart(conn.getHeaderField("Content-Range")) == start

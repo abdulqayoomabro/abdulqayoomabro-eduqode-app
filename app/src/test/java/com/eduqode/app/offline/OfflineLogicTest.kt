@@ -140,6 +140,15 @@ class OfflineLogicTest {
         assertEquals("""<p><img src="media/1.png"></p><img src="media/2.png">""", out)
     }
 
+    @Test fun googleDriveLinksBecomeDirectDownloads() {
+        val direct = "https://drive.usercontent.google.com/download?id=1AbCdEfGhIjKlMnOp&export=download&confirm=t"
+        assertEquals(direct, OfflineLogic.directDownloadUrl("https://drive.google.com/file/d/1AbCdEfGhIjKlMnOp/view?usp=sharing"))
+        assertEquals(direct, OfflineLogic.directDownloadUrl("https://drive.google.com/open?id=1AbCdEfGhIjKlMnOp"))
+        assertEquals(direct, OfflineLogic.directDownloadUrl("https://docs.google.com/uc?export=download&id=1AbCdEfGhIjKlMnOp"))
+        assertEquals("https://cdn.x.com/a.mp4", OfflineLogic.directDownloadUrl("https://cdn.x.com/a.mp4"))
+        assertNull(OfflineLogic.googleDriveId("https://drive.google.com/drive/folders/1AbCdEfGhIjKlMnOp"))
+    }
+
     @Test fun storageCheck() {
         assertTrue(OfflineLogic.hasRoom(100L * 1024 * 1024, 200L * 1024 * 1024))
         assertFalse(OfflineLogic.hasRoom(180L * 1024 * 1024, 200L * 1024 * 1024))

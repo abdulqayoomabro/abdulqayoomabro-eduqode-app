@@ -164,7 +164,7 @@ class LessonActivity : AppCompatActivity() {
         val local = l.videoOfflineUrl.takeIf { it.isNotEmpty() }?.let { repo.localFile(courseId, it) }
         val source: Uri? = when {
             local != null -> Uri.fromFile(local)
-            l.videoOfflineUrl.isNotEmpty() && repo.isOnline() -> Uri.parse(l.videoOfflineUrl) // stream until downloaded
+            l.videoOfflineUrl.isNotEmpty() && repo.isOnline() -> Uri.parse(com.eduqode.app.offline.OfflineLogic.directDownloadUrl(l.videoOfflineUrl)) // stream until downloaded
             else -> null
         }
 

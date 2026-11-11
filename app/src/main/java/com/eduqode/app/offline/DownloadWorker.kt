@@ -140,7 +140,7 @@ class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWork
 
         val result = try {
             FileDownloader(ApiClient.USER_AGENT).download(
-                url = file.url,
+                url = OfflineLogic.directDownloadUrl(file.url),
                 target = File(file.localPath),
                 expectedBytes = file.expectedBytes,
                 shouldStop = { isStopped },

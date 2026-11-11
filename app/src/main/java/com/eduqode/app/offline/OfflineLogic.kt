@@ -35,6 +35,25 @@ object OfflineLogic {
         return out
     }
 
+    private val driveId = listOf(
+        Regex("""drive\.google\.com/file/d/([A-Za-z0-9_-]{10,})"""),
+        Regex("""(?:drive|docs)\.google\.com/(?:open|uc)\?(?:.*&)?id=([A-Za-z0-9_-]{10,})"""),
+        Regex("""drive\.usercontent\.google\.com/download\?(?:.*&)?id=([A-Za-z0-9_-]{10,})""")
+    )
+
+    /** Google Drive file ID from a share link, or null if the link is not a Drive file link. */
+    fun googleDriveId(url: String): String? = driveId.firstNotNullOfOrNull { it.find(url)?.groupValues?.get(1) }
+
+    /**
+     * The link the app actually downloads from. A Google Drive share link ("Anyone with the link")
+     * opens a web page, so it is turned into Drive's direct download link (confirm=t skips the
+     * "can't scan for viruses" page shown for large files). Other links are used as they are.
+     */
+    fun directDownloadUrl(url: String): String {
+        val id = googleDriveId(url) ?: return url
+        return "https://drive.usercontent.google.com/download?id=$id&export=download&confirm=t"
+    }
+
     /** Full page for a lesson or course description, readable on a phone, no scripts. */
     fun wrapHtml(title: String, body: String): String = """
 <!doctype html>

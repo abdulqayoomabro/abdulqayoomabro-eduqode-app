@@ -63,6 +63,10 @@ class FileDownloaderTest {
         when (path) {
             "/missing.pdf" -> { head(404, "Not Found", emptyList(), 0); out.flush(); return }
             "/busy.mp4" -> { head(503, "Service Unavailable", emptyList(), 0); out.flush(); return }
+            "/page.mp4" -> {
+                val html = "<html>quota</html>".toByteArray()
+                head(200, "OK", listOf("Content-Type: text/html; charset=utf-8"), html.size.toLong()); out.write(html); out.flush(); return
+            }
         }
         val range = headers["range"]
         rangesSeen += range
@@ -134,6 +138,12 @@ class FileDownloaderTest {
     @Test fun missingFileFailsWithoutRetry() {
         val out = downloader.download("$base/missing.pdf", File(tmp.root, "m.pdf"), 0, { false }) { _, _ -> }
         assertEquals(FileDownloader.Outcome.Failed("Server answered 404"), out)
+    }
+
+    @Test fun webPageInsteadOfFileFails() {
+        val out = downloader.download("$base/page.mp4", File(tmp.root, "p.mp4"), 0, { false }) { _, _ -> }
+        assertEquals(FileDownloader.Outcome.Failed("The link opens a web page, not a file."), out)
+        assertFalse(File(tmp.root, "p.mp4").exists())
     }
 
     @Test fun busyServerIsRetriedLater() {
