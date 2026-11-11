@@ -82,12 +82,23 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
                 }
                 response.noAccess.forEach { db.setAccessExpired(userId, it, true) }
 
+
                 val now = System.currentTimeMillis()
                 response.progress.forEach { p ->
                     merge(db, userId, p)
                     db.setAccessExpired(userId, p.courseId, false)
                     val left = db.pendingCount(userId, p.courseId)
                     db.setSyncState(userId, p.courseId, if (left == 0) SyncState.SYNCED else SyncState.PENDING, "", now)
+                }
+                // The website refused a completion (for example a Tutor LMS Pro rule such as
+                // "watch the video first"): show the lesson as not completed again, and say why.
+                events.filter { e ->
+                    e.type == EventType.LESSON_COMPLETE &&
+                        response.results[e.id]?.let { it.first == "rejected" && it.second == "validation" } == true
+                }.forEach { e ->
+                    db.unmarkCompleted(userId, e.lessonId)
+                    db.setSyncState(userId, e.courseId, SyncState.FAILED,
+                        "A lesson could not be marked complete offline. Please complete it on the website.")
                 }
                 if (events.size < 200) break
             }

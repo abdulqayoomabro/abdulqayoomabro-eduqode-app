@@ -33,6 +33,17 @@ spl_autoload_register(function ($class) {
     }
 });
 PHP
+# Test-only rules that imitate Tutor LMS Pro features (a completion rule, content not released yet).
+mkdir -p site/wp-content/mu-plugins
+cat > site/wp-content/mu-plugins/eduqode-test-rules.php <<'PHP'
+<?php
+add_filter('tutor_validate_lesson_complete', function ($ok, $user_id, $lesson_id) {
+    return (int) get_option('eduqode_test_block_lesson') === (int) $lesson_id ? false : $ok;
+}, 10, 3);
+add_filter('eduqode_app_include_lesson', function ($ok, $lesson_id) {
+    return (int) get_option('eduqode_test_hide_lesson') === (int) $lesson_id ? false : $ok;
+}, 10, 2);
+PHP
 rm -rf site/wp-content/plugins/eduqode-app-connector
 cp -r "$REPO/wordpress/eduqode-app-connector" site/wp-content/plugins/eduqode-app-connector
 
@@ -52,6 +63,7 @@ sleep 2
 cp "$HERE/run_tests.sh" "$HERE/reset.php" "$WORK/"
 cd "$WORK"
 sed -i "s#WPC=\"php ../wp/wp-cli.phar --allow-root --path=../wp/site\"#WPC=\"$WP\"#" run_tests.sh
+sed -i "s#WPR=\"php ../wp/wp-cli.phar --allow-root --path=../wp/site\"#WPR=\"$WP\"#" run_tests.sh
 ./run_tests.sh | tee results.txt
 pkill -f "php -S 127.0.0.1:8099" || true
 ! grep -q '^FAIL' results.txt

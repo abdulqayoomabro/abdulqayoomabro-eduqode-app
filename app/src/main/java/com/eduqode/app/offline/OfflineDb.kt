@@ -321,6 +321,12 @@ class OfflineDb private constructor(context: Context) :
             "user_id=? AND id=? AND completed_at=0", arrayOf("$userId", "$lessonId"))
     }
 
+    /** Used only when the website refuses an offline completion (for example a Tutor LMS Pro rule). */
+    fun unmarkCompleted(userId: Long, lessonId: Long) {
+        writableDatabase.update("lessons", ContentValues().apply { put("completed_at", 0) },
+            "user_id=? AND id=?", arrayOf("$userId", "$lessonId"))
+    }
+
     fun savePosition(userId: Long, lessonId: Long, positionMs: Long, durationMs: Long, at: Long) {
         writableDatabase.update("lessons", ContentValues().apply {
             put("position_ms", positionMs); put("duration_ms", durationMs); put("position_at", at)

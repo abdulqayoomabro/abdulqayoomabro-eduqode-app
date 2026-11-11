@@ -94,6 +94,16 @@ check "progress: last lesson" "$(echo "$prog" | python3 -c "import json,sys;prin
 r=$(api -X POST -H "Content-Type: application/json" -d '{"events":[],"course_ids":['$C','$OTHER']}' "$B/?rest_route=/eduqode/v1/sync")
 check "pull: enrolled course progress + no_access list" "$(echo "$r" | python3 -c "import json,sys;d=json.load(sys.stdin);print(len(d['progress']),d.get('no_access'))")" "1 [$OTHER]"
 
+# Tutor LMS Pro-style rules
+WPR="php ../wp/wp-cli.phar --allow-root --path=../wp/site"
+$WPR option update eduqode_test_block_lesson $L3 >/dev/null
+r=$(api -X POST -H "Content-Type: application/json" -d '{"events":[{"id":"r1","type":"lesson_complete","course_id":'$C',"lesson_id":'$L3',"client_time":'$now'}]}' "$B/?rest_route=/eduqode/v1/sync")
+check "rule: completion refused by a Tutor rule is reported" "$(st r1)" "rejected/validation"
+$WPR option update eduqode_test_block_lesson 0 >/dev/null
+$WPR option update eduqode_test_hide_lesson $L3 >/dev/null
+check "rule: lesson left out of the offline pack by filter" "$(api "$B/?rest_route=/eduqode/v1/courses/$C/package" | python3 -c "import json,sys;print($L3 in [i['id'] for t in json.load(sys.stdin)['topics'] for i in t['items']])")" "False"
+$WPR option update eduqode_test_hide_lesson 0 >/dev/null
+
 # Website (Tutor LMS itself) sees the offline completion, and Tutor's redirect hook is restored
 WPC="php ../wp/wp-cli.phar --allow-root --path=../wp/site"
 check "website: Tutor marks lesson completed" "$($WPC eval 'echo tutor_utils()->is_completed_lesson('$L1', 2) ? "yes" : "no";' 2>/dev/null)" "yes"

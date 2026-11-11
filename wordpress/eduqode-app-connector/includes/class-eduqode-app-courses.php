@@ -264,6 +264,13 @@ class EduQode_App_Courses {
         foreach ( self::structure( $course_id ) as $topic ) {
             $items = array();
             foreach ( $topic['items'] as $order => $item ) {
+                /**
+                 * Leave a lesson out of offline packs (for example content that is not released yet).
+                 * Filter: eduqode_app_include_lesson( true, $lesson_id, $user_id, $course_id ).
+                 */
+                if ( ! apply_filters( 'eduqode_app_include_lesson', true, $item->ID, $user_id, $course_id ) ) {
+                    continue;
+                }
                 $is_lesson = $item->post_type === tutor()->lesson_post_type;
                 $entry     = array(
                     'id'           => (int) $item->ID,
