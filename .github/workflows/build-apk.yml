@@ -9,6 +9,26 @@ permissions:
   contents: write
 
 jobs:
+  plugin-tests:
+    name: WordPress plugin tests (real WordPress + Tutor LMS)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_sqlite, sqlite3, mbstring, gd
+      - name: Lint plugin
+        run: for f in $(find wordpress/eduqode-app-connector -name '*.php'); do php -l "$f"; done
+      - name: Run end-to-end plugin tests
+        run: tests/plugin/setup_and_run.sh "$RUNNER_TEMP/wp"
+      - name: Upload plugin test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-test-results
+          path: ${{ runner.temp }}/wp/results.txt
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -25,25 +45,62 @@ jobs:
         with:
           gradle-version: '8.14.3'
 
-      - name: Build debug APK
-        run: gradle assembleDebug --stacktrace
+      - name: Unit tests
+        run: gradle testDebugUnitTest --stacktrace
 
-      - name: Upload APK
+      - name: Upload unit test report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: EduQode-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: unit-test-report
+          path: app/build/reports/tests/testDebugUnitTest/
 
-      - name: Rename APK for download
-        run: cp app/build/outputs/apk/debug/app-debug.apk EduQode-test.apk
+      # Optional: Play Store upload key from repository secrets (Settings > Secrets > Actions).
+      - name: Prepare upload key
+        env:
+          KEYSTORE_B64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            echo "UPLOAD_KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+          fi
 
-      # Publishes the APK on the Releases page so it can be downloaded on a phone with one tap.
+      - name: Build debug APK and release AAB
+        env:
+          UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+          UPLOAD_KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+          UPLOAD_KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+        run: gradle assembleDebug bundleRelease --stacktrace
+
+      - name: Package files
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk EduQode-test.apk
+          cp app/build/outputs/bundle/release/app-release.aab EduQode-release.aab
+          (cd wordpress && zip -qr ../eduqode-app-connector.zip eduqode-app-connector)
+
+      - name: Upload build outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: EduQode-build
+          path: |
+            EduQode-test.apk
+            EduQode-release.aab
+            eduqode-app-connector.zip
+
+      # Publishes the files on the Releases page so they can be downloaded on a phone with one tap.
       - name: Publish test release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: test-build
           name: EduQode test build
-          body: Latest test APK, built from the main branch. Download EduQode-test.apk on your phone and install it.
+          body: |
+            Latest test build from the main branch.
+            - EduQode-test.apk: install on your phone for testing
+            - eduqode-app-connector.zip: WordPress plugin (Plugins > Add New > Upload Plugin)
+            - EduQode-release.aab: Play Store bundle (signed only when the upload key secrets are set)
           prerelease: true
           make_latest: false
-          files: EduQode-test.apk
+          files: |
+            EduQode-test.apk
+            EduQode-release.aab
+            eduqode-app-connector.zip

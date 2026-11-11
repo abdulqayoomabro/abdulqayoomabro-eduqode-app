@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 6-11: keep course downloads, the offline database and the login token out of cloud backups. -->
+<full-backup-content>
+    <exclude domain="file" path="offline/" />
+    <exclude domain="database" path="offline.db" />
+    <exclude domain="sharedpref" path="eduqode_auth.xml" />
+</full-backup-content>

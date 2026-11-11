@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+: same exclusions for cloud backup and device-to-device transfer. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="offline/" />
+        <exclude domain="database" path="offline.db" />
+        <exclude domain="sharedpref" path="eduqode_auth.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="offline/" />
+        <exclude domain="database" path="offline.db" />
+        <exclude domain="sharedpref" path="eduqode_auth.xml" />
+    </device-transfer>
+</data-extraction-rules>

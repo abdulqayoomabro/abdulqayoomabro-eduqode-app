@@ -3,9 +3,13 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Download / sync notifications (asked for only when the student starts a download). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -31,5 +35,21 @@
                 <data android:scheme="eduqode" android:host="auth" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.OfflineLibraryActivity" android:exported="false" />
+        <activity android:name=".ui.CourseDownloadActivity" android:exported="false" />
+        <activity android:name=".ui.OfflineCourseActivity" android:exported="false" />
+        <activity android:name=".ui.LessonActivity" android:exported="false"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden" />
+        <activity android:name=".ui.PdfViewerActivity" android:exported="false" />
+
+        <!-- Lets other apps open a downloaded attachment (Word, Excel, ...) read-only, one file at a time. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.files"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
+        </provider>
     </application>
 </manifest>

@@ -1,0 +1,184 @@
+<?php
+/**
+ * Settings > EduQode App
+ *  - switch offline downloads on/off
+ *  - test mode: one test MP4 for chosen lesson IDs
+ *  - offline video link (MP4) per lesson, course by course
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+class EduQode_App_Admin {
+
+    const SLUG = 'eduqode-app';
+
+    public static function init() {
+        add_action( 'admin_menu', array( __CLASS__, 'menu' ) );
+        add_action( 'admin_post_eduqode_app_save', array( __CLASS__, 'save' ) );
+        add_filter( 'plugin_action_links_eduqode-app-connector/eduqode-app-connector.php', array( __CLASS__, 'links' ) );
+    }
+
+    public static function links( $links ) {
+        array_unshift( $links, '<a href="' . esc_url( admin_url( 'options-general.php?page=' . self::SLUG ) ) . '">Settings</a>' );
+        return $links;
+    }
+
+    public static function menu() {
+        add_options_page( 'EduQode App', 'EduQode App', 'manage_options', self::SLUG, array( __CLASS__, 'page' ) );
+    }
+
+    public static function save() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( 'Not allowed.' );
+        }
+        check_admin_referer( 'eduqode_app_save' );
+
+        $section = isset( $_POST['section'] ) ? sanitize_key( $_POST['section'] ) : '';
+        $course  = isset( $_POST['course'] ) ? absint( $_POST['course'] ) : 0;
+
+        if ( 'general' === $section ) {
+            update_option( 'eduqode_app_offline_enabled', empty( $_POST['offline_enabled'] ) ? '0' : '1' );
+            $url = isset( $_POST['test_video_url'] ) ? esc_url_raw( trim( wp_unslash( $_POST['test_video_url'] ) ) ) : '';
+            update_option( 'eduqode_app_test_video_url', $url );
+            $ids = isset( $_POST['test_lesson_ids'] ) ? wp_unslash( $_POST['test_lesson_ids'] ) : '';
+            $ids = implode( ',', array_filter( array_map( 'absint', preg_split( '/[\s,]+/', $ids, -1, PREG_SPLIT_NO_EMPTY ) ) ) );
+            update_option( 'eduqode_app_test_lesson_ids', $ids );
+        }
+
+        if ( 'videos' === $section && $course && isset( $_POST['video'] ) && is_array( $_POST['video'] ) && eduqode_app_tutor_ready() ) {
+            foreach ( wp_unslash( $_POST['video'] ) as $lesson_id => $url ) {
+                $lesson_id = absint( $lesson_id );
+                if ( ! $lesson_id || ! EduQode_App_Courses::lesson_in_course( $lesson_id, $course ) ) {
+                    continue;
+                }
+                $url = esc_url_raw( trim( (string) $url ) );
+                if ( $url ) {
+                    update_post_meta( $lesson_id, EduQode_App_Courses::VIDEO_META, $url );
+                } else {
+                    delete_post_meta( $lesson_id, EduQode_App_Courses::VIDEO_META );
+                }
+            }
+        }
+
+        $args = array( 'page' => self::SLUG, 'saved' => 1 );
+        if ( $course ) {
+            $args['course'] = $course;
+        }
+        wp_safe_redirect( add_query_arg( $args, admin_url( 'options-general.php' ) ) );
+        exit;
+    }
+
+    public static function page() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+        $enabled  = EduQode_App_Courses::offline_enabled();
+        $test_url = get_option( 'eduqode_app_test_video_url', '' );
+        $test_ids = get_option( 'eduqode_app_test_lesson_ids', '' );
+        $course   = isset( $_GET['course'] ) ? absint( $_GET['course'] ) : 0;
+        ?>
+        <div class="wrap">
+            <h1>EduQode App</h1>
+            <?php if ( ! empty( $_GET['saved'] ) ) : ?>
+                <div class="notice notice-success is-dismissible"><p>Saved.</p></div>
+            <?php endif; ?>
+            <?php if ( ! eduqode_app_tutor_ready() ) : ?>
+                <div class="notice notice-error"><p>Tutor LMS is not active. Offline packs need Tutor LMS.</p></div>
+            <?php endif; ?>
+
+            <h2>Offline downloads</h2>
+            <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+                <?php wp_nonce_field( 'eduqode_app_save' ); ?>
+                <input type="hidden" name="action" value="eduqode_app_save">
+                <input type="hidden" name="section" value="general">
+                <table class="form-table" role="presentation">
+                    <tr>
+                        <th scope="row">Offline packs</th>
+                        <td><label><input type="checkbox" name="offline_enabled" value="1" <?php checked( $enabled ); ?>> Students can download enrolled courses in the app</label></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="eq-test-url">Test video URL</label></th>
+                        <td>
+                            <input type="url" class="regular-text" id="eq-test-url" name="test_video_url" value="<?php echo esc_attr( $test_url ); ?>" placeholder="https://example.com/video.mp4">
+                            <p class="description">A direct MP4 link you own or are allowed to distribute. Used only for the lessons listed below, so you can test offline video before moving real videos off YouTube.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="eq-test-ids">Use test video on lesson IDs</label></th>
+                        <td>
+                            <input type="text" class="regular-text" id="eq-test-ids" name="test_lesson_ids" value="<?php echo esc_attr( $test_ids ); ?>" placeholder="123, 456">
+                            <p class="description">Lesson IDs are shown in the table below.</p>
+                        </td>
+                    </tr>
+                </table>
+                <?php submit_button( 'Save settings' ); ?>
+            </form>
+
+            <hr>
+            <h2>Offline video links</h2>
+            <p>YouTube and Vimeo videos stay online-only. To make a lesson's video available offline, paste a direct MP4 link that you own (your server, Bunny, S3, ...). Videos uploaded to Tutor as "HTML5 (mp4)" are offline automatically.</p>
+            <?php if ( eduqode_app_tutor_ready() ) : ?>
+                <form method="get">
+                    <input type="hidden" name="page" value="<?php echo esc_attr( self::SLUG ); ?>">
+                    <select name="course">
+                        <option value="">Choose a course</option>
+                        <?php
+                        $courses = get_posts(
+                            array(
+                                'post_type'      => tutor()->course_post_type,
+                                'post_status'    => array( 'publish', 'draft', 'private' ),
+                                'posts_per_page' => -1,
+                                'orderby'        => 'title',
+                                'order'          => 'ASC',
+                            )
+                        );
+                        foreach ( $courses as $c ) {
+                            printf( '<option value="%d" %s>%s</option>', (int) $c->ID, selected( $course, $c->ID, false ), esc_html( get_the_title( $c ) ) );
+                        }
+                        ?>
+                    </select>
+                    <?php submit_button( 'Show lessons', 'secondary', '', false ); ?>
+                </form>
+                <?php if ( $course ) : ?>
+                    <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+                        <?php wp_nonce_field( 'eduqode_app_save' ); ?>
+                        <input type="hidden" name="action" value="eduqode_app_save">
+                        <input type="hidden" name="section" value="videos">
+                        <input type="hidden" name="course" value="<?php echo (int) $course; ?>">
+                        <table class="widefat striped" style="margin-top:12px">
+                            <thead><tr><th>ID</th><th>Lesson</th><th>Website video</th><th>Offline video (MP4 link)</th><th>Offline status</th></tr></thead>
+                            <tbody>
+                            <?php
+                            foreach ( EduQode_App_Courses::structure( $course ) as $topic ) {
+                                printf( '<tr><td colspan="5"><strong>%s</strong></td></tr>', esc_html( get_the_title( $topic['post'] ) ) );
+                                foreach ( $topic['items'] as $item ) {
+                                    if ( $item->post_type !== tutor()->lesson_post_type ) {
+                                        printf( '<tr><td>%d</td><td>%s</td><td colspan="2">Quiz / other content</td><td>Online only</td></tr>', (int) $item->ID, esc_html( get_the_title( $item ) ) );
+                                        continue;
+                                    }
+                                    $video  = EduQode_App_Courses::video( $item->ID, get_current_user_id() );
+                                    $online = $video['online'] ? $video['online']['provider'] : 'none';
+                                    $status = $video['offline'] ? 'Offline (' . $video['offline']['origin'] . ')' : ( $video['online'] ? 'Online only' : 'No video' );
+                                    printf(
+                                        '<tr><td>%1$d</td><td>%2$s</td><td>%3$s</td><td><input type="url" class="large-text" name="video[%1$d]" value="%4$s" placeholder="https://.../lesson.mp4"></td><td>%5$s</td></tr>',
+                                        (int) $item->ID,
+                                        esc_html( get_the_title( $item ) ),
+                                        esc_html( $online ),
+                                        esc_attr( get_post_meta( $item->ID, EduQode_App_Courses::VIDEO_META, true ) ),
+                                        esc_html( $status )
+                                    );
+                                }
+                            }
+                            ?>
+                            </tbody>
+                        </table>
+                        <?php submit_button( 'Save offline video links' ); ?>
+                    </form>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+}

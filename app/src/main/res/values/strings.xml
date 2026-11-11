@@ -5,4 +5,9 @@
     <string name="no_app_for_link">No app found to open this link.</string>
     <string name="google_login_title">Google login</string>
     <string name="download_started">Downloading %1$s</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_offline">Offline courses</string>
+    <string name="sync_now">Sync now</string>
+    <string name="download_offline_pack">Download offline pack</string>
+    <string name="offline_library_title">My offline courses</string>
 </resources>

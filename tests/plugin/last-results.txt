@@ -1,0 +1,45 @@
+PASS  token: GET is refused
+PASS  token: not logged in is refused
+PASS  token: issued for logged-in student
+PASS  REST without token is 401
+PASS  REST with fake token is 401
+PASS  me returns the student
+PASS  no-store cache header
+PASS  courses lists only enrolled course
+PASS  course lesson_count
+PASS  package of a non-enrolled course is 403
+PASS  topics in order
+PASS  items in order
+PASS  YouTube online source
+PASS  test-mode video on listed lesson
+PASS  html5 mp4 is offline
+PASS  html5 mp4 size known
+PASS  admin offline link used
+PASS  quiz is online only
+PASS  PDF attachment listed
+PASS  image extracted
+PASS  srcset removed
+PASS  not completed yet
+PASS  sync: offline completion applied
+PASS  sync: video position applied
+PASS  sync: last lesson applied
+PASS  sync: non-enrolled course rejected
+PASS  sync: quiz cannot be completed offline
+PASS  sync: lesson from another course rejected
+PASS  sync: progress percent = Tutor's own (1 of 3 lessons + 1 quiz)
+PASS  sync: same events again are duplicates
+PASS  sync: older position from 2nd phone does not overwrite
+PASS  sync: completing again keeps completion
+PASS  progress: position kept at newest
+PASS  progress: completed lesson listed
+PASS  progress: last lesson
+PASS  pull: enrolled course progress + no_access list
+PASS  website: Tutor marks lesson completed
+PASS  website: Tutor best watched time updated (s)
+PASS  website: enrollment intact
+PASS  website: Tutor redirect hook restored after sync
+PASS  re-login on same device: old token stops working
+PASS  re-login on same device: new token works
+PASS  revoked token no longer works
+----
+passed: 43  failed: 0

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/brand_dark">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+        app:theme="@style/ThemeOverlay.EduQode.Toolbar" app:title="@string/download_offline_pack" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/screen_bg">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="16dp">
+
+            <TextView android:id="@+id/course_title" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall" />
+            <TextView android:id="@+id/course_desc" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="6dp" android:maxLines="4" android:ellipsize="end"
+                android:textAppearance="?attr/textAppearanceBodyMedium" android:textColor="@color/text_secondary" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp"
+                app:cardBackgroundColor="@color/card_bg">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:id="@+id/facts" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:lineSpacingExtra="4dp" android:textAppearance="?attr/textAppearanceBodyMedium" />
+                    <TextView android:id="@+id/video_note" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp" android:visibility="gone" android:textColor="@color/warn_orange"
+                        android:textAppearance="?attr/textAppearanceBodySmall" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/progress_card" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" app:cardBackgroundColor="@color/card_bg">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:textAppearance="?attr/textAppearanceTitleSmall" />
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progress" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp" app:indicatorColor="@color/brand_accent" app:trackCornerRadius="4dp" />
+                    <TextView android:id="@+id/progress_text" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp" android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton android:id="@+id/btn_download_all"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp"
+                android:text="Download complete course" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btn_download_selected"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Download selected lessons" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btn_open"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp"
+                android:text="Open offline course" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton android:id="@+id/btn_pause"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Pause" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btn_resume"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Resume" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btn_retry"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:layout_marginStart="8dp" android:text="Retry failed" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btn_cancel"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:layout_marginStart="8dp" android:text="Cancel download" />
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton android:id="@+id/btn_remove"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Remove download"
+                android:textColor="@color/error_red" />
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp"
+                android:text="Lessons" android:textAppearance="?attr/textAppearanceTitleMedium" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/lessons"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp"
+                android:nestedScrollingEnabled="false" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

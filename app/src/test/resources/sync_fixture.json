@@ -1,0 +1,38 @@
+{
+    "results": [
+        {
+            "id": "fx2",
+            "status": "rejected",
+            "reason": "no_access"
+        },
+        {
+            "id": "fx1",
+            "status": "applied"
+        }
+    ],
+    "progress": [
+        {
+            "course_id": 10,
+            "percent": 25,
+            "completed": {
+                "13": 1794386617000
+            },
+            "positions": {
+                "14": {
+                    "position_ms": 90000,
+                    "duration_ms": 120000,
+                    "updated_at": 1794386567000
+                }
+            },
+            "last_lesson": {
+                "lesson_id": 13,
+                "updated_at": 1794387028000
+            },
+            "server_time": 1794387028000
+        }
+    ],
+    "no_access": [
+        17
+    ],
+    "server_time": 1794387028000
+}

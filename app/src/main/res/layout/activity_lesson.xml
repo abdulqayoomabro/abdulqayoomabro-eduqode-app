@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/brand_dark">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+        app:theme="@style/ThemeOverlay.EduQode.Toolbar" />
+
+    <FrameLayout android:id="@+id/video_box" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@android:color/black" android:visibility="gone">
+        <androidx.media3.ui.PlayerView android:id="@+id/player" android:layout_width="match_parent"
+            android:layout_height="220dp" app:show_buffering="when_playing" app:resize_mode="fit" />
+    </FrameLayout>
+
+    <LinearLayout android:id="@+id/online_only" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="#1F1F1F" android:orientation="vertical" android:padding="16dp" android:visibility="gone">
+        <TextView android:id="@+id/online_only_text" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Online Only — Internet Required" android:textColor="@android:color/white"
+            android:textAppearance="?attr/textAppearanceTitleSmall" />
+        <TextView android:id="@+id/online_only_sub" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="4dp" android:textColor="#CCFFFFFF" android:textAppearance="?attr/textAppearanceBodySmall" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_watch_online"
+            android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp"
+            android:text="Watch online" app:backgroundTint="@color/brand_accent" android:textColor="@color/brand_dark" />
+    </LinearLayout>
+
+    <HorizontalScrollView android:id="@+id/attachments_box" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:background="@color/screen_bg" android:scrollbars="none" android:visibility="gone">
+        <com.google.android.material.chip.ChipGroup android:id="@+id/attachments" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:paddingHorizontal="12dp" android:paddingVertical="6dp"
+            app:singleLine="true" />
+    </HorizontalScrollView>
+
+    <WebView android:id="@+id/content" android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:background="@android:color/white" />
+
+    <LinearLayout android:id="@+id/bottom_bar" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@color/card_bg" android:gravity="center_vertical" android:orientation="horizontal"
+        android:padding="8dp">
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_prev"
+            style="@style/Widget.Material3.Button.TextButton" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="‹ Previous" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_complete"
+            android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:layout_marginHorizontal="4dp" android:text="Mark as complete" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_next"
+            style="@style/Widget.Material3.Button.TextButton" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="Next ›" />
+    </LinearLayout>
+</LinearLayout>

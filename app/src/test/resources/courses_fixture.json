@@ -1,0 +1,17 @@
+{
+    "courses": [
+        {
+            "id": 10,
+            "title": "Python Basics",
+            "excerpt": "Learn Python.",
+            "thumbnail": "",
+            "permalink": "http://127.0.0.1:8099/courses/python-basics/",
+            "categories": [],
+            "modified": 1794386506000,
+            "progress": 25,
+            "lesson_count": 3,
+            "offline": true
+        }
+    ],
+    "server_time": 1794387028000
+}

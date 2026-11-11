@@ -34,6 +34,19 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.lifecycleScope
+import com.eduqode.app.offline.CourseState
+import com.eduqode.app.offline.OfflineRepository
+import com.eduqode.app.offline.Session
+import com.eduqode.app.offline.SyncWorker
+import com.eduqode.app.ui.CourseDownloadActivity
+import com.eduqode.app.ui.OfflineCourseActivity
+import com.eduqode.app.ui.OfflineLibraryActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.webkit.ScriptHandler
 import androidx.webkit.WebViewCompat
@@ -44,6 +57,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val HOME_URL = "https://lms.eduqode.com/"
+        const val EXTRA_OPEN_URL = "open_url"
         const val APP_UA_TAG = "EduQodeApp/1.0"
 
         // Google does not allow its login inside a WebView, so login runs in a browser tab
@@ -64,6 +78,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var progress: ProgressBar
     private lateinit var fullscreenHolder: FrameLayout
+    private lateinit var bottomNav: BottomNavigationView
+    private lateinit var fabDownload: ExtendedFloatingActionButton
+    private lateinit var offlineRepo: OfflineRepository
+    private var enrolledRefreshed = false
 
     private var firstLoadDone = false
     private var customView: View? = null
@@ -99,8 +117,23 @@ class MainActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
-            insets
+            WindowInsetsCompat.CONSUMED
         }
+
+        offlineRepo = OfflineRepository(this)
+        bottomNav = findViewById(R.id.bottom_nav)
+        fabDownload = findViewById(R.id.fab_download)
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_offline -> { openOfflineLibrary(); false }
+                R.id.nav_home -> { if (webView.url?.startsWith(HOME_URL) != true || webView.canGoBack()) webView.loadUrl(HOME_URL); true }
+                else -> false
+            }
+        }
+        bottomNav.setOnItemReselectedListener { if (it.itemId == R.id.nav_home) webView.loadUrl(HOME_URL) }
+        // Offline progress sync: every few hours, and right away if something is waiting.
+        SyncWorker.schedulePeriodic(this)
+        if (offlineRepo.auth.isLoggedIn) SyncWorker.enqueueNow(this)
 
         remote = RemoteConfig(this)
         setupWebView()
@@ -128,17 +161,69 @@ class MainActivity : AppCompatActivity() {
         })
 
         val authUrl = authUrlFrom(intent)
+        val openUrl = openUrlFrom(intent)
         when {
             authUrl != null -> webView.loadUrl(authUrl)
+            openUrl != null -> webView.loadUrl(openUrl)
             savedInstanceState != null -> webView.restoreState(savedInstanceState)
             else -> webView.loadUrl(HOME_URL)
         }
+        if (intent?.data?.scheme == "eduqode" && intent?.data?.host == "offline") openOfflineLibrary()
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
         authUrlFrom(intent)?.let { webView.loadUrl(it) }
+        openUrlFrom(intent)?.let { webView.loadUrl(it) }
+        if (intent.data?.scheme == "eduqode" && intent.data?.host == "offline") openOfflineLibrary()
+    }
+
+    /** A page of the EduQode website to open (for example "Watch online" from an offline lesson). */
+    private fun openUrlFrom(intent: Intent?): String? {
+        val url = intent?.getStringExtra(EXTRA_OPEN_URL) ?: return null
+        val host = Uri.parse(url).host ?: return null
+        return url.takeIf { OWN_HOSTS.contains(host) }
+    }
+
+    private fun openOfflineLibrary() {
+        startActivity(Intent(this, OfflineLibraryActivity::class.java))
+    }
+
+    /** After each page: link the website login to the app, and offer the offline pack on course pages. */
+    private fun afterPageLoaded(url: String) {
+        val host = Uri.parse(url).host ?: return
+        if (!OWN_HOSTS.contains(host)) return
+        lifecycleScope.launch {
+            val state = Session.refresh(this@MainActivity)
+            if (state is Session.State.LoggedIn && !enrolledRefreshed && offlineRepo.isOnline()) {
+                enrolledRefreshed = runCatching { offlineRepo.refreshEnrolled() }.isSuccess
+            }
+            updateDownloadButton(url)
+        }
+    }
+
+    private suspend fun updateDownloadButton(url: String) {
+        if (!offlineRepo.auth.isLoggedIn || customView != null) {
+            fabDownload.visibility = View.GONE
+            return
+        }
+        val uid = offlineRepo.userId
+        val course = withContext(Dispatchers.IO) { offlineRepo.db.courseByPermalink(uid, url.substringBefore('?').substringBefore('#')) }
+        if (course == null) {
+            fabDownload.visibility = View.GONE
+            return
+        }
+        val downloaded = course.state == CourseState.DOWNLOADED
+        fabDownload.text = if (downloaded) "Open offline" else getString(R.string.download_offline_pack)
+        fabDownload.visibility = View.VISIBLE
+        fabDownload.setOnClickListener {
+            if (downloaded) {
+                startActivity(Intent(this, OfflineCourseActivity::class.java).putExtra(OfflineCourseActivity.EXTRA_COURSE, course.id))
+            } else {
+                startActivity(Intent(this, CourseDownloadActivity::class.java).putExtra(CourseDownloadActivity.EXTRA_COURSE, course.id))
+            }
+        }
     }
 
     /** eduqode://auth?token=XYZ  ->  website URL that logs this app in with the one-time token. */
@@ -244,6 +329,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+                fabDownload.visibility = View.GONE
+                // Logged out on the website: log the app out too (offline courses get locked).
+                if (url.contains("action=logout") || url.contains("loggedout=true")) {
+                    lifecycleScope.launch { Session.logout(this@MainActivity) }
+                }
                 // Catches redirects and form posts that skip shouldOverrideUrlLoading.
                 if (isBlocked(Uri.parse(url))) {
                     view.stopLoading()
@@ -262,6 +352,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView, url: String) {
                 injectPageStyle()
+                afterPageLoaded(url)
                 firstLoadDone = true
                 progress.visibility = View.GONE
                 swipe.isRefreshing = false
@@ -335,6 +426,10 @@ class MainActivity : AppCompatActivity() {
             openExternally(uri)
             return true
         }
+        if (scheme == "eduqode" && uri.host == "offline") {
+            openOfflineLibrary()
+            return true
+        }
         // mailto:, tel:, whatsapp:, intent: and similar.
         openExternally(uri)
         return true
@@ -406,6 +501,8 @@ class MainActivity : AppCompatActivity() {
         )
         fullscreenHolder.visibility = View.VISIBLE
         swipe.visibility = View.GONE
+        bottomNav.visibility = View.GONE
+        fabDownload.visibility = View.GONE
         WindowInsetsControllerCompat(window, window.decorView).apply {
             hide(WindowInsetsCompat.Type.systemBars())
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
@@ -417,6 +514,7 @@ class MainActivity : AppCompatActivity() {
         fullscreenHolder.removeView(view)
         fullscreenHolder.visibility = View.GONE
         swipe.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
         customView = null
         customViewCallback?.onCustomViewHidden()
         customViewCallback = null

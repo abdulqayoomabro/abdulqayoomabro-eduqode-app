@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+
+    <TextView android:id="@+id/topic" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:paddingTop="14dp" android:paddingBottom="4dp" android:visibility="gone"
+        android:textAppearance="?attr/textAppearanceLabelLarge" android:textColor="@color/warn_orange" />
+
+    <LinearLayout android:id="@+id/row" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground" android:gravity="center_vertical"
+        android:minHeight="56dp" android:orientation="horizontal" android:paddingVertical="8dp">
+        <ImageView android:id="@+id/icon" android:layout_width="24dp" android:layout_height="24dp" android:contentDescription="@null" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:layout_marginStart="12dp" android:orientation="vertical">
+            <TextView android:id="@+id/title" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+            <TextView android:id="@+id/subtitle" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodySmall" android:textColor="@color/text_secondary" />
+        </LinearLayout>
+        <TextView android:id="@+id/percent" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginStart="8dp" android:textAppearance="?attr/textAppearanceLabelMedium" />
+    </LinearLayout>
+</LinearLayout>

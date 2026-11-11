@@ -1,0 +1,144 @@
+{
+    "package_version": 1,
+    "generated_at": 1794387028000,
+    "course": {
+        "id": 10,
+        "title": "Python Basics",
+        "excerpt": "Learn Python.",
+        "thumbnail": "",
+        "permalink": "http://127.0.0.1:8099/courses/python-basics/",
+        "categories": [],
+        "modified": 1794386506000,
+        "progress": 25,
+        "lesson_count": 3,
+        "offline": true,
+        "description": "<p>Learn Python.</p>\n"
+    },
+    "topics": [
+        {
+            "id": 11,
+            "title": "Getting started",
+            "summary": "",
+            "order": 0,
+            "items": [
+                {
+                    "id": 13,
+                    "type": "lesson",
+                    "title": "Intro (YouTube)",
+                    "order": 0,
+                    "permalink": "http://127.0.0.1:8099/courses/python-basics/lessons/intro-youtube/",
+                    "modified": 1794386506000,
+                    "online_only": false,
+                    "completed_at": 1794386617000,
+                    "content_html": "<p>Welcome</p>\n<p><img src=\"http://localhost:8099/site/wp-content/uploads/2026/11/pic.png\" alt=\"x\"></p>\n",
+                    "images": [
+                        "http://localhost:8099/site/wp-content/uploads/2026/11/pic.png"
+                    ],
+                    "attachments": [
+                        {
+                            "id": 7,
+                            "url": "http://127.0.0.1:8099/wp-content/uploads/2026/11/notes.pdf",
+                            "name": "Notes.pdf",
+                            "size_bytes": 15,
+                            "mime": "application/pdf"
+                        }
+                    ],
+                    "video": {
+                        "online": {
+                            "provider": "youtube",
+                            "url": "https://www.youtube.com/watch?v=abc123"
+                        },
+                        "offline": {
+                            "provider": "direct",
+                            "url": "https://test.example.com/test.mp4",
+                            "origin": "test_mode",
+                            "size_bytes": 0,
+                            "mime": "video/mp4"
+                        }
+                    },
+                    "position": null
+                },
+                {
+                    "id": 14,
+                    "type": "lesson",
+                    "title": "Install (own mp4)",
+                    "order": 1,
+                    "permalink": "http://127.0.0.1:8099/courses/python-basics/lessons/install-own-mp4/",
+                    "modified": 1794386506000,
+                    "online_only": false,
+                    "completed_at": 0,
+                    "content_html": "<p>Install python</p>\n",
+                    "images": [],
+                    "attachments": [],
+                    "video": {
+                        "online": {
+                            "provider": "html5",
+                            "url": ""
+                        },
+                        "offline": {
+                            "provider": "direct",
+                            "url": "http://127.0.0.1:8099/wp-content/uploads/2026/11/clip.mp4",
+                            "origin": "tutor_html5",
+                            "size_bytes": 2048,
+                            "mime": "video/mp4"
+                        }
+                    },
+                    "position": {
+                        "position_ms": 90000,
+                        "duration_ms": 120000,
+                        "updated_at": 1794386567000
+                    }
+                },
+                {
+                    "id": 15,
+                    "type": "quiz",
+                    "title": "Quiz 1",
+                    "order": 2,
+                    "permalink": "http://127.0.0.1:8099/courses/python-basics/quizzes/quiz-1/",
+                    "modified": 1794386506000,
+                    "online_only": true,
+                    "completed_at": 0
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "title": "Next steps",
+            "summary": "",
+            "order": 1,
+            "items": [
+                {
+                    "id": 16,
+                    "type": "lesson",
+                    "title": "Variables (YouTube + offline link)",
+                    "order": 0,
+                    "permalink": "http://127.0.0.1:8099/courses/python-basics/lessons/variables-youtube-offline-link/",
+                    "modified": 1794386506000,
+                    "online_only": false,
+                    "completed_at": 0,
+                    "content_html": "<p>Vars</p>\n",
+                    "images": [],
+                    "attachments": [],
+                    "video": {
+                        "online": {
+                            "provider": "youtube",
+                            "url": "https://youtu.be/xyz"
+                        },
+                        "offline": {
+                            "provider": "direct",
+                            "url": "https://cdn.example.com/vars.mp4",
+                            "origin": "lesson_setting",
+                            "size_bytes": 0,
+                            "mime": "video/mp4"
+                        }
+                    },
+                    "position": null
+                }
+            ]
+        }
+    ],
+    "last_lesson": {
+        "lesson_id": 14,
+        "updated_at": 1794386577000
+    }
+}
