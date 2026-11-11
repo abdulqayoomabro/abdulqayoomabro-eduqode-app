@@ -56,18 +56,25 @@ import org.json.JSONObject
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val HOME_URL = "https://lms.eduqode.com/"
+        // The website the app shows. Set once in app/build.gradle.kts (SITE_URL).
+        private val SITE = BuildConfig.SITE_URL.trimEnd('/')
+        private val SITE_URI: Uri = Uri.parse(SITE)
+        /** Path of the WordPress install, e.g. "/demo" (empty when WordPress is at the domain root). */
+        private val BASE_PATH = (SITE_URI.path ?: "").trimEnd('/').lowercase()
+        val HOME_URL = "$SITE/"
         const val EXTRA_OPEN_URL = "open_url"
         const val APP_UA_TAG = "EduQodeApp/1.0"
 
         // Google does not allow its login inside a WebView, so login runs in a browser tab
         // and the website hands the session back to the app through eduqode://auth?token=...
-        const val LOGIN_HANDOFF_URL = "https://lms.eduqode.com/?eduqode_app_handoff=1"
-        private const val TOKEN_LOGIN_URL = "https://lms.eduqode.com/?eduqode_app_token="
+        val LOGIN_HANDOFF_URL = "$SITE/?eduqode_app_handoff=1"
+        private val TOKEN_LOGIN_URL = "$SITE/?eduqode_app_token="
 
         // Pages that belong to the website, not opened in an external app.
-        private val OWN_HOSTS = setOf("lms.eduqode.com", "eduqode.com", "www.eduqode.com")
-        private val OWN_ORIGINS = setOf("https://lms.eduqode.com", "https://eduqode.com", "https://www.eduqode.com")
+        private val OWN_HOSTS = setOf(SITE_URI.host ?: "")
+        private val OWN_ORIGINS = setOf(
+            "${SITE_URI.scheme}://${SITE_URI.host}" + if (SITE_URI.port > 0) ":${SITE_URI.port}" else ""
+        )
     }
 
     // Blocked pages, page styling and the Google login switch come from GitHub (see RemoteConfig).
@@ -426,6 +433,10 @@ class MainActivity : AppCompatActivity() {
             openExternally(uri)
             return true
         }
+        if (scheme == "eduqode" && uri.host == "home") {
+            webView.loadUrl(HOME_URL)
+            return true
+        }
         if (scheme == "eduqode" && uri.host == "offline") {
             openOfflineLibrary()
             return true
@@ -438,7 +449,8 @@ class MainActivity : AppCompatActivity() {
     private fun isBlocked(uri: Uri): Boolean {
         val host = uri.host ?: return false
         if (!OWN_HOSTS.contains(host)) return false
-        val path = (uri.path ?: "").lowercase()
+        // Compare paths inside the WordPress install, so "/demo/cart" counts as "/cart".
+        val path = (uri.path ?: "").lowercase().let { if (BASE_PATH.isNotEmpty() && it.startsWith(BASE_PATH)) it.removePrefix(BASE_PATH) else it }
         val query = (uri.query ?: "").lowercase()
         val s = remote.settings
         return s.blockedPathParts.any { path.startsWith(it) || path.contains("$it/") } ||

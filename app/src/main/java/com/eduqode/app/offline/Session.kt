@@ -30,7 +30,7 @@ object Session {
             ?.takeIf { it.isNotBlank() }
     }
 
-    private fun cookies(): String? = runCatching { CookieManager.getInstance().getCookie(ApiClient.SITE) }.getOrNull()
+    private fun cookies(): String? = runCatching { CookieManager.getInstance().getCookie("${ApiClient.SITE}/") }.getOrNull()
 
     /** Call on the main thread (reads web view cookies), does network work in the background. */
     suspend fun refresh(context: Context): State {

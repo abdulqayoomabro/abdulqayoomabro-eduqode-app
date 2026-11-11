@@ -3,6 +3,11 @@
 Students download an enrolled course once, study it with no internet, and their progress
 syncs to Tutor LMS automatically when they are back online.
 
+## Which website the app uses
+
+Set once in `app/build.gradle.kts` → `SITE_URL` (now `https://demo.lms.eduqode.com/demo`).
+WordPress can be in a sub-folder like `/demo`; the app handles that. Install the plugin on that site.
+
 ## What is where
 
 | Part | Location |

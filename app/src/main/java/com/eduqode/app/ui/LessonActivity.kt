@@ -116,7 +116,7 @@ class LessonActivity : AppCompatActivity() {
                     if (url.host == ASSET_HOST) return false
                     if (!repo.isOnline()) {
                         Toast.makeText(this@LessonActivity, "This link needs an internet connection.", Toast.LENGTH_SHORT).show()
-                    } else if (url.host?.endsWith("eduqode.com") == true) {
+                    } else if (url.host == Uri.parse(com.eduqode.app.offline.ApiClient.SITE).host) {
                         Ui.openWebsite(this@LessonActivity, url.toString())
                     } else {
                         runCatching { startActivity(Intent(Intent.ACTION_VIEW, url)) }

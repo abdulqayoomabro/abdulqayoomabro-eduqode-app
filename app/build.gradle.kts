@@ -14,7 +14,7 @@ android {
         versionCode = 4
         versionName = "2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "SITE_URL", "\"https://lms.eduqode.com\"")
+        buildConfigField("String", "SITE_URL", "\"https://demo.lms.eduqode.com/demo\"")
         manifestPlaceholders["cleartext"] = "false"
     }
 

@@ -1,6 +1,6 @@
 # EduQode Android App
 
-Android app for https://lms.eduqode.com (Tutor LMS).
+Android app for the EduQode Tutor LMS website (address set in `app/build.gradle.kts` → `SITE_URL`, now https://demo.lms.eduqode.com/demo/).
 
 ## What it does
 - Opens the EduQode website inside the app, with login kept between sessions
