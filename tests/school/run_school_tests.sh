@@ -115,8 +115,9 @@ has "student: classmate refused" "You do not have access" s_other.html
 check "admin pages render without PHP notices" "$($WP eval 'wp_set_current_user(1); ob_start(); $_GET=[]; EQS_Admin::page_groups(); $_GET["group"]='$SEC'; EQS_Admin::page_groups(); EQS_Admin::page_parents(); EQS_Admin::page_terms(); $h=ob_get_clean(); echo (strpos($h,"Computer Science")!==false && strpos($h,"Ali Father")!==false && strpos($h,"Term 1")!==false) ? "ok" : "missing";' 2>&1 | tail -1)" "ok"
 
 if [ -f "$WORK/school-server.log" ]; then
-  check "no PHP warnings or errors while serving the pages" "$(grep -cE 'PHP (Warning|Notice|Fatal|Deprecated)' "$WORK/school-server.log")" "0"
-  grep -E 'PHP (Warning|Notice|Fatal|Deprecated)' "$WORK/school-server.log" | head -5
+  # PHP start-up messages of the machine itself ("... in Unknown on line 0") are not from the plugin.
+  check "no PHP warnings or errors while serving the pages" "$(grep -E 'PHP (Warning|Notice|Fatal|Deprecated)' "$WORK/school-server.log" | grep -vc 'in Unknown on line 0')" "0"
+  grep -E 'PHP (Warning|Notice|Fatal|Deprecated)' "$WORK/school-server.log" | grep -v 'in Unknown on line 0' | head -5
 fi
 echo "----"; echo "passed: $pass  failed: $fail"
 [ "$fail" = 0 ]
