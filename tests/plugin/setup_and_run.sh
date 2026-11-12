@@ -77,6 +77,7 @@ fi
 $WP plugin activate h5p >/dev/null
 if [ ! -d site/wp-content/plugins/tutor-pro ]; then
   cp "$HERE/tutor_pro_h5p_standin.php" site/wp-content/mu-plugins/
+  cp "$HERE/tutor_pro_assignments_standin.php" site/wp-content/mu-plugins/
 fi
 H5P_ID=$($WP eval-file "$HERE/h5p_import.php" "$HERE/fixtures/true-false.h5p" "Is the sky blue?" | tail -1)
 STUDENT=$(python3 -c "import json;print(json.load(open('$WORK/ids.json'))['student'])")

@@ -107,7 +107,7 @@ class LessonAdapter(
         val color = when {
             status.startsWith("Download failed") -> R.color.error_red
             status.startsWith("Available") || status.startsWith("Passed") || status.startsWith("Submitted") -> R.color.ok_green
-            status.startsWith("Not passed") -> R.color.error_red
+            status.startsWith("Not passed") || status.startsWith("Not sent") -> R.color.error_red
             else -> R.color.text_secondary
         }
         h.subtitle.setTextColor(ContextCompat.getColor(ctx, color))

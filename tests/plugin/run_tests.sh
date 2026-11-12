@@ -192,6 +192,22 @@ check "website: Tutor best watched time updated (s)" "$($WPC eval 'echo (int) tu
 check "website: enrollment intact" "$($WPC eval 'echo tutor_utils()->is_enrolled('$C', 2) ? "yes" : "no";' 2>/dev/null)" "yes"
 check "website: Tutor redirect hook restored after sync" "$($WPC eval 'global $wp_filter; $n=0; foreach (($wp_filter["tutor_lesson_completed_after"]->callbacks ?? []) as $cbs) foreach ($cbs as $cb) if (is_array($cb["function"]) && $cb["function"][1]==="tutor_lesson_completed_after") $n++; echo $n;' 2>/dev/null)" "1"
 
+# ---------------- Assignments written offline (Tutor LMS Pro Assignments addon) ----------------
+ASG=$(id asg)
+check "assignment: package says it can be submitted from the app" "$(api "$B/?rest_route=/eduqode/v1/courses/$C/package" | python3 -c "import json,sys;p=json.load(sys.stdin);a=[i for t in p['topics'] for i in t['items'] if i['id']==$ASG][0]['assignment'];print(a['offline_submit'],a['max_files'],a['retry'])")" "True 2 True"
+printf 'x,y\n1,2\n' > answer.csv
+sub() { api -s -o sub.json -w "%{http_code}" "$@" "$B/?rest_route=/eduqode/v1/assignments/$ASG/submit"; }
+check "assignment: empty answer refused" "$(sub --form-string 'answer=<p></p>' -F client_id=empty-0001-aaaa)" "400"
+check "assignment: too many files refused" "$(sub --form-string 'answer=<p>Done</p>' -F client_id=many-0001-aaaa -F 'attached_assignment_files[]=@answer.csv' -F 'attached_assignment_files[]=@answer.csv' -F 'attached_assignment_files[]=@answer.csv')" "400"
+# A submission cut off half way (left "submitting") is finished by the retry, not reported as a duplicate.
+$WPC eval 'global $wpdb; $wpdb->insert($wpdb->comments, ["comment_post_ID"=>'$ASG',"comment_approved"=>"submitting","comment_type"=>"tutor_assignment","user_id"=>'$(id student)',"comment_parent"=>'$C']); add_comment_meta($wpdb->insert_id, "_eduqode_client_id", "offline-0001-aaaa");' >/dev/null 2>&1
+code=$(sub --form-string 'answer=<p>OFFLINE-ANSWER sales grew</p>' -F client_id=offline-0001-aaaa -F "started_at=$(( $(date +%s)*1000 - 3600000 ))" -F 'attached_assignment_files[]=@answer.csv;type=text/csv')
+check "assignment: offline work submitted" "$code $(python3 -c "import json;r=json.load(open('sub.json'));print(r['status'],r['files'])")" "200 applied 1"
+check "assignment: Tutor sees it submitted with the answer and file" "$($WPC eval 'global $wpdb; $c=$wpdb->get_row("select comment_ID,comment_approved,comment_content from {$wpdb->comments} where comment_type=\"tutor_assignment\" and comment_post_ID='$ASG' order by comment_ID desc"); $f=json_decode(get_comment_meta($c->comment_ID,"uploaded_attachments",true)); echo $c->comment_approved, " ", strpos($c->comment_content,"OFFLINE-ANSWER")!==false ? "answer" : "-", " ", (preg_match("/^answer(-\\d+)?\\.csv$/", $f[0]->name ?? "") ? "answer.csv" : ($f[0]->name ?? "-")), " ", tutor_utils()->is_assignment_submitted('$ASG','$(id student)') ? "yes":"no";' 2>/dev/null)" "submitted answer answer.csv yes"
+code=$(sub --form-string 'answer=<p>OFFLINE-ANSWER sales grew</p>' -F client_id=offline-0001-aaaa)
+check "assignment: same submission sent again is not doubled" "$code $(python3 -c "import json;print(json.load(open('sub.json'))['status'])") $($WPC eval 'global $wpdb; echo $wpdb->get_var("select count(*) from {$wpdb->comments} where comment_type=\"tutor_assignment\" and comment_post_ID='$ASG'");' 2>/dev/null)" "200 duplicate 1"
+check "assignment: package shows it submitted" "$(api "$B/?rest_route=/eduqode/v1/courses/$C/package" | python3 -c "import json,sys;p=json.load(sys.stdin);print([i for t in p['topics'] for i in t['items'] if i['id']==$ASG][0]['assignment']['submitted'])")" "True"
+
 # ---------------- H5P (offline exercises in lessons and H5P quizzes) ----------------
 if [ -f ids_h5p.json ]; then
 hid() { python3 -c "import json;print(json.load(open('ids_h5p.json'))['$1'])"; }

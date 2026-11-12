@@ -354,7 +354,7 @@ class EduQode_App_Courses {
                         'max_files'       => (int) tutor_utils()->get_assignment_option( $item->ID, 'upload_files_limit', 0 ),
                         'max_file_mb'     => (int) tutor_utils()->get_assignment_option( $item->ID, 'upload_file_size_limit', 0 ),
                         'submitted'       => (bool) $submitted,
-                    );
+                    ) + EduQode_App_Assignments::options( $item->ID );
                 } elseif ( 'tutor_quiz' === $item->post_type ) {
                     $reason = '';
                     $images = array();

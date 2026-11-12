@@ -351,6 +351,70 @@ class OfflineRepository(context: Context) {
         return "$word ${n(earned)}/${n(total)}"
     }
 
+    // ---------- assignments written on the phone ----------
+
+    fun submissionDir(courseId: Long, submissionId: String) = File(courseDir(courseId), "submissions/$submissionId")
+
+    /** The submission being written, or a new one (started now). */
+    fun draft(courseId: Long, assignmentId: Long): Submission {
+        val list = db.submissions(userId, assignmentId)
+        list.firstOrNull { it.state == SubmissionState.DRAFT }?.let { return it }
+        // After a refusal the student fixes the answer and sends it again as a new submission.
+        val rejected = list.firstOrNull()?.takeIf { it.state == SubmissionState.REJECTED }
+        val now = System.currentTimeMillis()
+        val s = Submission(UUID.randomUUID().toString(), courseId, assignmentId, rejected?.answer ?: "", emptyList(),
+            rejected?.startedAt ?: now, now, SubmissionState.DRAFT, "")
+        db.saveSubmission(userId, s)
+        rejected?.files?.forEach { f -> File(f.path).takeIf { it.exists() }?.let { addSubmissionFile(s.id, it, f.name, f.mime) } }
+        return db.submissions(userId, assignmentId).first { it.id == s.id }
+    }
+
+    fun latestSubmission(assignmentId: Long): Submission? = db.submissions(userId, assignmentId).firstOrNull()
+
+    fun saveDraftAnswer(s: Submission, answer: String): Submission {
+        val updated = s.copy(answer = answer, updatedAt = System.currentTimeMillis())
+        db.saveSubmission(userId, updated)
+        return updated
+    }
+
+    /** Copies a file into the submission (the original stays where it was). */
+    fun addSubmissionFile(submissionId: String, source: File, name: String, mime: String): Submission? {
+        val s = db.submissionById(userId, submissionId) ?: return null
+        val dir = submissionDir(s.courseId, s.id).apply { mkdirs() }
+        var target = File(dir, OfflineLogic.safeFileName(name))
+        var n = 1
+        while (target.exists()) target = File(dir, "${n++}-" + OfflineLogic.safeFileName(name))
+        source.copyTo(target)
+        val updated = s.copy(files = s.files + SubmissionFile(target.path, name, mime, target.length()), updatedAt = System.currentTimeMillis())
+        db.saveSubmission(userId, updated)
+        return updated
+    }
+
+    fun removeSubmissionFile(s: Submission, path: String): Submission {
+        File(path).delete()
+        val updated = s.copy(files = s.files.filter { it.path != path }, updatedAt = System.currentTimeMillis())
+        db.saveSubmission(userId, updated)
+        return updated
+    }
+
+    /** Problems that would make the website refuse the submission (checked before it is queued). */
+    fun submissionProblem(s: Submission, info: AssignmentInfo): String? = when {
+        s.answer.isBlank() -> "Write your answer first."
+        info.maxFiles <= 0 && s.files.isNotEmpty() -> "This assignment does not take files."
+        s.files.size > info.maxFiles -> "At most ${info.maxFiles} file(s)."
+        s.files.any { Math.round(it.size / (1024.0 * 1024.0)) > info.maxFileMb } -> "Each file can be at most ${info.maxFileMb} MB."
+        else -> null
+    }
+
+    /** Finishes the submission on the phone; it is sent to the website as soon as there is internet. */
+    fun submitAssignment(s: Submission) {
+        val now = System.currentTimeMillis()
+        db.saveSubmission(userId, s.copy(state = SubmissionState.PENDING, updatedAt = now, reason = ""))
+        db.markCompleted(userId, s.assignmentId, now)
+        db.setSyncState(userId, s.courseId, SyncState.PENDING)
+        SyncWorker.enqueueNow(app)
+    }
+
     // ---------- H5P exercises ----------
 
     /** True when every file an H5P exercise needs is on the phone. */
@@ -458,9 +522,13 @@ class OfflineRepository(context: Context) {
     fun lessonAvailability(lesson: Lesson, files: List<StoredFile>): String {
         if (lesson.isAssignment) {
             val mine = files.filter { it.lessonId == lesson.id }
+            val sub = latestSubmission(lesson.id)
             return when {
                 mine.any { it.state == FileState.FAILED } -> "Download failed"
                 mine.any { it.state != FileState.DONE && it.state != FileState.SKIPPED } -> "Downloading"
+                sub?.state == SubmissionState.PENDING -> "Submitted on this phone · will be sent when online"
+                sub?.state == SubmissionState.REJECTED -> "Not sent: ${sub.reason}"
+                sub?.state == SubmissionState.DRAFT && sub.answer.isNotBlank() -> "Draft saved on this phone"
                 lesson.completedAt > 0 -> "Submitted · instructions and files offline"
                 else -> "Instructions and files offline · submit on the website"
             }

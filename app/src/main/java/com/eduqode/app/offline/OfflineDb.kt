@@ -13,7 +13,7 @@ import org.json.JSONObject
  * Every row belongs to one WordPress user, so two students on one phone never see each other's data.
  */
 class OfflineDb private constructor(context: Context) :
-    SQLiteOpenHelper(context.applicationContext, "offline.db", null, 4) {
+    SQLiteOpenHelper(context.applicationContext, "offline.db", null, 5) {
 
     companion object {
         @Volatile private var instance: OfflineDb? = null
@@ -76,6 +76,19 @@ class OfflineDb private constructor(context: Context) :
         upgradeTo2(db)
         upgradeTo3(db)
         upgradeTo4(db)
+        upgradeTo5(db)
+    }
+
+    /** Version 5: assignments written on the phone. */
+    private fun upgradeTo5(db: SQLiteDatabase) {
+        db.execSQL("ALTER TABLE lessons ADD COLUMN assignment_json TEXT NOT NULL DEFAULT ''")
+        db.execSQL(
+            """CREATE TABLE submissions (
+                id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, course_id INTEGER NOT NULL, assignment_id INTEGER NOT NULL,
+                answer TEXT NOT NULL DEFAULT '', files TEXT NOT NULL DEFAULT '[]', started_at INTEGER NOT NULL,
+                updated_at INTEGER NOT NULL, state TEXT NOT NULL DEFAULT 'draft', reason TEXT NOT NULL DEFAULT '')"""
+        )
+        db.execSQL("CREATE INDEX submissions_user ON submissions(user_id, assignment_id)")
     }
 
     /** Version 4: H5P exercises (which ones a lesson has, and which ones the student finished). */
@@ -101,6 +114,7 @@ class OfflineDb private constructor(context: Context) :
         if (oldVersion < 2) upgradeTo2(db)
         if (oldVersion < 3) upgradeTo3(db)
         if (oldVersion < 4) upgradeTo4(db)
+        if (oldVersion < 5) upgradeTo5(db)
     }
 
     /** Version 2: offline quizzes. */
@@ -164,7 +178,8 @@ class OfflineDb private constructor(context: Context) :
         selected = c.int("selected") == 1, completedAt = c.long("completed_at"),
         positionMs = c.long("position_ms"), durationMs = c.long("duration_ms"), positionAt = c.long("position_at"),
         quizJson = c.str("quiz_json"), quizAttemptsUsed = c.int("quiz_attempts_used"), quizLastJson = c.str("quiz_last"),
-        onlineReason = c.str("online_reason"), h5pJson = c.str("h5p_json"), h5pFinished = c.int("h5p_finished") == 1
+        onlineReason = c.str("online_reason"), h5pJson = c.str("h5p_json"), h5pFinished = c.int("h5p_finished") == 1,
+        assignmentJson = c.str("assignment_json")
     )
 
     private fun fileFrom(c: Cursor) = StoredFile(
@@ -294,6 +309,7 @@ class OfflineDb private constructor(context: Context) :
                     put("h5p_json", OfflineLogic.h5pItemsJson(
                         l.h5p.map { H5PItem(it.id, it.title, it.library, true) } + l.h5pOnline.map { H5PItem(it, "", "", false) }
                     ))
+                    put("assignment_json", l.assignmentJson)
                     // "All exercises finished" never goes back (like completion).
                     put("h5p_finished", if (l.h5pFinished || old?.h5pFinished == true) 1 else 0)
                     val q = l.quizJson.takeIf { it.isNotEmpty() }?.let { runCatching { QuizEngine.parse(JSONObject(it)) }.getOrNull() }
@@ -370,6 +386,43 @@ class OfflineDb private constructor(context: Context) :
         } finally {
             db.endTransaction()
         }
+    }
+
+    // ---------- assignments written on the phone ----------
+
+    private fun submissionFrom(c: Cursor) = Submission(
+        id = c.str("id"), courseId = c.long("course_id"), assignmentId = c.long("assignment_id"), answer = c.str("answer"),
+        files = runCatching {
+            val a = JSONArray(c.str("files"))
+            (0 until a.length()).map { i -> a.getJSONObject(i).let { SubmissionFile(it.getString("path"), it.optString("name"), it.optString("mime"), it.optLong("size")) } }
+        }.getOrDefault(emptyList()),
+        startedAt = c.long("started_at"), updatedAt = c.long("updated_at"), state = c.str("state"), reason = c.str("reason")
+    )
+
+    fun saveSubmission(userId: Long, s: Submission) {
+        writableDatabase.insertWithOnConflict("submissions", null, ContentValues().apply {
+            put("id", s.id); put("user_id", userId); put("course_id", s.courseId); put("assignment_id", s.assignmentId)
+            put("answer", s.answer); put("started_at", s.startedAt); put("updated_at", s.updatedAt); put("state", s.state); put("reason", s.reason)
+            put("files", JSONArray().apply { s.files.forEach { put(JSONObject().put("path", it.path).put("name", it.name).put("mime", it.mime).put("size", it.size)) } }.toString())
+        }, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+
+    /** Newest first. */
+    fun submissions(userId: Long, assignmentId: Long): List<Submission> =
+        query("SELECT * FROM submissions WHERE user_id=? AND assignment_id=? ORDER BY updated_at DESC", arrayOf("$userId", "$assignmentId"), ::submissionFrom)
+
+    fun submissionById(userId: Long, id: String): Submission? =
+        query("SELECT * FROM submissions WHERE user_id=? AND id=?", arrayOf("$userId", id), ::submissionFrom).firstOrNull()
+
+    fun pendingSubmissions(userId: Long): List<Submission> =
+        query("SELECT * FROM submissions WHERE user_id=? AND state=? ORDER BY updated_at", arrayOf("$userId", SubmissionState.PENDING), ::submissionFrom)
+
+    fun setSubmissionState(id: String, state: String, reason: String = "") {
+        writableDatabase.update("submissions", ContentValues().apply { put("state", state); put("reason", reason) }, "id=?", arrayOf(id))
+    }
+
+    fun deleteSubmission(id: String) {
+        writableDatabase.delete("submissions", "id=?", arrayOf(id))
     }
 
     // ---------- H5P ----------
@@ -531,7 +584,9 @@ class OfflineDb private constructor(context: Context) :
     ) { c -> PendingEvent(c.str("id"), c.long("course_id"), c.long("lesson_id"), c.str("type"), c.long("client_time"), c.long("position_ms"), c.long("duration_ms"), c.str("payload")) }
 
     fun pendingCount(userId: Long, courseId: Long): Int =
-        query("SELECT COUNT(*) FROM events WHERE user_id=? AND course_id=?", arrayOf("$userId", "$courseId")) { it.getInt(0) }.first()
+        query("SELECT (SELECT COUNT(*) FROM events WHERE user_id=? AND course_id=?) + " +
+            "(SELECT COUNT(*) FROM submissions WHERE user_id=? AND course_id=? AND state='pending')",
+            arrayOf("$userId", "$courseId", "$userId", "$courseId")) { it.getInt(0) }.first()
 
     fun pendingPositionLessons(userId: Long): Set<Long> =
         query("SELECT lesson_id FROM events WHERE user_id=? AND type='video_position'", arrayOf("$userId")) { it.getLong(0) }.toSet()

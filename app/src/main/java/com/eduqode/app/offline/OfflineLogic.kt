@@ -141,6 +141,29 @@ $body
         return m.groupValues[1].toLongOrNull() ?: -1
     }
 
+    // ---------- assignments ----------
+
+    fun parseAssignment(json: String): AssignmentInfo? = if (json.isBlank()) null else runCatching {
+        val o = org.json.JSONObject(json)
+        AssignmentInfo(
+            totalMark = o.optDouble("total_mark", 0.0), passMark = o.optDouble("pass_mark", 0.0),
+            maxFiles = o.optInt("max_files", 0), maxFileMb = o.optInt("max_file_mb", 2),
+            retry = o.optBoolean("retry", true), attempts = o.optInt("attempts", 5),
+            offlineSubmit = o.optBoolean("offline_submit", false), submitted = o.optBoolean("submitted", false)
+        )
+    }.getOrNull()
+
+    /** The answer as simple HTML for Tutor LMS (plain text typed on the phone, paragraphs kept). */
+    fun answerHtml(text: String): String = text.trim().split(Regex("\\n\\s*\\n")).filter { it.isNotBlank() }.joinToString("") { p ->
+        "<p>" + p.trim().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>") + "</p>"
+    }
+
+    /** A file name that is safe to store and send (no folders, no odd characters). */
+    fun safeFileName(name: String): String {
+        val base = name.substringAfterLast('/').substringAfterLast('\\').replace(Regex("[^A-Za-z0-9._ -]"), "_").trim().trimStart('.')
+        return base.take(80).ifBlank { "file" }
+    }
+
     // ---------- H5P ----------
 
     /** A path from the server that stays inside its folder (no "..", no absolute paths). */

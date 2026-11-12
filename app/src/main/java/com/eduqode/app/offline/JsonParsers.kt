@@ -89,7 +89,8 @@ object JsonParsers {
                     onlineReason = item.str("online_reason"),
                     h5p = item.optJSONArray("h5p")?.let { arr -> (0 until arr.length()).map { h5pContent(arr.getJSONObject(it)) } } ?: emptyList(),
                     h5pOnline = item.optJSONArray("h5p_online")?.let { arr -> (0 until arr.length()).map { arr.getLong(it) } } ?: emptyList(),
-                    h5pFinished = item.optBoolean("h5p_finished", false)
+                    h5pFinished = item.optBoolean("h5p_finished", false),
+                    assignmentJson = item.optJSONObject("assignment")?.toString() ?: ""
                 )
             }
         }

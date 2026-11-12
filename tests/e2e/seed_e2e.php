@@ -68,7 +68,7 @@ $csv_id = wp_insert_attachment(['post_title' => 'Dataset', 'post_mime_type' => '
 $asg = wp_insert_post(['post_type' => 'tutor_assignments', 'post_status' => 'publish', 'post_title' => 'Dataset exercise', 'post_parent' => $t1, 'menu_order' => 5,
     'post_content' => '<p>ASSIGNMENT-MARKER Analyse the dataset.</p>']);
 update_post_meta($asg, '_tutor_assignment_attachments', [$csv_id]);
-update_post_meta($asg, 'assignment_option', ['total_mark' => 10, 'pass_mark' => 5]);
+update_post_meta($asg, 'assignment_option', ['total_mark' => 10, 'pass_mark' => 5, 'upload_files_limit' => 2, 'upload_file_size_limit' => 5]);
 
 // Published during the test, to check that downloaded courses pick up new content.
 $l4 = wp_insert_post(['post_type' => 'lesson', 'post_status' => 'draft', 'post_title' => 'Lesson added later', 'post_parent' => $t1, 'menu_order' => 6,

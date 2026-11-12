@@ -354,6 +354,24 @@ class LessonActivity : AppCompatActivity() {
 
     private fun updateCompleteButton() {
         val l = lesson
+        if (l != null && l.isAssignment && l.assignment?.offlineSubmit == true) {
+            // Written on the phone (works offline) and sent to Tutor LMS Pro by the sync.
+            val sub = repo.latestSubmission(l.id)
+            findViewById<MaterialButton>(R.id.btn_complete).apply {
+                text = when (sub?.state) {
+                    com.eduqode.app.offline.SubmissionState.SUBMITTED -> "Submitted ✓"
+                    com.eduqode.app.offline.SubmissionState.PENDING -> "Submitted · waiting to send"
+                    com.eduqode.app.offline.SubmissionState.REJECTED -> "Not sent · fix and submit"
+                    else -> if (l.completedAt > 0) "Submitted ✓ · submit again" else "Write your answer"
+                }
+                isEnabled = true
+                setOnClickListener {
+                    startActivity(Intent(this@LessonActivity, AssignmentActivity::class.java)
+                        .putExtra(AssignmentActivity.EXTRA_COURSE, courseId).putExtra(AssignmentActivity.EXTRA_ASSIGNMENT, l.id))
+                }
+            }
+            return
+        }
         if (l != null && l.isAssignment) {
             // Assignments are submitted on the website (answers and files go to the teacher there).
             findViewById<MaterialButton>(R.id.btn_complete).apply {
@@ -398,7 +416,8 @@ class LessonActivity : AppCompatActivity() {
         lesson?.let { old ->
             repo.db.lesson(repo.userId, old.id)?.let { fresh ->
                 lesson = fresh
-                if (fresh.h5p.isNotEmpty()) { setupH5P(fresh); updateCompleteButton() }
+                if (fresh.h5p.isNotEmpty()) setupH5P(fresh)
+                if (fresh.h5p.isNotEmpty() || fresh.isAssignment) updateCompleteButton()
             }
         }
     }

@@ -112,6 +112,26 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
                 }
                 if (events.size < 200) break
             }
+            // Assignments written on the phone: sent one by one (they can carry files).
+            val submissions = db.pendingSubmissions(userId)
+            submissions.forEach { s ->
+                try {
+                    repo.api.submitAssignment(s)
+                    db.setSubmissionState(s.id, SubmissionState.SUBMITTED)
+                    db.markCompleted(userId, s.assignmentId, System.currentTimeMillis())
+                    sent++
+                } catch (e: ApiClient.ApiException) {
+                    // 4xx: the website refused it (for example no submissions left); the student is told why.
+                    if (e.code in 400..499 && e.code !in setOf(401, 408, 429)) {
+                        db.setSubmissionState(s.id, SubmissionState.REJECTED, e.message ?: "refused by the website")
+                        if (db.lesson(userId, s.assignmentId)?.assignment?.submitted != true) db.unmarkCompleted(userId, s.assignmentId)
+                    } else throw e
+                }
+            }
+            submissions.map { it.courseId }.toSet().forEach { cid ->
+                val left = db.pendingCount(userId, cid)
+                db.setSyncState(userId, cid, if (left == 0) SyncState.SYNCED else SyncState.PENDING, "", System.currentTimeMillis())
+            }
             // Courses whose events were all answered without a progress block (for example rejected ones).
             db.courses(userId).filter { it.syncState == SyncState.SYNCING }.forEach {
                 val left = db.pendingCount(userId, it.id)

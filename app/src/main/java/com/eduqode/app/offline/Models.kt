@@ -42,6 +42,40 @@ object EventType {
     const val H5P_LESSON_FINISHED = "h5p_lesson_finished" // every H5P exercise of a lesson answered
 }
 
+/** Tutor LMS Pro assignment limits (from the course pack). */
+data class AssignmentInfo(
+    val totalMark: Double,
+    val passMark: Double,
+    val maxFiles: Int,
+    val maxFileMb: Int,
+    val retry: Boolean,
+    val attempts: Int,
+    val offlineSubmit: Boolean,
+    val submitted: Boolean
+)
+
+object SubmissionState {
+    const val DRAFT = "draft"            // being written on the phone
+    const val PENDING = "pending"        // finished, waiting for internet
+    const val SUBMITTED = "submitted"    // accepted by Tutor LMS
+    const val REJECTED = "rejected"      // refused by the website (reason shown)
+}
+
+data class SubmissionFile(val path: String, val name: String, val mime: String, val size: Long)
+
+/** An assignment answer written on the phone. */
+data class Submission(
+    val id: String,
+    val courseId: Long,
+    val assignmentId: Long,
+    val answer: String,
+    val files: List<SubmissionFile>,
+    val startedAt: Long,
+    val updatedAt: Long,
+    val state: String,
+    val reason: String
+)
+
 /** An H5P exercise of a lesson or quiz question (files are in <course>/h5p/). */
 data class H5PItem(val id: Long, val title: String, val library: String, val offline: Boolean = true)
 
@@ -99,8 +133,10 @@ data class Lesson(
     val quizLastJson: String = "",
     val onlineReason: String = "",
     val h5pJson: String = "",
-    val h5pFinished: Boolean = false
+    val h5pFinished: Boolean = false,
+    val assignmentJson: String = ""
 ) {
+    val assignment: AssignmentInfo? by lazy { OfflineLogic.parseAssignment(assignmentJson) }
     /** H5P exercises in this lesson. */
     val h5p: List<H5PItem> by lazy { OfflineLogic.parseH5PItems(h5pJson) }
     val isLesson get() = type == "lesson"
@@ -204,7 +240,8 @@ data class PackageLesson(
     val onlineReason: String = "",
     val h5p: List<H5PContent> = emptyList(),
     val h5pOnline: List<Long> = emptyList(),
-    val h5pFinished: Boolean = false
+    val h5pFinished: Boolean = false,
+    val assignmentJson: String = ""
 ) {
     val quiz: Quiz? by lazy { if (quizJson.isEmpty()) null else runCatching { QuizEngine.parse(org.json.JSONObject(quizJson)) }.getOrNull() }
 }

@@ -43,6 +43,8 @@
         <activity android:name=".ui.LessonActivity" android:exported="false"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden" />
         <activity android:name=".ui.PdfViewerActivity" android:exported="false" />
+        <activity android:name=".ui.AssignmentActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.H5PActivity" android:exported="false"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
         <activity android:name=".ui.QuizActivity" android:exported="false"

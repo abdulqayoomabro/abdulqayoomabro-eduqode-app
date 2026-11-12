@@ -517,4 +517,43 @@ class OfflineE2ETest {
         assertEquals("not undone by the sync", true, repo.db.lesson(uid, hl)!!.completedAt > 0)
         step("PASS H5P sync: website has the exercise result, lesson completion and the H5P quiz attempt (1/2 pass, same as the phone)")
     }
+
+    // ---------------- Assignment written offline ----------------
+
+    @Test fun t16_assignmentWrittenOfflineIsSent(): Unit = runBlocking {
+        val uid = repo.userId
+        val asg = ids.getLong("asg")
+        repo.preparePackage(course)
+        val info = repo.db.lesson(uid, asg)!!.assignment!!
+        assertTrue("assignment can be written in the app", info.offlineSubmit)
+        assertEquals(2, info.maxFiles)
+
+        network(false)
+        val intent = Intent(context, com.eduqode.app.ui.AssignmentActivity::class.java)
+            .putExtra(com.eduqode.app.ui.AssignmentActivity.EXTRA_COURSE, course).putExtra(com.eduqode.app.ui.AssignmentActivity.EXTRA_ASSIGNMENT, asg)
+        ActivityScenario.launch<com.eduqode.app.ui.AssignmentActivity>(intent).use { sc ->
+            Thread.sleep(1500)
+            sc.onActivity {
+                assertTrue(it.findViewById<View>(R.id.answer).isEnabled)
+                assertEquals(View.VISIBLE, it.findViewById<View>(R.id.btn_attach).visibility)
+            }
+        }
+        var s = repo.draft(course, asg)
+        s = repo.saveDraftAnswer(s, "OFFLINE-ASSIGNMENT my analysis\n\nSales grew in February.")
+        val file = File(context.cacheDir, "result.csv").apply { writeText("month,sales\njan,10\nfeb,12\n") }
+        s = repo.addSubmissionFile(s.id, file, "result.csv", "text/csv")!!
+        assertEquals(null, repo.submissionProblem(s, info))
+        repo.submitAssignment(s)
+        assertEquals(com.eduqode.app.offline.SubmissionState.PENDING, repo.latestSubmission(asg)!!.state)
+        assertTrue("shown as done on the phone", repo.db.lesson(uid, asg)!!.completedAt > 0)
+        step("PASS assignment offline: answer and a file written with no internet, waiting to send")
+
+        network(true)
+        waitUntil("assignment sent by the sync", 180_000) {
+            repo.latestSubmission(asg)!!.state == com.eduqode.app.offline.SubmissionState.SUBMITTED
+        }
+        val l = repo.api.coursePackage(course).lessons.single { it.id == asg }
+        assertTrue("website: Tutor LMS has the submission", com.eduqode.app.offline.OfflineLogic.parseAssignment(l.assignmentJson)!!.submitted)
+        step("PASS assignment sync: sent automatically when online, Tutor LMS shows it submitted")
+    }
 }

@@ -106,4 +106,46 @@ class ApiClient(context: Context) {
     fun courses(): List<EnrolledCourse> = JsonParsers.enrolledCourses(call("/courses"))
     fun coursePackage(courseId: Long): CoursePackage = JsonParsers.coursePackage(call("/courses/$courseId/package"))
     fun sync(body: JSONObject): JsonParsers.SyncResponse = JsonParsers.syncResponse(call("/sync", "POST", body))
+
+    /**
+     * Sends an assignment written on the phone (answer + files) to Tutor LMS Pro.
+     * The submission id makes a retry safe: the website never stores it twice.
+     */
+    fun submitAssignment(s: Submission): JSONObject {
+        val token = auth.token ?: throw ApiException(401, "Please log in.")
+        val boundary = "----EduQode" + java.util.UUID.randomUUID().toString().replace("-", "")
+        val conn = open("$REST/assignments/${s.assignmentId}/submit&_=${System.currentTimeMillis()}", "POST")
+        try {
+            conn.setRequestProperty("X-EduQode-Token", token)
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+            conn.doOutput = true
+            conn.setChunkedStreamingMode(64 * 1024)
+            conn.readTimeout = 120_000
+            conn.outputStream.buffered().use { out ->
+                fun field(name: String, value: String) {
+                    out.write("--$boundary\r\nContent-Disposition: form-data; name=\"$name\"\r\n\r\n".toByteArray())
+                    out.write(value.toByteArray(Charsets.UTF_8)); out.write("\r\n".toByteArray())
+                }
+                field("client_id", s.id)
+                field("answer", OfflineLogic.answerHtml(s.answer))
+                field("started_at", s.startedAt.toString())
+                s.files.forEach { f ->
+                    val file = java.io.File(f.path)
+                    if (!file.exists()) return@forEach
+                    val name = OfflineLogic.safeFileName(f.name).replace("\"", "_")
+                    out.write(("--$boundary\r\nContent-Disposition: form-data; name=\"attached_assignment_files[]\"; filename=\"$name\"\r\n" +
+                        "Content-Type: ${f.mime.ifBlank { "application/octet-stream" }}\r\n\r\n").toByteArray())
+                    file.inputStream().use { it.copyTo(out) }
+                    out.write("\r\n".toByteArray())
+                }
+                out.write("--$boundary--\r\n".toByteArray())
+            }
+            return read(conn)
+        } catch (e: ApiException) {
+            if (e.code == 401) auth.needsLogin = true
+            throw e
+        } finally {
+            conn.disconnect()
+        }
+    }
 }
