@@ -1,5 +1,7 @@
 package com.eduqode.app.ui
 
+import com.eduqode.app.tr
+
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -19,6 +21,26 @@ import java.io.File
 
 /** Small helpers shared by the offline screens. */
 object Ui {
+
+    /** "Language / زبان": English, اردو or the phone's language. The website follows the choice too. */
+    fun chooseLanguage(activity: androidx.appcompat.app.AppCompatActivity) {
+        val choices = com.eduqode.app.I18n.CHOICES
+        val current = choices.indexOfFirst { it.first == com.eduqode.app.I18n.choice(activity) }.coerceAtLeast(0)
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(activity)
+            .setTitle("Language / زبان")
+            .setSingleChoiceItems(choices.map { if (it.first.isEmpty()) tr(it.second) else it.second }.toTypedArray(), current) { d, which ->
+                d.dismiss()
+                val app = activity.applicationContext
+                com.eduqode.app.I18n.setChoice(app, choices[which].first)
+                com.eduqode.app.offline.Notifier.ensureChannels(app)
+                val auth = com.eduqode.app.offline.AuthStore(app)
+                if (auth.isLoggedIn) {
+                    val lang = com.eduqode.app.I18n.language
+                    Thread { runCatching { com.eduqode.app.offline.ApiClient(app).setLanguage(lang) } }.start()
+                }
+            }
+            .show()
+    }
 
     /** Keeps content clear of the status and navigation bars (Android 15+ draws edge-to-edge). */
     fun applyInsets(root: View) {
@@ -56,26 +78,26 @@ object Ui {
     }
 
     fun ago(time: Long): String =
-        if (time <= 0) "never" else DateUtils.getRelativeTimeSpanString(time, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
+        if (time <= 0) tr("never") else DateUtils.getRelativeTimeSpanString(time, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
 
     fun date(context: Context, time: Long): String =
         if (time <= 0) "" else DateUtils.formatDateTime(context, time, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH)
 
     fun syncLabel(c: Course): String = when (c.syncState) {
-        SyncState.SYNCED -> if (c.lastSyncAt > 0) "Synced ${ago(c.lastSyncAt)}" else "Synced"
-        SyncState.PENDING -> "Pending sync"
-        SyncState.SYNCING -> "Syncing…"
-        SyncState.FAILED -> "Sync failed" + if (c.syncError.isNotBlank()) ": ${c.syncError}" else ""
+        SyncState.SYNCED -> if (c.lastSyncAt > 0) tr("Synced %s", ago(c.lastSyncAt)) else tr("Synced")
+        SyncState.PENDING -> tr("Pending sync")
+        SyncState.SYNCING -> tr("Syncing…")
+        SyncState.FAILED -> tr("Sync failed") + if (c.syncError.isNotBlank()) ": ${c.syncError}" else ""
         else -> ""
     }
 
     fun stateLabel(c: Course): String = when {
-        c.accessExpired -> "Access ended"
-        c.state == CourseState.DOWNLOADED -> "Available offline"
-        c.state == CourseState.DOWNLOADING -> "Downloading…"
-        c.state == CourseState.QUEUED -> if (c.error.isNotBlank()) c.error else "Waiting to download…"
-        c.state == CourseState.PAUSED -> "Paused"
-        c.state == CourseState.FAILED -> "Download problem"
+        c.accessExpired -> tr("Access ended")
+        c.state == CourseState.DOWNLOADED -> tr("Available offline")
+        c.state == CourseState.DOWNLOADING -> tr("Downloading…")
+        c.state == CourseState.QUEUED -> if (c.error.isNotBlank()) c.error else tr("Waiting to download…")
+        c.state == CourseState.PAUSED -> tr("Paused")
+        c.state == CourseState.FAILED -> tr("Download problem")
         else -> ""
     }
 

@@ -1,0 +1,453 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ur\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "School"
+msgstr "اسکول"
+
+msgid "Classes & batches"
+msgstr "کلاسیں اور بیچ"
+
+msgid "Parents"
+msgstr "والدین"
+
+msgid "Report cards"
+msgstr "رپورٹ کارڈ"
+
+msgid "Not allowed."
+msgstr "اجازت نہیں ہے۔"
+
+msgid "Saved."
+msgstr "محفوظ ہو گیا۔"
+
+msgid "Name is required."
+msgstr "نام ضروری ہے۔"
+
+msgid "Deleted."
+msgstr "حذف ہو گیا۔"
+
+msgid "Subject added."
+msgstr "مضمون شامل ہو گیا۔"
+
+msgid "Choose a course."
+msgstr "کورس منتخب کریں۔"
+
+msgid "Subject removed."
+msgstr "مضمون ہٹا دیا گیا۔"
+
+msgid "%d student(s) added."
+msgstr "%d طالب علم شامل ہو گئے۔"
+
+msgid " Not found: "
+msgstr " نہیں ملے: "
+
+msgid "Student removed from the group."
+msgstr "طالب علم کو گروپ سے ہٹا دیا گیا۔"
+
+msgid "A valid email is required."
+msgstr "درست ای میل ضروری ہے۔"
+
+msgid "Parent saved, %d child(ren) linked."
+msgstr "والدین محفوظ ہو گئے، %d بچے منسلک ہو گئے۔"
+
+msgid "Link removed."
+msgstr "تعلق ختم کر دیا گیا۔"
+
+msgid "Term added."
+msgstr "ٹرم شامل ہو گئی۔"
+
+msgid "Name, start and end date are required."
+msgstr "نام، شروع اور آخری تاریخ ضروری ہیں۔"
+
+msgid "Term deleted."
+msgstr "ٹرم حذف ہو گئی۔"
+
+msgid "Grading saved."
+msgstr "گریڈنگ محفوظ ہو گئی۔"
+
+msgid "Nothing changed."
+msgstr "کوئی تبدیلی نہیں ہوئی۔"
+
+msgid "Dashboards for teachers, parents and students:"
+msgstr "اساتذہ، والدین اور طلبہ کے ڈیش بورڈ:"
+
+msgid "(also inside the EduQode app)."
+msgstr "(EduQode ایپ میں بھی)۔"
+
+msgid "Name"
+msgstr "نام"
+
+msgid "Type"
+msgstr "قسم"
+
+msgid "Session"
+msgstr "سیشن"
+
+msgid "Class teacher"
+msgstr "کلاس ٹیچر"
+
+msgid "Students"
+msgstr "طلبہ"
+
+msgid "Subjects"
+msgstr "مضامین"
+
+msgid "Delete"
+msgstr "حذف کریں"
+
+msgid "Delete this group, its subjects, students list, attendance and remarks?"
+msgstr "کیا یہ گروپ، اس کے مضامین، طلبہ کی فہرست، حاضری اور ریمارکس حذف کر دیے جائیں؟"
+
+msgid "No classes yet. Add one below (a school class, a section of a class, or an academy batch)."
+msgstr "ابھی کوئی کلاس نہیں۔ نیچے شامل کریں (اسکول کی کلاس، کلاس کا سیکشن، یا اکیڈمی کا بیچ)۔"
+
+msgid "Edit"
+msgstr "ترمیم"
+
+msgid "Add a class, section or batch"
+msgstr "کلاس، سیکشن یا بیچ شامل کریں"
+
+msgid "Class 7, A, Morning batch…"
+msgstr "جماعت ہفتم، A، صبح کا بیچ…"
+
+msgid "Class (for a section)"
+msgstr "کلاس (سیکشن کے لیے)"
+
+msgid "Order"
+msgstr "ترتیب"
+
+msgid "Save"
+msgstr "محفوظ کریں"
+
+msgid "Add"
+msgstr "شامل کریں"
+
+msgid "Not found."
+msgstr "نہیں ملا۔"
+
+msgid "← All classes"
+msgstr "→ تمام کلاسیں"
+
+msgid "Results"
+msgstr "نتائج"
+
+msgid "Attendance"
+msgstr "حاضری"
+
+msgid "A subject is a Tutor LMS course taught to this group by a teacher. Subjects of a class also count for its sections. Students of the group are enrolled in the course."
+msgstr "مضمون ایک Tutor LMS کورس ہے جو کوئی استاد اس گروپ کو پڑھاتا ہے۔ کلاس کے مضامین اس کے سیکشنز پر بھی لاگو ہوتے ہیں۔ گروپ کے طلبہ اس کورس میں داخل کر دیے جاتے ہیں۔"
+
+msgid "Subject"
+msgstr "مضمون"
+
+msgid "Course"
+msgstr "کورس"
+
+msgid "Teacher"
+msgstr "استاد"
+
+msgid "(from the class)"
+msgstr "(کلاس کی طرف سے)"
+
+msgid "Remove"
+msgstr "ہٹائیں"
+
+msgid "Course…"
+msgstr "کورس…"
+
+msgid "Subject name (optional)"
+msgstr "مضمون کا نام (اختیاری)"
+
+msgid "Add subject"
+msgstr "مضمون شامل کریں"
+
+msgid "Roll"
+msgstr "رول نمبر"
+
+msgid "Email"
+msgstr "ای میل"
+
+msgid "Group"
+msgstr "گروپ"
+
+msgid "Add students (one per line:"
+msgstr "طلبہ شامل کریں (ہر سطر میں ایک:"
+
+msgid "email or username, roll no"
+msgstr "ای میل یا یوزر نیم، رول نمبر"
+
+msgid "ali@example.com, 1&#10;sara, 2"
+msgstr "ali@example.com, 1&#10;sara, 2"
+
+msgid "Add students"
+msgstr "طلبہ شامل کریں"
+
+msgid "A parent sees only the children linked here: progress, results, attendance and report cards (on the School page and in the app)."
+msgstr "والدین صرف یہاں منسلک بچوں کو دیکھتے ہیں: پیش رفت، نتائج، حاضری اور رپورٹ کارڈ (اسکول کے صفحے اور ایپ میں)۔"
+
+msgid "Parent"
+msgstr "والدین"
+
+msgid "Child"
+msgstr "بچہ"
+
+msgid "Relation"
+msgstr "رشتہ"
+
+msgid "Unlink"
+msgstr "تعلق ختم کریں"
+
+msgid "Add a parent or link more children"
+msgstr "والدین شامل کریں یا مزید بچے منسلک کریں"
+
+msgid "Parent name"
+msgstr "والدین کا نام"
+
+msgid "Parent email"
+msgstr "والدین کی ای میل"
+
+msgid "If an account with this email exists it is used; otherwise a Parent account is created."
+msgstr "اگر اس ای میل کا اکاؤنٹ موجود ہے تو وہی استعمال ہوگا؛ ورنہ والدین کا نیا اکاؤنٹ بنے گا۔"
+
+msgid "Children"
+msgstr "بچے"
+
+msgid "student email or username, one per line"
+msgstr "طالب علم کی ای میل یا یوزر نیم، ہر سطر میں ایک"
+
+msgid "Father, Mother, Guardian"
+msgstr "والد، والدہ، سرپرست"
+
+msgid "E-mail the parent a link to set their password"
+msgstr "والدین کو پاس ورڈ بنانے کا لنک ای میل کریں"
+
+msgid "Save parent"
+msgstr "والدین محفوظ کریں"
+
+msgid "A report card shows each subject's results in the term (quiz attempts finished and assignments graded in the term), attendance in the term and the teacher's remark."
+msgstr "رپورٹ کارڈ میں ہر مضمون کا اس ٹرم کا نتیجہ (ٹرم میں مکمل کیے گئے کوئز اور جانچی گئی اسائنمنٹس)، ٹرم کی حاضری اور استاد کے ریمارکس ہوتے ہیں۔"
+
+msgid "Terms"
+msgstr "ٹرمز"
+
+msgid "Term"
+msgstr "ٹرم"
+
+msgid "From"
+msgstr "سے"
+
+msgid "To"
+msgstr "تک"
+
+msgid "Delete this term and its remarks?"
+msgstr "کیا یہ ٹرم اور اس کے ریمارکس حذف کر دیے جائیں؟"
+
+msgid "Term 1"
+msgstr "پہلی ٹرم"
+
+msgid "Add term"
+msgstr "ٹرم شامل کریں"
+
+msgid "Grading"
+msgstr "گریڈنگ"
+
+msgid "Weights"
+msgstr "وزن"
+
+msgid "Quizzes"
+msgstr "کوئز"
+
+msgid "Assignments"
+msgstr "اسائنمنٹس"
+
+msgid "When a subject has only quizzes (or only assignments), that part counts 100%."
+msgstr "اگر کسی مضمون میں صرف کوئز (یا صرف اسائنمنٹس) ہوں تو وہی حصہ سو فیصد شمار ہوتا ہے۔"
+
+msgid "Grade scale"
+msgstr "گریڈ اسکیل"
+
+msgid "One per line:"
+msgstr "ہر سطر میں ایک:"
+
+msgid "minimum percent grade"
+msgstr "کم از کم فیصد گریڈ"
+
+msgid "Save grading"
+msgstr "گریڈنگ محفوظ کریں"
+
+msgid "Present"
+msgstr "حاضر"
+
+msgid "Absent"
+msgstr "غیر حاضر"
+
+msgid "Late"
+msgstr "تاخیر"
+
+msgid "Leave"
+msgstr "چھٹی"
+
+msgid "You cannot take attendance for this group."
+msgstr "آپ اس گروپ کی حاضری نہیں لگا سکتے۔"
+
+msgid "You cannot write remarks for this group."
+msgstr "آپ اس گروپ کے ریمارکس نہیں لکھ سکتے۔"
+
+msgid "← School home"
+msgstr "→ اسکول ہوم"
+
+msgid "Please log in to see your school dashboard."
+msgstr "اپنا اسکول ڈیش بورڈ دیکھنے کے لیے لاگ ان کریں۔"
+
+msgid "Log in"
+msgstr "لاگ ان"
+
+msgid "Tutor LMS is not active."
+msgstr "Tutor LMS فعال نہیں ہے۔"
+
+msgid "You do not have access to this page."
+msgstr "آپ کو اس صفحے تک رسائی نہیں ہے۔"
+
+msgid "Your account is not linked to a class yet. Please contact the school office."
+msgstr "آپ کا اکاؤنٹ ابھی کسی کلاس سے منسلک نہیں۔ براہ کرم اسکول کے دفتر سے رابطہ کریں۔"
+
+msgid "My children"
+msgstr "میرے بچے"
+
+msgid "No class yet"
+msgstr "ابھی کوئی کلاس نہیں"
+
+msgid "Attendance (30 days):"
+msgstr "حاضری (30 دن):"
+
+msgid "Progress, results and report cards"
+msgstr "پیش رفت، نتائج اور رپورٹ کارڈ"
+
+msgid "My classes"
+msgstr "میری کلاسیں"
+
+msgid "My progress, attendance and report cards"
+msgstr "میری پیش رفت، حاضری اور رپورٹ کارڈ"
+
+msgid "All classes and batches"
+msgstr "تمام کلاسیں اور بیچ"
+
+msgid "Present today"
+msgstr "آج حاضر"
+
+msgid "All subjects"
+msgstr "تمام مضامین"
+
+msgid "Take attendance"
+msgstr "حاضری لگائیں"
+
+msgid "No students in this group yet."
+msgstr "اس گروپ میں ابھی کوئی طالب علم نہیں۔"
+
+msgid "Student"
+msgstr "طالب علم"
+
+msgid "Progress"
+msgstr "پیش رفت"
+
+msgid "Quiz avg"
+msgstr "کوئز اوسط"
+
+msgid "Assignment avg"
+msgstr "اسائنمنٹ اوسط"
+
+msgid "Overall"
+msgstr "مجموعی"
+
+msgid "Grade"
+msgstr "گریڈ"
+
+msgid "(%d to grade)"
+msgstr "(%d جانچ باقی)"
+
+msgid "Class average"
+msgstr "کلاس کی اوسط"
+
+msgid "Average"
+msgstr "اوسط"
+
+msgid "% done"
+msgstr "% مکمل"
+
+msgid "Remarks: "
+msgstr "ریمارکس: "
+
+msgid "Attendance ·"
+msgstr "حاضری ·"
+
+msgid "Saved for %d student(s)."
+msgstr "%d طلبہ کی حاضری محفوظ ہو گئی۔"
+
+msgid "Date"
+msgstr "تاریخ"
+
+msgid "Open"
+msgstr "کھولیں"
+
+msgid "All present"
+msgstr "سب حاضر"
+
+msgid "Save attendance"
+msgstr "حاضری محفوظ کریں"
+
+msgid "Not in a class yet."
+msgstr "ابھی کسی کلاس میں نہیں۔"
+
+msgid "Report cards:"
+msgstr "رپورٹ کارڈ:"
+
+msgid "Recent attendance"
+msgstr "حالیہ حاضری"
+
+msgid "Report card remarks ·"
+msgstr "رپورٹ کارڈ ریمارکس ·"
+
+msgid "Remarks saved."
+msgstr "ریمارکس محفوظ ہو گئے۔"
+
+msgid "report card"
+msgstr "رپورٹ کارڈ"
+
+msgid "Save remarks"
+msgstr "ریمارکس محفوظ کریں"
+
+msgid "← Back"
+msgstr "→ واپس"
+
+msgid "Print / Save as PDF"
+msgstr "پرنٹ / PDF محفوظ کریں"
+
+msgid "Report card ·"
+msgstr "رپورٹ کارڈ ·"
+
+msgid "Class"
+msgstr "جماعت"
+
+msgid "Roll no."
+msgstr "رول نمبر"
+
+msgid "Attendance:"
+msgstr "حاضری:"
+
+msgid "(%1$d of %2$d days present, %3$d on leave)"
+msgstr "(%2$d میں سے %1$d دن حاضر، %3$d دن چھٹی)"
+
+msgid "Teacher's remarks"
+msgstr "استاد کے ریمارکس"
+
+msgid "Principal"
+msgstr "پرنسپل"
+
+msgid "Section"
+msgstr "سیکشن"
+
+msgid "Batch"
+msgstr "بیچ"
+

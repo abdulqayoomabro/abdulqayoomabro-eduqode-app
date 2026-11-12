@@ -11,7 +11,7 @@
             android:orientation="vertical" android:padding="16dp">
             <TextView android:id="@+id/empty" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:textColor="@color/text_secondary" android:textSize="15sp"
-                android:text="No certificates yet. When you complete a course, its certificate is saved here so you can open and share it without internet." />
+                android:text="@string/ui_no_certificates_yet_when_you_complete_a" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

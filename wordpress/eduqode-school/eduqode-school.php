@@ -2,20 +2,23 @@
 /**
  * Plugin Name: EduQode School
  * Description: Classes, sections and batches on top of Tutor LMS: teacher dashboard (subject-wise and class-wise results), parent dashboard, attendance and term report cards. Works on the website and inside the EduQode app.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Requires PHP: 7.4
  * Author: EduQode
  * License: GPLv2 or later
+ * Text Domain: eduqode-school
+ * Domain Path: /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'EQS_VERSION', '1.0.0' );
+define( 'EQS_VERSION', '1.1.0' );
 define( 'EQS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EQS_URL', plugin_dir_url( __FILE__ ) );
 
+require_once EQS_DIR . 'includes/user-language.php';
 require_once EQS_DIR . 'includes/class-eqs-db.php';
 require_once EQS_DIR . 'includes/class-eqs-model.php';
 require_once EQS_DIR . 'includes/class-eqs-stats.php';
@@ -28,6 +31,15 @@ register_activation_hook( __FILE__, array( 'EQS_DB', 'activate' ) );
 add_action( 'plugins_loaded', array( 'EQS_DB', 'maybe_upgrade' ) );
 EQS_Front::init();
 EQS_Admin::init();
+
+/** Translation of the plugin's own text (languages/eduqode-school-ur.mo for Urdu). */
+function eqs__( $text ) {
+    return translate( $text, 'eduqode-school' );
+}
+
+add_action( 'init', function () {
+    load_plugin_textdomain( 'eduqode-school', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+} );
 
 /** Tutor LMS must be active for results and progress. */
 function eqs_tutor_ready() {

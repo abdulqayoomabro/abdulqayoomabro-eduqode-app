@@ -1,5 +1,7 @@
 package com.eduqode.app.ui
 
+import com.eduqode.app.tr
+
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -60,14 +62,14 @@ class AssignmentActivity : AppCompatActivity() {
         info = i
         findViewById<MaterialToolbar>(R.id.toolbar).apply {
             title = lesson.title
-            subtitle = "Assignment"
+            subtitle = tr("Assignment")
             setNavigationIcon(R.drawable.ic_back)
             setNavigationOnClickListener { finish() }
         }
         findViewById<TextView>(R.id.info).text = buildString {
-            if (info.totalMark > 0) append("Total marks ${n(info.totalMark)} · pass ${n(info.passMark)}\n")
-            append(if (info.maxFiles > 0) "You can attach up to ${info.maxFiles} file(s), ${info.maxFileMb} MB each.\n" else "Write your answer below.\n")
-            append("Your work is saved on this phone while you type and is sent to your teacher when you are online.")
+            if (info.totalMark > 0) append(tr("Total marks %s · pass %s", n(info.totalMark), n(info.passMark)) + "\n")
+            append(if (info.maxFiles > 0) tr("You can attach up to %s file(s), %s MB each.", info.maxFiles, info.maxFileMb) + "\n" else tr("Write your answer below.\n"))
+            append(tr("Your work is saved on this phone while you type and is sent to your teacher when you are online."))
         }
         findViewById<MaterialButton>(R.id.btn_attach).setOnClickListener { pick.launch(arrayOf("*/*")) }
         findViewById<MaterialButton>(R.id.btn_submit).setOnClickListener { confirmSubmit() }
@@ -96,7 +98,7 @@ class AssignmentActivity : AppCompatActivity() {
         box.removeAllViews()
         s.files.forEach { f ->
             box.addView(TextView(this).apply {
-                text = "📎 ${f.name} · ${OfflineLogic.formatBytes(f.size)}" + if (editable) "   ✕ remove" else ""
+                text = "📎 ${f.name} · ${OfflineLogic.formatBytes(f.size)}" + if (editable) tr("   ✕ remove") else ""
                 textSize = 15f
                 setPadding(0, 12, 0, 12)
                 if (editable) setOnClickListener {
@@ -107,10 +109,10 @@ class AssignmentActivity : AppCompatActivity() {
         }
         val state = findViewById<TextView>(R.id.state)
         val (msg, color) = when {
-            s.state == SubmissionState.SUBMITTED -> "Submitted ✓ Your teacher has it." to R.color.ok_green
-            s.state == SubmissionState.PENDING -> (if (repo.isOnline()) "Submitted on this phone · sending…" else "Submitted on this phone · it will be sent when you are online.") to R.color.ok_green
-            rejected != null -> "The website did not accept the last submission: ${rejected.reason}. Fix it and submit again." to R.color.error_red
-            info.submitted -> "Already submitted on the website. You can submit again if your teacher allows it." to R.color.text_secondary
+            s.state == SubmissionState.SUBMITTED -> tr("Submitted ✓ Your teacher has it.") to R.color.ok_green
+            s.state == SubmissionState.PENDING -> (if (repo.isOnline()) tr("Submitted on this phone · sending…") else tr("Submitted on this phone · it will be sent when you are online.")) to R.color.ok_green
+            rejected != null -> tr("The website did not accept the last submission: %s. Fix it and submit again.", rejected.reason) to R.color.error_red
+            info.submitted -> tr("Already submitted on the website. You can submit again if your teacher allows it.") to R.color.text_secondary
             else -> "" to R.color.text_secondary
         }
         state.visibility = if (msg.isEmpty()) View.GONE else View.VISIBLE
@@ -118,7 +120,7 @@ class AssignmentActivity : AppCompatActivity() {
         state.setTextColor(ContextCompat.getColor(this, color))
         findViewById<MaterialButton>(R.id.btn_submit).apply {
             visibility = if (editable) View.VISIBLE else View.GONE
-            text = if (repo.isOnline()) "Submit" else "Submit (sends when online)"
+            text = if (repo.isOnline()) tr("Submit") else tr("Submit (sends when online)")
         }
     }
 
@@ -140,12 +142,12 @@ class AssignmentActivity : AppCompatActivity() {
                         if (!c.isNull(1)) size = c.getLong(1)
                     }
                 }
-                if (size > info.maxFileMb * 1024L * 1024L + 512 * 1024) return@withContext "This file is too big (max ${info.maxFileMb} MB)."
+                if (size > info.maxFileMb * 1024L * 1024L + 512 * 1024) return@withContext tr("This file is too big (max %s MB).", info.maxFileMb)
                 val tmp = File(cacheDir, "pick-${System.nanoTime()}")
                 try {
                     contentResolver.openInputStream(uri)?.use { input -> tmp.outputStream().use { input.copyTo(it) } }
-                        ?: return@withContext "This file could not be read."
-                    if (Math.round(tmp.length() / (1024.0 * 1024.0)) > info.maxFileMb) return@withContext "This file is too big (max ${info.maxFileMb} MB)."
+                        ?: return@withContext tr("This file could not be read.")
+                    if (Math.round(tmp.length() / (1024.0 * 1024.0)) > info.maxFileMb) return@withContext tr("This file is too big (max %s MB).", info.maxFileMb)
                     sub = repo.addSubmissionFile(s.id, tmp, name, contentResolver.getType(uri) ?: "")
                     null
                 } finally {
@@ -161,11 +163,11 @@ class AssignmentActivity : AppCompatActivity() {
         val s = currentDraft()
         repo.submissionProblem(s, info)?.let { Toast.makeText(this, it, Toast.LENGTH_LONG).show(); return }
         MaterialAlertDialogBuilder(this)
-            .setTitle("Submit your assignment?")
-            .setMessage("After submitting you cannot change this answer." +
-                if (repo.isOnline()) "" else "\n\nYou are offline: it is kept on this phone and sent automatically when you are online.")
-            .setNegativeButton("Keep editing", null)
-            .setPositiveButton("Submit") { _, _ ->
+            .setTitle(tr("Submit your assignment?"))
+            .setMessage(tr("After submitting you cannot change this answer.") +
+                if (repo.isOnline()) "" else tr("\n\nYou are offline: it is kept on this phone and sent automatically when you are online."))
+            .setNegativeButton(tr("Keep editing"), null)
+            .setPositiveButton(tr("Submit")) { _, _ ->
                 repo.submitAssignment(s)
                 sub = repo.latestSubmission(assignmentId)
                 sub?.let { render(it) }

@@ -1,0 +1,4627 @@
+[
+{
+"ctx": null,
+"id": "Email",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Courses",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Categories",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Tags",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Students",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Announcements",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz Attempts",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Q&A",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Instructors",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Settings",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Permission Denied",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Access Denied",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Complete",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Publish",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Draft",
+"plural": null
+},
+{
+"ctx": null,
+"id": "On Hold",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Pending",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Processing",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Cancel",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Trash",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Active",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Inactive",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Video source is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid video source",
+"plural": null
+},
+{
+"ctx": null,
+"id": "The enrollment start date cannot be earlier than the course start date",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid course categories",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid course tags",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid price type",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Product already linked with course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid product",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Price is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "New Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Draft course created",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course list retrieved successfully!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid input",
+"plural": "Invalid inputs"
+},
+{
+"ctx": null,
+"id": "Course created successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid course id",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course updated successfully.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Builder unlinked successfully.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course contents fetched successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Data retrieved successfully!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You cannot edit this course because it is in the Trash. Please restore it and try again",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Products retrieved successfully!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "One product can not be added to multiple course!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Product not found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Sorting order is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course content order updated successfully!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Fully Booked",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Topic title is required!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid inputs",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Topic updated successfully!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Topic created successfully!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Topic deleted successfully!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please Sign In first",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You do not have permission to enroll in this course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please Sign-In",
+"plural": null
+},
+{
+"ctx": null,
+"id": "User is not enrolled in course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You do not have permission to complete this course.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You are not enrolled in this course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course completed successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Only main instructor can delete this course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course has been trashed successfully ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Complete all lessons to mark this course as complete",
+"plural": null
+},
+{
+"ctx": null,
+"id": "quiz",
+"plural": "quizzes"
+},
+{
+"ctx": null,
+"id": "assignment",
+"plural": "assignments"
+},
+{
+"ctx": null,
+"id": "You have to pass %1$s %2$s to complete this course.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You have to pass %1$s %2$s and %3$s %4$s to complete this course.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You do not have permission to reset this course.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You do not have permission to retake this course.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid Course ID or Access Denied.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "This course is password protected",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please purchase the course before enrolling",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enrollment successfully done!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enrollment failed, please try again!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Completed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Resume",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Start",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You have not completed all required lessons and assessments. ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your Progress",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Complete the Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Retake this Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid course or topic ID",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No topics provided",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid topic id provided",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid content id provided",
+"plural": null
+},
+{
+"ctx": null,
+"id": "All",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Published",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Scheduled",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Private",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Category",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Profile",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reviews",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Billing",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Withdrawals",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz attempts",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz details",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%1$s - %2$s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Current Stats",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Earnings Over Time",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course Completion Rate",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Top Performing Courses",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Upcoming Tasks",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Recent Student Reviews",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Revenue",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Student",
+"plural": null
+},
+{
+"ctx": null,
+"id": "First name field is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Last name field is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "E-Mail field is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "User Name field is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Password field is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Password Confirmation field is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Valid E-Mail is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your passwords should match each other. Please recheck.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Total Earnings",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Total Courses",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Total Students",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enrolled",
+"plural": null
+},
+{
+"ctx": null,
+"id": "In Progress",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Cancelled",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid comment ID",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Comment deleted successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You are not allowed to delete this comment",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Lesson data fetched successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Lesson updated successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Lesson created successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Lesson",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Assignment",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%s deleted successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": " ago",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Overview",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Exercise Files",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Comments",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reading",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Video",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Video - %s mins",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Dashboard Page",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course",
+"plural": "Courses"
+},
+{
+"ctx": null,
+"id": "Quiz",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Withdraw",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Appearance",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Learning Mode",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Tag",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Dashboard",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Wishlist",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Level",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Duration",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Total Enrolled",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Description",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Requirements",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Instructor Registration Page",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Student Registration Page",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Edit Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "View Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Seconds",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Minutes",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Hours",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Days",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Weeks",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Default",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Answers shown after quiz is finished",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reveal Mode",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Show result after the attempt.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Retry Mode",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reattempt quiz any number of times. Define Attempts Allowed below.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Set question layout view",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Single Question",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Question Pagination",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Question below each other",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Random",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Sorting",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Ascending",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Descending",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid request data",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Could not save feedback",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Feedback saved successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Feedback removed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Could not delete feedback",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Feedback deleted successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please sign in to do this operation",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No active quiz attempt found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz has been timeout already",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Operation not allowed, attempt not found or permission denied",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz attempt is not in progress",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Answer reveal is disabled for this quiz",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Question not found or does not belong to this quiz",
+"plural": null
+},
+{
+"ctx": null,
+"id": "This question type does not support instant answer verification",
+"plural": null
+},
+{
+"ctx": null,
+"id": "An answer is required to verify this question",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Answer has already been committed for this question",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Failed to save answer",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Review update failed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No changes to update",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Review updated successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz data fetched successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid quiz",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz deleted successfully",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Access Denied.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid attempt ID",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Attempt deleted successfully!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Questions",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz Time",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Total Marks",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Passing Grade",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Earned Grade",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Total Attempts",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Limit",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Attempts",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Marks",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Time",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Result",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Skip Quiz",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Yes, Skip This",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Do You Want to Skip This Quiz?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Are you sure you want to skip this quiz? Please confirm your choice.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Retry Quiz",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Start Quiz",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Continue Lesson",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Retry Quiz?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Retrying this quiz will reset your current attempt. Your answers and score from this attempt will be lost.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Pass",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Fail",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Failed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Passed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Details",
+"plural": null
+},
+{
+"ctx": null,
+"id": "More options",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Delete",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Something went wrong!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Profile Updated",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Incorrect Previous Password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "New Password Required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Confirm Password Required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "New password and confirm password does not matched",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Password Changed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Social Profile Updated",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course Info",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Status",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Dismiss",
+"plural": null
+},
+{
+"ctx": null,
+"id": " left",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Home",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Retrieve Password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Account",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Discussions",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Create Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Create Bundle",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Approved",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Blocked",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Ratings",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Rating",
+"plural": null
+},
+{
+"ctx": null,
+"id": "All Levels",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Beginner",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Intermediate",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Expert",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Facebook",
+"plural": null
+},
+{
+"ctx": null,
+"id": "X",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Linkedin",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Github",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Website",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Not Taken",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Cart",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Checkout",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Set Your Profile Photo",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Add Your Social Links",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Set Your Bio",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Set Withdraw Method",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Try adjusting your filters.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Try using different keywords.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "All Time",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Today",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Last 30 Days",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Last 90 Days",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Last 365 Days",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Custom",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Data Available in this Section",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Data Found from your Search/Filter",
+"plural": null
+},
+{
+"ctx": null,
+"id": "HTML 5 (mp4)",
+"plural": null
+},
+{
+"ctx": null,
+"id": "External URL",
+"plural": null
+},
+{
+"ctx": null,
+"id": "YouTube",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Vimeo",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Embedded",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Shortcode",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Something went wrong",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You are not authorzied to perform this action",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Nonce not matched. Action failed!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invalid request",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Authentication failed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Authorization required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Requested resource not found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Internal server error",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Request timed out",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Access to this resource is forbidden",
+"plural": null
+},
+{
+"ctx": null,
+"id": "HTTP method not allowed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Too many requests",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Validation error",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Database operation failed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Requested file not found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Unsupported media type",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Gutenberg",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Droip",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Elementor",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Classic Editor",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%s left",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Rejected",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Yes",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Close",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Page",
+"plural": null
+},
+{
+"ctx": null,
+"id": "of",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Previous page",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Next page",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Buy Now",
+"plural": null
+},
+{
+"ctx": null,
+"id": "View Cart",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course:",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Live",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%s ago",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Read",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Unread",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Important",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Archived",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Correct",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Wrong",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Incomplete",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Expired",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Trial",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Partially Refunded",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Refunded",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Unpaid",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Paid",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Partially Paid",
+"plural": null
+},
+{
+"ctx": "true/false question options",
+"id": "True",
+"plural": null
+},
+{
+"ctx": "true/false question options",
+"id": "False",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Day",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Hour",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Minute",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Second",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Exclusive",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Inclusive",
+"plural": null
+},
+{
+"ctx": "Week name",
+"id": "Monday",
+"plural": null
+},
+{
+"ctx": "Week name",
+"id": "Tuesday",
+"plural": null
+},
+{
+"ctx": "Week name",
+"id": "Wednesday",
+"plural": null
+},
+{
+"ctx": "Week name",
+"id": "Thursday",
+"plural": null
+},
+{
+"ctx": "Week name",
+"id": "Friday",
+"plural": null
+},
+{
+"ctx": "Week name",
+"id": "Saturday",
+"plural": null
+},
+{
+"ctx": "Week name",
+"id": "Sunday",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "January",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "February",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "March",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "April",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "May",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "June",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "July",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "August",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "September",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "October",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "November",
+"plural": null
+},
+{
+"ctx": "Month name",
+"id": "December",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Incl. tax",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course Enrolled",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Pay",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Edit",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Back",
+"plural": null
+},
+{
+"ctx": null,
+"id": "By",
+"plural": null
+},
+{
+"ctx": null,
+"id": "In",
+"plural": null
+},
+{
+"ctx": null,
+"id": "View Details",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Release Date (newest first)",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Release Date (oldest first)",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course Title (a-z)",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course Title (z-a)",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Free",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Search",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Price",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Clear All Filters",
+"plural": null
+},
+{
+"ctx": null,
+"id": "My Courses",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Menu",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your application is under review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Only your dashboard home is available while your instructor application is pending.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Order History",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Invoice",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Orders Found!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Clear all",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Receipt",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Delete your Review?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Are you sure you want to delete this review? This action cannot be undone.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Yes, Delete This",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Reviews Found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Bundle",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reviewed on: %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Edit Review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Delete Review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Review Actions",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Review content is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Cmd/Ctrl +",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter to Save",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Save and Continue",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Name, email, phone number, profiles",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Security",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Password, 2FA",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Social Accounts",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Linked social media profiles",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Withdrawal and refund",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Preferences",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Sound effects, animations, theme",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Edit Cover Photo",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Upload Photo",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Remove Photo",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Profile Photo Size: 200x200 pixels Cover Photo Size: 700x430 pixels",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Cover Photo Info",
+"plural": null
+},
+{
+"ctx": null,
+"id": "User Avatar",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Profile Photo",
+"plural": null
+},
+{
+"ctx": null,
+"id": "First Name",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter your first name",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Last Name",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter your last name",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Username",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter your username",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Phone Number",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter your phone number",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Skill/Occupation",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter your skill/occupation",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Timezone",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Select your timezone",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Public Profile",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Display Name",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter your display name",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Bio",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter your bio",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Unsaved changes",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Discard",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Save",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course Content",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reset to Default",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reset your Preferences?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "This will reset your learning preferences to the default settings. Your progress and account data won’t be affected.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reset Preferences",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Auto-play next lesson",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Interactive Effects",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Motion Effects",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Limit animations and motion effects to reduce visual strain.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Theme",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Select theme...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Select mode",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Accessibility",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Font Size",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Adjust the text size for better readability.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Select font size...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "High Contrast",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Increase contrast to improve text and element visibility.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Vision",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Choose a color filter based on your visual needs.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Select vision...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Current Password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "New Password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Type Password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Confirm New Password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Login Info",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Account Email",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter Your Email",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reset Password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Update Password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Change Account Password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Social Profile Link",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please enter a valid %s URL",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Withdrawal Method",
+"plural": null
+},
+{
+"ctx": null,
+"id": "There's no Withdrawal method selected yet! To select a Withdraw method, please contact the Site Admin.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Select Method",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Select a withdrawal method",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Minimum withdraw amount is %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Available Balance",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Selected Payment Method",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Amount",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Minimum withdrawal amount is: %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Request Withdrawal",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please contact the site administrator for more information.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Withdrawal request is pending approval, please hold tight.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Available for Withdrawal",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Withdrawal Request",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Net Income",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Pending Withdrawals",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Total amount requested but not yet processed.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Withdrawal Total",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You can update your %s.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Withdraw Preference",
+"plural": null
+},
+{
+"ctx": null,
+"id": "The preferred payment method is selected as %1$s. %2$s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Withdrawal History",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No withdrawal records found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "New Announcement",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Search announcements...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Announcements Found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Announcement actions",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Delete This Announcement?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Are you sure you want to delete this announcement permanently? Please confirm your choice.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Select Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Select a course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Announcement Title",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Announcement title",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write a short announcement description.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Logout",
+"plural": null
+},
+{
+"ctx": "greetings",
+"id": "Hi,",
+"plural": null
+},
+{
+"ctx": null,
+"id": "<span class=\"tutor-font-medium\">%s</span> active course",
+"plural": "<span class=\"tutor-font-medium\">%s</span> active courses"
+},
+{
+"ctx": null,
+"id": "<span class=\"tutor-font-medium\">%s</span> student enrolled",
+"plural": "<span class=\"tutor-font-medium\">%s</span> students enrolled"
+},
+{
+"ctx": null,
+"id": "Open user menu",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Application Under Review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Become an Instructor",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Switch to Learner",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Switch to Instructor",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Complete Your Profile",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Toggle profile completion",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Student: ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%d correct",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%d incorrect",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Explore",
+"plural": null
+},
+{
+"ctx": null,
+"id": "More",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Back to Site",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Explore Courses",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enrolled Courses",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Active Courses",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Completed Courses",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Courses Found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "lesson",
+"plural": "lessons"
+},
+{
+"ctx": null,
+"id": "%1$s of %2$s %3$s",
+"plural": "%1$s of %2$s %3$s"
+},
+{
+"ctx": null,
+"id": "%1$s%% Complete",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Lesson Comments",
+"plural": null
+},
+{
+"ctx": null,
+"id": "comment on",
+"plural": null
+},
+{
+"ctx": null,
+"id": "in",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reply",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write your comment",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write your reply",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Update",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please enter a comment",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Comments Found!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Delete This Comment?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Are you sure you want to delete this comment permanently? Please confirm your choice.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Replies",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Comments Found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Go to Lesson",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Just drop your response here!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark as Read",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark as Unread",
+"plural": null
+},
+{
+"ctx": null,
+"id": "asked in",
+"plural": null
+},
+{
+"ctx": "human-readable time difference",
+"id": "%s ago",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark as Unresolved",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark as Solved",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Solved",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Unresolved",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark as Not Important",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark as Important",
+"plural": null
+},
+{
+"ctx": null,
+"id": "This conversation is important",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark this conversation as important",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Un-Archive",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Archive",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write your question",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please enter your response.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Questions Found!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Delete This Question?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Are you sure you want to delete this question permanently? Please confirm your choice.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write your answer",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Go to all Q&A",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No course found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Sort By",
+"plural": null
+},
+{
+"ctx": null,
+"id": "ASC",
+"plural": null
+},
+{
+"ctx": null,
+"id": "DESC",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Create Date",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Loading...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "vs",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Instructor Application",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Do you want to start your career as an instructor?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Tell us your qualifications, show us your passion, and begin teaching with us!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Apply Now",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You're ready to start %s teaching!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Create your first course and share your %s knowledge with learners around the world.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Create Your First Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Thank you for applying to %s become an Instructor!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Our team is reviewing your application. Once %1$s approved, you'll be able to create and publish %2$s courses.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Filter dashboard sections",
+"plural": null
+},
+{
+"ctx": null,
+"id": "JavaScript is required to load your dashboard statistics. Please enable JavaScript in your browser to view your dashboard.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Earnings",
+"plural": null
+},
+{
+"ctx": null,
+"id": "By: ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Live Session",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Open",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Thank you for applying to become an instructor. Our team is reviewing your application.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Application Approved",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your application has been approved. You can now create and publish courses.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You have been rejected from being an instructor.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your application will be reviewed and the results will be sent to you by email.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your application has been accepted. Further necessary details have been sent to your registered email account.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You have been blocked from being an instructor.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Instructor Application Received",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Thank you for registering as an instructor! ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Congratulations! You are now registered as an instructor.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Unfortunately, your instructor status has been removed.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "We've received your application, and we will review it soon. Please hang tight!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Start building your first course today and let your eLearning journey begin.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please contact the site administrator for further information.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Go to Dashboard",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Statistics",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Ooh! Access Denied",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You do not have access to this area of the application. Please refer to your system  administrator.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Go to Home",
+"plural": null
+},
+{
+"ctx": null,
+"id": "User Name",
+"plural": null
+},
+{
+"ctx": null,
+"id": "E-Mail",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Toggle password visibility",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Password confirmation",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Password Confirmation",
+"plural": null
+},
+{
+"ctx": null,
+"id": "By signing up, you agree to the ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Terms and Conditions",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Register as instructor",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Already have an account?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Login",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You are already logged in",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Schedule",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Search courses...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Plan:",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course Actions",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Submit",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Cancel Submission",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Duplicate",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Move to Draft",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Delete This Course?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Are you sure you want to delete this course permanently from the site? Please confirm your choice.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz info",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Previous Attempts",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Quiz Attempts Found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Retake Quiz?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Search quizzes...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Do You Want to Delete This?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Would you like to delete Quiz Attempt permanently? We suggest you proceed with caution.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Instructor Feedback",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write your feedback",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Attempt not found or access permission denied",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Oooh! Access Denied",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Register",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Continue Learning",
+"plural": null
+},
+{
+"ctx": null,
+"id": "See All",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Discussions are a great place to ask questions",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You can pause and resume courses any time",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Welcome to %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Confetti",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You haven't enrolled in %s a course yet.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Explore course and start building your %s skills today.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quick Tips",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Make the most of your learning experience",
+"plural": null
+},
+{
+"ctx": "abbreviation for hours with plus sign",
+"id": "h+",
+"plural": null
+},
+{
+"ctx": "abbreviation for minutes with plus sign",
+"id": "m+",
+"plural": null
+},
+{
+"ctx": "time unit",
+"id": "hours",
+"plural": null
+},
+{
+"ctx": "time unit",
+"id": "minutes",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%1$d %2$s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%1$d+ %2$s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Time Spent",
+"plural": null
+},
+{
+"ctx": null,
+"id": "That's %1$s minutes, and %2$s seconds! Incredible!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "That's %1$s minutes! Incredible!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "That's %1$s seconds! Incredible!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "That's 0 seconds! Incredible!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Fantastic,",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You've dedicated over",
+"plural": null
+},
+{
+"ctx": null,
+"id": "I'm Happy",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Learners",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Phone",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please define alert class",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Size",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Attachment Found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Instructor Cover Photo",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Back to dashboard",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Toggle course sidebar",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Close course sidebar",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%s Completed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reset Progress",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reset Course Progress?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "This will remove your completed lessons, quizzes, and assignments. You will start the course from the beginning.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No, Keep My Progress",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Yes, Reset Everything",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Expand panel",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Collapse panel",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Exit fullscreen",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter fullscreen",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Learning area",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz Attempt Details: %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz: %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Finish Course Early?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Go Back to Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Complete Anyway",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Start the Course Again?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Retaking the course will reset your progress and start everything from the beginning.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Start Retake",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Collapse all replies",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%d more reply",
+"plural": "%d more replies"
+},
+{
+"ctx": null,
+"id": "Join The Conversation",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write your comment...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Be the first to ask a question about this lesson!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Delete This Item?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "This action cannot be undone.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Previous",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark as Complete",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Next",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your quiz was abandoned automatically because time expired before you submitted it.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your quiz has been submitted automatically.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Stay Here",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Question No: %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Nicely Done!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Wrong Answer",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Skip Question",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Submit Quiz",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Leave this Quiz?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "If you leave now, your quiz will be submitted with the answers completed so far.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Yes, Leave Quiz",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz Submitted",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your answers are locked in. Ready to check your score?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "View Results",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Times up!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Starting Quiz in",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You answered <strong x-text=\"payload?.attempted ?? 0\"></strong> of <strong x-text=\"payload?.total ?? 0\"></strong> questions. %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "OK",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quit",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Points: ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "The answer for this question is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Type your answer here",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write your answer here",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Drop here",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Clear matched option",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Drag from here",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Drag matching option",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please select an option to answer",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please select at least one option to answer.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "The answer exceeds the allowed character limit",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Character Remaining: ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reorder item",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Announcements Found!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "By:",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%s Student",
+"plural": "%s Students"
+},
+{
+"ctx": null,
+"id": "Student Ratings",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%s File",
+"plural": "%s Files"
+},
+{
+"ctx": null,
+"id": "Resources",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Materials",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Audience",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%s Last Updated",
+"plural": null
+},
+{
+"ctx": null,
+"id": "by %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "About this Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "What you'll learn",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Question & Answer",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Asked questions...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write a Review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "How Was Your Experience?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your feedback helps others find the right course.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Reviews Found!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Student Ratings & Reviews",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Based on %s rating",
+"plural": "Based on %s ratings"
+},
+{
+"ctx": null,
+"id": "%s rating",
+"plural": "%s ratings"
+},
+{
+"ctx": null,
+"id": "Rating is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write Your Review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Tell us about your experience. Was it a good match for you?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Submit Review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your Review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Username or Email Address",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Keep me signed in",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Forgot Password?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Sign In",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Don't have an account?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Register Now",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Hi, Welcome back!",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No EDD product for this course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Add to Cart",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Start Learning",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Review Progress",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enroll Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "% Booked",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Ok",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You don't have permission to access this page",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please make sure you are logged in to correct account if the content needs authorization.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Bio data is empty",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No course yet.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Courses Enrolled",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Courses Completed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course Completed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Biography",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Attempt not found",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz Summary",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Review your answers",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Score: %1$s/%2$s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark as correct",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark as incorrect",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz questions",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Given Answer",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Correct Answer",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark cannot be negative",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark cannot exceed %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark is required",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No answer submitted",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Obtained marks",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Add Feedback",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Show Feedback",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Edit Feedback",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write feedback",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write feedback for the student...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Feedback from instructor",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Topic",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Earned Marks",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Pass Marks",
+"plural": null
+},
+{
+"ctx": null,
+"id": "of %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Attempted on: %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Attempted by:",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Edited by Instructor",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Questions Answered.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%d Attempts",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Attempt %d",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Take the Tour",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Get Started",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Skip",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your learning experience just got a whole lot better",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Find quiz attempts inside your courses",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Access all your lesson & video notes in one place",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Everything about your account now lives in one place",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Switch between dark and light mode whenever you like",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Relevant",
+"plural": null
+},
+{
+"ctx": null,
+"id": "New",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Popular",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Filters",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Clear",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Show More",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Search any instructor...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Sort by",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Your Progress:",
+"plural": null
+},
+{
+"ctx": null,
+"id": "of ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please make sure that your EDD product exists and valid for this course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please make sure that your product exists and valid for this course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Continue to lesson",
+"plural": null
+},
+{
+"ctx": null,
+"id": "What Will You Learn?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "About Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Last Updated",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course Progress",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Retake This Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Complete Course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "You enrolled in this course on",
+"plural": null
+},
+{
+"ctx": null,
+"id": "This course is full right now. We limit the number of students to create an optimized and productive group dynamic.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enroll Now",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Free access this course",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Load More",
+"plural": null
+},
+{
+"ctx": null,
+"id": "A course by",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Categories:",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Uncategorized",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Material Includes",
+"plural": null
+},
+{
+"ctx": null,
+"id": "This feature has been disabled by the administrator",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No Review Yet",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Total ",
+"plural": null
+},
+{
+"ctx": null,
+"id": " Rating",
+"plural": " Ratings"
+},
+{
+"ctx": null,
+"id": "%s Rating",
+"plural": "%s Ratings"
+},
+{
+"ctx": null,
+"id": "Write a review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Edit review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "write a review",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Join the conversation",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write your comment here…",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Please enroll in this course to view course content.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course name : %s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No questions yet",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Describe what you're trying to achieve and where you're getting stuck",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Back to course list",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Course is locked",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter your password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Show password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Finish",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No course found for this quiz",
+"plural": null
+},
+{
+"ctx": null,
+"id": "It seems there is no course belongs with this quiz, you can not attempt on this quiz without a course belongs, please notify to your instructor to fix this issue.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Drag your answer",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Questions No",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Total Attempted",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Attempts Allowed",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No limit",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Time remaining: ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reattempt",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Marks : ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Submit &amp; Next",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Week",
+"plural": null
+},
+{
+"ctx": null,
+"id": "%1$s %2$s",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Enter Password and Confirm Password to reset your password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Confirm Password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Reset password",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Lost your password? Please enter your username or email address. You will receive a link to create a new password via email.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Username or email",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Edit Profile",
+"plural": null
+},
+{
+"ctx": null,
+"id": "… Read more",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Read less",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Member since",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Date",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Published Date",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Are you sure you want to delete this Announcement permanently from the site? Please confirm your choice.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Edit Announcement",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Create Announcement",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Upload Attachments",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Select or Upload Media Of Your Chosen Persuasion",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Use this media",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Size: ",
+"plural": null
+},
+{
+"ctx": null,
+"id": "700x430 pixels",
+"plural": null
+},
+{
+"ctx": null,
+"id": "File Support: ",
+"plural": null
+},
+{
+"ctx": "tutor-supported-image-type",
+"id": ".jpg, .jpeg,. gif, or .png",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Upload Image",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Type",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Action",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Write here...",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Question",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Waiting Since",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Do you have any questions?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Ask a New Question",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Ask Question",
+"plural": null
+},
+{
+"ctx": null,
+"id": "ago",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Do You Want to Delete This Question?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "All the replies also will be deleted.",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Un-archive",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Mark as read",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Instructor Note",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz Overview",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Save mark",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Show feedback",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Add feedback",
+"plural": null
+},
+{
+"ctx": null,
+"id": "(Overrides the auto-graded result)",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No answered questions to display",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Are you sure you want to delete this feedback?",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No, keep it",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Yes, delete",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Student:",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Quiz Info",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Incorrect Answer",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Attempt By",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Attempt Time",
+"plural": null
+},
+{
+"ctx": null,
+"id": "No",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Passing Marks",
+"plural": null
+},
+{
+"ctx": null,
+"id": "Updated",
+"plural": null
+}
+]

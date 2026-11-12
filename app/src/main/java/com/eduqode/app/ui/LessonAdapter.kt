@@ -1,5 +1,7 @@
 package com.eduqode.app.ui
 
+import com.eduqode.app.tr
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +30,11 @@ class LessonAdapter(
     data class Row(val lesson: Lesson, val status: String, val done: Boolean, val files: List<StoredFile>)
 
     companion object {
+        /** Status beginnings (English keys, compared in the shown language) that colour the status line. */
+        private val RED = listOf("Download failed", "Not passed", "Not sent: %s")
+        private val GREEN = listOf("Available offline", "Passed", "Submitted on this phone · will be sent when online",
+            "Submitted · instructions and files offline")
+
         /** Builds rows; call from a background thread (status and done may read the database). */
         fun rows(
             lessons: List<Lesson>,
@@ -81,10 +88,10 @@ class LessonAdapter(
 
         val status = r.status
         val kind = when {
-            l.type == "quiz" -> "Quiz"
-            l.isAssignment -> "Assignment"
-            l.hasVideo -> "Video lesson"
-            else -> "Lesson"
+            l.type == "quiz" -> tr("Quiz")
+            l.isAssignment -> tr("Assignment")
+            l.hasVideo -> tr("Video lesson")
+            else -> tr("Lesson")
         }
         h.subtitle.text = "$kind · $status"
 
@@ -105,9 +112,8 @@ class LessonAdapter(
             }
         }
         val color = when {
-            status.startsWith("Download failed") -> R.color.error_red
-            status.startsWith("Available") || status.startsWith("Passed") || status.startsWith("Submitted") -> R.color.ok_green
-            status.startsWith("Not passed") || status.startsWith("Not sent") -> R.color.error_red
+            RED.any { status.startsWith(tr(it).substringBefore("%")) } -> R.color.error_red
+            GREEN.any { status.startsWith(tr(it).substringBefore("%")) } -> R.color.ok_green
             else -> R.color.text_secondary
         }
         h.subtitle.setTextColor(ContextCompat.getColor(ctx, color))

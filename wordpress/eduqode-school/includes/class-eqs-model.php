@@ -16,6 +16,12 @@ class EQS_Model {
 
     const KINDS = array( 'class' => 'Class', 'section' => 'Section', 'batch' => 'Batch' );
 
+    /** Translated name of a group type. */
+    public static function kind_label( $kind ) {
+        $labels = array( 'class' => eqs__( 'Class' ), 'section' => eqs__( 'Section' ), 'batch' => eqs__( 'Batch' ) );
+        return $labels[ $kind ] ?? $kind;
+    }
+
     // ------------------------------------------------------------ groups
 
     public static function group( $id ) {

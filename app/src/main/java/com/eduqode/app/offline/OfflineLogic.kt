@@ -55,12 +55,15 @@ object OfflineLogic {
     }
 
     /** Full page for a lesson or course description, readable on a phone, no scripts. */
-    fun wrapHtml(title: String, body: String): String = """
+    fun wrapHtml(title: String, body: String): String {
+        val rtl = isRtlText(title + " " + body.replace(Regex("<[^>]*>"), " "))
+        return """
 <!doctype html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<html${if (rtl) " dir=\"rtl\" lang=\"ur\"" else ""}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://appassets.androidplatform.net; img-src 'self' https://appassets.androidplatform.net data:; style-src 'unsafe-inline'; script-src 'none'">
 <style>
-  body{margin:0;padding:16px 16px 32px;font-family:system-ui,-apple-system,Roboto,sans-serif;font-size:16px;line-height:1.6;color:#1b1b1b;background:#fff;word-wrap:break-word}
+  @font-face{font-family:"EQ Nastaliq";src:url(https://appassets.androidplatform.net/assets/fonts/noto-nastaliq-urdu.woff2) format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF}
+  body{margin:0;padding:16px 16px 32px;font-family:"EQ Nastaliq",system-ui,-apple-system,Roboto,sans-serif;font-size:16px;line-height:1.6;color:#1b1b1b;background:#fff;word-wrap:break-word}
   h1{font-size:22px;line-height:1.3;margin:0 0 12px}
   img,video{max-width:100%;height:auto;border-radius:8px}
   iframe{display:none}
@@ -69,12 +72,27 @@ object OfflineLogic {
   table{border-collapse:collapse;max-width:100%;display:block;overflow-x:auto}
   td,th{border:1px solid #ddd;padding:6px}
   a{color:#b26b00}
+  [dir=rtl] body{line-height:2.1;font-size:17px}
   @media (prefers-color-scheme: dark){body{background:#121212;color:#e8e8e8}pre,code{background:#222}a{color:#F5A623}td,th{border-color:#444}}
 </style></head>
 <body><h1>${escape(title)}</h1>
 $body
 </body></html>
 """.trimIndent()
+    }
+
+    /** True when most letters are Urdu/Arabic script (the page is then shown right to left). */
+    fun isRtlText(text: String): Boolean {
+        var arabic = 0
+        var latin = 0
+        for (ch in text) {
+            when {
+                ch in '\u0600'..'\u06FF' || ch in '\u0750'..'\u077F' || ch in '\uFB50'..'\uFDFF' || ch in '\uFE70'..'\uFEFF' -> arabic++
+                ch in 'A'..'Z' || ch in 'a'..'z' -> latin++
+            }
+        }
+        return arabic > 0 && arabic >= latin
+    }
 
     fun escape(s: String) = s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")
 

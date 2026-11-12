@@ -591,4 +591,37 @@ class OfflineE2ETest {
         }
         step("PASS School tab: shown because the EduQode School plugin is active on the website")
     }
+
+    private fun texts(v: View): List<String> = when (v) {
+        is android.widget.TextView -> listOf(v.text.toString())
+        is android.view.ViewGroup -> (0 until v.childCount).flatMap { texts(v.getChildAt(it)) }
+        else -> emptyList()
+    }
+
+    @Test fun t19_urduScreensAndAnswers(): Unit = runBlocking {
+        val instr = InstrumentationRegistry.getInstrumentation()
+        instr.runOnMainSync { I18n.setChoice(context, "ur") }
+        assertEquals("ur", I18n.language)
+        ActivityScenario.launch<OfflineLibraryActivity>(Intent(context, OfflineLibraryActivity::class.java)).use { sc ->
+            var shown = emptyList<String>()
+            var rtl = false
+            waitUntil("library screen in Urdu, right to left", 20_000) {
+                sc.onActivity {
+                    shown = texts(it.window.decorView)
+                    rtl = it.window.decorView.layoutDirection == View.LAYOUT_DIRECTION_RTL
+                }
+                rtl && shown.contains("اسٹوریج")
+            }
+            assertTrue("Wi-Fi switch in Urdu: $shown", shown.contains("صرف Wi-Fi پر ڈاؤن لوڈ کریں"))
+        }
+        // The website answers the app in Urdu too (the app sends its language), and keeps the choice for the website.
+        val repo = OfflineRepository(context)
+        assertEquals("ur", repo.api.setLanguage("ur").getString("locale"))
+        assertEquals("ur", repo.api.me().getString("locale"))
+        step("PASS Urdu: app screens right to left in Urdu, website language set to Urdu")
+
+        instr.runOnMainSync { I18n.setChoice(context, "") }
+        repo.api.setLanguage("en")
+        assertEquals("en", I18n.language)
+    }
 }

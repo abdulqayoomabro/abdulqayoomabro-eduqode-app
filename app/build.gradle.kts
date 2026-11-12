@@ -11,8 +11,8 @@ android {
         applicationId = "com.eduqode.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 9
-        versionName = "2.5"
+        versionCode = 10
+        versionName = "2.6"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "SITE_URL", "\"https://demo.lms.eduqode.com/demo\"")
         manifestPlaceholders["cleartext"] = "false"

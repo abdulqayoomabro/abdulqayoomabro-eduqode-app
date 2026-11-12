@@ -1,5 +1,7 @@
 package com.eduqode.app.ui
 
+import com.eduqode.app.tr
+
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -89,8 +91,8 @@ class CourseDownloadActivity : AppCompatActivity() {
             val state = Session.refresh(this@CourseDownloadActivity)
             if (state !is Session.State.LoggedIn) {
                 MaterialAlertDialogBuilder(this@CourseDownloadActivity)
-                    .setMessage("Please log in to your EduQode account first.")
-                    .setPositiveButton("Log in") { _, _ -> Ui.openWebsite(this@CourseDownloadActivity, "${ApiClient.SITE}/dashboard/"); finish() }
+                    .setMessage(tr("Please log in to your EduQode account first."))
+                    .setPositiveButton(tr("Log in")) { _, _ -> Ui.openWebsite(this@CourseDownloadActivity, "${ApiClient.SITE}/dashboard/"); finish() }
                     .setNegativeButton(android.R.string.cancel) { _, _ -> finish() }
                     .setCancelable(false).show()
                 return@launch
@@ -125,12 +127,12 @@ class CourseDownloadActivity : AppCompatActivity() {
             repo.preparePackage(courseId)
         } catch (e: ApiClient.ApiException) {
             prepareError = when (e.code) {
-                403 -> "You are not enrolled in this course, or offline downloads are switched off for it."
-                401 -> "Please log in again."
+                403 -> tr("You are not enrolled in this course, or offline downloads are switched off for it.")
+                401 -> tr("Please log in again.")
                 else -> e.message
             }
         } catch (e: Exception) {
-            prepareError = "Could not load the course. Check your internet and try again."
+            prepareError = tr("Could not load the course. Check your internet and try again.")
         }
         preparing = false
         render()
@@ -151,23 +153,23 @@ class CourseDownloadActivity : AppCompatActivity() {
         val note = findViewById<TextView>(R.id.video_note)
         if (summary != null && lessons.isNotEmpty()) {
             facts.text = buildString {
-                append("Lessons: ${summary.lessons}\n")
-                append("Videos: ${summary.videos} (${summary.offlineVideos} can play offline)\n")
-                append("Downloadable resources: ${summary.resources}\n")
-                if (summary.quizzes > 0) append("Quizzes: ${summary.quizzes} (${summary.offlineQuizzes} can be taken offline)\n")
-                append("Estimated download: ${OfflineLogic.formatBytes(summary.totalBytes)}")
-                if (summary.unknownSizeFiles > 0) append(" + ${summary.unknownSizeFiles} file(s) of unknown size")
-                append("\nFree space on phone: ${OfflineLogic.formatBytes(summary.freeBytes)}")
+                append(tr("Lessons: %s", summary.lessons) + "\n")
+                append(tr("Videos: %s (%s can play offline)", summary.videos, summary.offlineVideos) + "\n")
+                append(tr("Downloadable resources: %s", summary.resources) + "\n")
+                if (summary.quizzes > 0) append(tr("Quizzes: %s (%s can be taken offline)", summary.quizzes, summary.offlineQuizzes) + "\n")
+                append(tr("Estimated download: %s", OfflineLogic.formatBytes(summary.totalBytes)))
+                if (summary.unknownSizeFiles > 0) append(tr(" + %s file(s) of unknown size", summary.unknownSizeFiles))
+                append("\n" + tr("Free space on phone: %s", OfflineLogic.formatBytes(summary.freeBytes)))
             }
             val onlineOnly = summary.videos - summary.offlineVideos
             note.visibility = if (onlineOnly > 0) View.VISIBLE else View.GONE
-            note.text = "$onlineOnly video(s) are on YouTube or another online service. They show “Online only — internet required”. All other material of those lessons is still downloaded."
+            note.text = tr("%s video(s) are on YouTube or another online service. They show “Online only — internet required”. All other material of those lessons is still downloaded.", onlineOnly)
         } else {
             facts.text = when {
-                preparing -> "Preparing the course…"
+                preparing -> tr("Preparing the course…")
                 prepareError != null -> prepareError
-                !repo.isOnline() -> "Connect to the internet to download this course."
-                else -> "Loading…"
+                !repo.isOnline() -> tr("Connect to the internet to download this course.")
+                else -> tr("Loading…")
             }
             note.visibility = View.GONE
         }
@@ -180,26 +182,26 @@ class CourseDownloadActivity : AppCompatActivity() {
         val done = summary?.doneBytes ?: 0
         val pct = if (total > 0) (done * 100 / total).toInt().coerceIn(0, 100) else 0
         statusView.text = when (state) {
-            CourseState.NONE -> if (preparing) "Preparing…" else "Not downloaded"
+            CourseState.NONE -> if (preparing) tr("Preparing…") else tr("Not downloaded")
             CourseState.QUEUED -> course?.error.orEmpty().ifBlank {
-                if (repo.wifiOnly) "Waiting for Wi-Fi…" else "Waiting to start…"
+                if (repo.wifiOnly) tr("Waiting for Wi-Fi…") else tr("Waiting to start…")
             }
-            CourseState.DOWNLOADING -> "Downloading… $pct%"
-            CourseState.PAUSED -> "Paused at $pct%"
-            CourseState.FAILED -> course?.error?.ifBlank { "Some files could not be downloaded" } ?: ""
-            CourseState.DOWNLOADED -> "Downloaded · available offline"
+            CourseState.DOWNLOADING -> tr("Downloading… %s%%", pct)
+            CourseState.PAUSED -> tr("Paused at %s%%", pct)
+            CourseState.FAILED -> course?.error?.ifBlank { tr("Some files could not be downloaded") } ?: ""
+            CourseState.DOWNLOADED -> tr("Downloaded · available offline")
             else -> ""
         }
         bar.isIndeterminate = preparing || (state == CourseState.DOWNLOADING && total <= 0)
         if (!bar.isIndeterminate) bar.setProgressCompat(if (state == CourseState.NONE) 0 else pct, true)
         val live = DownloadProgress.get(courseId)
         progressText.text = if (state == CourseState.NONE) "" else buildString {
-            append("${OfflineLogic.formatBytes(done)} of ${OfflineLogic.formatBytes(total)} · ${OfflineLogic.formatBytes(maxOf(0, total - done))} left")
+            append(tr("%s of %s · %s left", OfflineLogic.formatBytes(done), OfflineLogic.formatBytes(total), OfflineLogic.formatBytes(maxOf(0, total - done))))
             if (state == CourseState.DOWNLOADING && live != null) {
                 append("\n${OfflineLogic.formatBytes(live.bytesPerSecond)}/s · ${live.currentFile}")
             }
             val failed = files.count { it.state == FileState.FAILED }
-            if (failed > 0) append("\n$failed file(s) failed")
+            if (failed > 0) append("\n" + tr("%s file(s) failed", failed))
         }
 
         val ready = summary != null && lessons.isNotEmpty() && !preparing && course?.accessExpired != true
@@ -207,7 +209,7 @@ class CourseDownloadActivity : AppCompatActivity() {
         val active = state == CourseState.DOWNLOADING || state == CourseState.QUEUED
         show(R.id.btn_download_all, ready && state == CourseState.NONE)
         show(R.id.btn_download_selected, ready && (state == CourseState.NONE || state == CourseState.DOWNLOADED))
-        button(R.id.btn_download_selected).text = if (state == CourseState.DOWNLOADED) "Change downloaded lessons" else "Download selected lessons"
+        button(R.id.btn_download_selected).text = if (state == CourseState.DOWNLOADED) tr("Change downloaded lessons") else tr("Download selected lessons")
         show(R.id.btn_open, state == CourseState.DOWNLOADED || state == CourseState.FAILED)
         show(R.id.btn_pause, active)
         // New content on the website (for example an offline video link added later) for a downloaded course.
@@ -215,7 +217,7 @@ class CourseDownloadActivity : AppCompatActivity() {
         val hasUpdates = state == CourseState.DOWNLOADED && updates.isNotEmpty()
         show(R.id.btn_resume, state == CourseState.PAUSED || hasUpdates)
         button(R.id.btn_resume).text = if (hasUpdates)
-            "Download new content (${updates.size} file(s), ${OfflineLogic.formatBytes(updates.sumOf { it.expectedBytes })})" else "Resume"
+            tr("Download new content (%s file(s), %s)", updates.size, OfflineLogic.formatBytes(updates.sumOf { it.expectedBytes })) else tr("Resume")
         show(R.id.btn_retry, state == CourseState.FAILED)
         show(R.id.btn_cancel, active || state == CourseState.PAUSED)
         show(R.id.btn_remove, state == CourseState.DOWNLOADED || state == CourseState.FAILED)
@@ -231,10 +233,10 @@ class CourseDownloadActivity : AppCompatActivity() {
         val titles = lessons.map { it.title }.toTypedArray()
         val checked = lessons.map { it.selected }.toBooleanArray()
         MaterialAlertDialogBuilder(this)
-            .setTitle("Choose lessons to download")
+            .setTitle(tr("Choose lessons to download"))
             .setMultiChoiceItems(titles, checked) { _, which, isChecked -> checked[which] = isChecked }
             .setNegativeButton(android.R.string.cancel, null)
-            .setPositiveButton("Download") { _, _ ->
+            .setPositiveButton(tr("Download")) { _, _ ->
                 val ids = lessons.filterIndexed { i, _ -> checked[i] }.map { it.id }.toSet()
                 if (ids.isEmpty()) return@setPositiveButton
                 confirmDownload(ids)
@@ -251,19 +253,19 @@ class CourseDownloadActivity : AppCompatActivity() {
             val needed = maxOf(0, s.totalBytes - s.doneBytes)
             if (!OfflineLogic.hasRoom(needed, s.freeBytes)) {
                 MaterialAlertDialogBuilder(this@CourseDownloadActivity)
-                    .setTitle("Not enough storage")
-                    .setMessage("This download needs about ${OfflineLogic.formatBytes(needed)}, but only ${OfflineLogic.formatBytes(s.freeBytes)} is free. Free up space or choose fewer lessons.")
+                    .setTitle(tr("Not enough storage"))
+                    .setMessage(tr("This download needs about %s, but only %s is free. Free up space or choose fewer lessons.", OfflineLogic.formatBytes(needed), OfflineLogic.formatBytes(s.freeBytes)))
                     .setPositiveButton(android.R.string.ok, null).show()
                 return@launch
             }
-            val network = if (repo.wifiOnly) "It will download over Wi-Fi only." else "It can use mobile data. You can switch to Wi-Fi only in My offline courses."
+            val network = if (repo.wifiOnly) tr("It will download over Wi-Fi only.") else tr("It can use mobile data. You can switch to Wi-Fi only in My offline courses.")
             MaterialAlertDialogBuilder(this@CourseDownloadActivity)
-                .setTitle(if (selected == null) "Download complete course?" else "Download ${selected.size} lesson(s)?")
-                .setMessage("About ${OfflineLogic.formatBytes(needed)} will be downloaded" +
-                    (if (s.unknownSizeFiles > 0) " (plus ${s.unknownSizeFiles} file(s) of unknown size)" else "") +
-                    ". Free space: ${OfflineLogic.formatBytes(s.freeBytes)}.\n\n$network")
+                .setTitle(if (selected == null) tr("Download complete course?") else tr("Download %s lesson(s)?", selected.size))
+                .setMessage(tr("About %s will be downloaded", OfflineLogic.formatBytes(needed)) +
+                    (if (s.unknownSizeFiles > 0) tr(" (plus %s file(s) of unknown size)", s.unknownSizeFiles) else "") +
+                    tr(". Free space: %s.", OfflineLogic.formatBytes(s.freeBytes)) + "\n\n$network")
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton("Download") { _, _ ->
+                .setPositiveButton(tr("Download")) { _, _ ->
                     pendingStart = selected; pendingAll = selected == null
                     askNotificationsThenStart()
                 }.show()
@@ -287,10 +289,10 @@ class CourseDownloadActivity : AppCompatActivity() {
 
     private fun confirmRemove(cancel: Boolean) {
         MaterialAlertDialogBuilder(this)
-            .setTitle(if (cancel) "Cancel download?" else "Remove download?")
-            .setMessage("Downloaded files of this course will be deleted from this phone only. Your enrollment and your progress on your account are not affected.")
-            .setNegativeButton("Keep", null)
-            .setPositiveButton(if (cancel) "Cancel download" else "Remove") { _, _ ->
+            .setTitle(if (cancel) tr("Cancel download?") else tr("Remove download?"))
+            .setMessage(tr("Downloaded files of this course will be deleted from this phone only. Your enrollment and your progress on your account are not affected."))
+            .setNegativeButton(tr("Keep"), null)
+            .setPositiveButton(if (cancel) tr("Cancel download") else tr("Remove")) { _, _ ->
                 lifecycleScope.launch {
                     repo.removeDownload(courseId)
                     prepare()

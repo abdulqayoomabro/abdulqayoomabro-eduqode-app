@@ -1,5 +1,7 @@
 package com.eduqode.app.ui
 
+import com.eduqode.app.tr
+
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
@@ -80,7 +82,7 @@ class H5PActivity : AppCompatActivity() {
         if (!repo.auth.isLoggedIn || contentId <= 0) { finish(); return }
 
         findViewById<MaterialToolbar>(R.id.toolbar).apply {
-            title = intent.getStringExtra(EXTRA_TITLE)?.ifBlank { null } ?: "Exercise"
+            title = intent.getStringExtra(EXTRA_TITLE)?.ifBlank { null } ?: tr("Exercise")
             setNavigationIcon(R.drawable.ic_back)
             setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
         }
@@ -88,7 +90,7 @@ class H5PActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() = close()
         })
-        if (quizMode) status.text = "Answer the exercise and tap Check, then Done."
+        if (quizMode) status.text = tr("Answer the exercise and tap Check, then Done.")
 
         val loader = WebViewAssetLoader.Builder()
             .setDomain(ASSET_HOST)
@@ -111,7 +113,7 @@ class H5PActivity : AppCompatActivity() {
                     if (url.host == ASSET_HOST) return false
                     // Links inside an exercise open outside the app (only when online).
                     if (repo.isOnline()) runCatching { startActivity(Intent(Intent.ACTION_VIEW, url)) }
-                    else Toast.makeText(this@H5PActivity, "This link needs an internet connection.", Toast.LENGTH_SHORT).show()
+                    else Toast.makeText(this@H5PActivity, tr("This link needs an internet connection."), Toast.LENGTH_SHORT).show()
                     return true
                 }
             }
@@ -135,7 +137,7 @@ class H5PActivity : AppCompatActivity() {
         @JavascriptInterface
         fun onError(message: String) {
             runOnUiThread {
-                status.text = "This exercise could not be opened. Download the course again when online."
+                status.text = tr("This exercise could not be opened. Download the course again when online.")
                 status.setTextColor(ContextCompat.getColor(this@H5PActivity, R.color.error_red))
             }
         }
@@ -150,7 +152,7 @@ class H5PActivity : AppCompatActivity() {
             if (statements.size < MAX_STATEMENTS) statements += raw
             if (final != null && score == null) {
                 score = final
-                status.text = "Score ${fmt(final.first)}/${fmt(final.second)} · tap Done to continue the quiz"
+                status.text = tr("Score %s/%s · tap Done to continue the quiz", fmt(final.first), fmt(final.second))
             }
             return
         }
@@ -165,11 +167,11 @@ class H5PActivity : AppCompatActivity() {
             val finishedLesson = withContext(Dispatchers.IO) { repo.saveH5PStatement(courseId, ownerId, contentId, st, openedAt) }
             if (final != null) {
                 score = final
-                status.text = "Done · score ${fmt(final.first)}/${fmt(final.second)}" +
-                    if (repo.isOnline()) " · saving to your account" else " · saved on this phone"
+                status.text = tr("Done · score %s/%s", fmt(final.first), fmt(final.second)) +
+                    if (repo.isOnline()) tr(" · saving to your account") else tr(" · saved on this phone")
                 status.setTextColor(ContextCompat.getColor(this@H5PActivity, R.color.ok_green))
                 if (finishedLesson) {
-                    Snackbar.make(findViewById(R.id.root), "All exercises in this lesson are done.", Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(findViewById(R.id.root), tr("All exercises in this lesson are done."), Snackbar.LENGTH_LONG).show()
                 }
             }
         }

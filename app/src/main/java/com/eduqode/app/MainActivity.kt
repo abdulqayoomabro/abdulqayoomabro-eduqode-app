@@ -250,7 +250,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         val downloaded = course.state == CourseState.DOWNLOADED
-        fabDownload.text = if (downloaded) "Open offline" else getString(R.string.download_offline_pack)
+        fabDownload.text = if (downloaded) tr("Open offline") else getString(R.string.download_offline_pack)
         fabDownload.visibility = View.VISIBLE
         fabDownload.setOnClickListener {
             if (downloaded) {
@@ -328,12 +328,12 @@ class MainActivity : AppCompatActivity() {
 
     private val NAV_SCHOOL = 0x5c01
 
-    /** "School" tab when the website has the EduQode School plugin (teachers, parents, students). */
+    /** tr("School") tab when the website has the EduQode School plugin (teachers, parents, students). */
     private fun updateSchoolTab() {
         val url = remote.settings.schoolUrl
         val item = bottomNav.menu.findItem(NAV_SCHOOL)
         if (url.isNotEmpty() && item == null) {
-            bottomNav.menu.add(android.view.Menu.NONE, NAV_SCHOOL, 1, "School").setIcon(R.drawable.ic_school)
+            bottomNav.menu.add(android.view.Menu.NONE, NAV_SCHOOL, 1, tr("School")).setIcon(R.drawable.ic_school)
         } else if (url.isEmpty() && item != null) {
             bottomNav.menu.removeItem(NAV_SCHOOL)
         }
@@ -341,7 +341,7 @@ class MainActivity : AppCompatActivity() {
 
     /** window.print() on a website page (report cards): Android's print screen, which can save a PDF. */
     private fun printPage() {
-        val title = (webView.title ?: "Report card").take(60)
+        val title = (webView.title ?: tr("Report card")).take(60)
         val pm = getSystemService(PRINT_SERVICE) as android.print.PrintManager
         runCatching { pm.print(title, webView.createPrintDocumentAdapter(title), android.print.PrintAttributes.Builder().build()) }
     }
@@ -393,12 +393,12 @@ class MainActivity : AppCompatActivity() {
         if (prefs.getInt("webview_warned", 0) == major) return
         prefs.edit().putInt("webview_warned", major).apply()
         AlertDialog.Builder(this)
-            .setTitle("Please update Android System WebView")
-            .setMessage("This phone has an old web engine (version $major). Some buttons and menus of the website may not work until it is updated from the Play Store.")
-            .setPositiveButton("Update") { _, _ ->
+            .setTitle(tr("Please update Android System WebView"))
+            .setMessage(tr("This phone has an old web engine (version %s). Some buttons and menus of the website may not work until it is updated from the Play Store.", major))
+            .setPositiveButton(tr("Update")) { _, _ ->
                 openExternally(Uri.parse("market://details?id=${pkg.packageName}"))
             }
-            .setNegativeButton("Later", null).show()
+            .setNegativeButton(tr("Later"), null).show()
     }
 
     /** Long-press Home: shares technical details (no passwords or cookies) to help find website problems. */
@@ -554,6 +554,10 @@ class MainActivity : AppCompatActivity() {
         if (scheme == "http" || scheme == "https") {
             val host = uri.host ?: return false
             if (OWN_HOSTS.contains(host)) {
+                // The website's "English · اردو" switch also changes the app's language.
+                uri.getQueryParameter("eduqode_lang")?.let { lang ->
+                    if ((lang == "ur" || lang == "en") && lang != I18n.language) I18n.setChoice(this, lang, fromApp = false)
+                }
                 applyCacheMode()
                 return false
             }
@@ -675,6 +679,11 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         webView.onResume()
+        // Language chosen in the app: the website (Tutor LMS pages, School) follows for this student.
+        if (I18n.takeWebsitePush(this)) {
+            val current = webView.url?.let { Uri.parse(it) }?.takeIf { (it.host ?: "") in OWN_HOSTS } ?: Uri.parse(HOME_URL)
+            webView.loadUrl(current.buildUpon().appendQueryParameter("eduqode_lang", I18n.language).build().toString())
+        }
     }
 
     override fun onDestroy() {

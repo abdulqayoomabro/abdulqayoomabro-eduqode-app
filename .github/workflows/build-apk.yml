@@ -20,6 +20,13 @@ jobs:
           extensions: pdo_sqlite, sqlite3, mbstring, gd
       - name: Lint plugin
         run: for f in $(find wordpress/eduqode-app-connector -name '*.php'); do php -l "$f"; done
+      - name: Urdu translations complete and up to date (plugins, Tutor LMS screens, app)
+        shell: bash
+        run: |
+          python3 tools/i18n/build_po.py
+          python3 tools/i18n/tutor/build.py
+          python3 tools/i18n/build_app.py
+          git diff --exit-code -- wordpress/*/languages app/src/main/assets/i18n app/src/main/res/values-ur
       - name: Run end-to-end plugin tests
         run: tests/plugin/setup_and_run.sh "$RUNNER_TEMP/wp"
       - name: EduQode School plugin (teacher, parent, student, attendance, report cards)

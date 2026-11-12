@@ -11,6 +11,12 @@ class EQS_Attendance {
 
     const STATUSES = array( 'P' => 'Present', 'A' => 'Absent', 'L' => 'Late', 'E' => 'Leave' );
 
+    /** Translated status name ("Present" …). */
+    public static function label( $english ) {
+        $labels = array( 'Present' => eqs__( 'Present' ), 'Absent' => eqs__( 'Absent' ), 'Late' => eqs__( 'Late' ), 'Leave' => eqs__( 'Leave' ) );
+        return $labels[ $english ] ?? $english;
+    }
+
     public static function valid_date( $d ) {
         return is_string( $d ) && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $d ) && strtotime( $d ) !== false;
     }

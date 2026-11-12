@@ -1,5 +1,7 @@
 package com.eduqode.app.offline
 
+import com.eduqode.app.tr
+
 import android.content.ContentValues
 import android.content.Context
 import android.net.ConnectivityManager
@@ -151,7 +153,7 @@ class OfflineRepository(context: Context) {
         }
 
         // Course description + thumbnail
-        addFile(0, FileKind.THUMBNAIL, pkg.course.thumbnailUrl, "Course image", "image/*", 0, "jpg")
+        addFile(0, FileKind.THUMBNAIL, pkg.course.thumbnailUrl, tr("Course image"), "image/*", 0, "jpg")
         File(dir, "course.html").writeText(OfflineLogic.wrapHtml(pkg.course.title, pkg.course.descriptionHtml))
 
         // H5P: library files are shared by every exercise of the course (lesson 0); each exercise's
@@ -189,7 +191,7 @@ class OfflineRepository(context: Context) {
                 }
             } else if (l.quizJson.isNotEmpty()) {
                 // Pictures used in offline quiz questions.
-                l.images.forEach { addFile(0, FileKind.IMAGE, it, "Quiz image", "image/*", 0, "img") }
+                l.images.forEach { addFile(0, FileKind.IMAGE, it, tr("Quiz image"), "image/*", 0, "img") }
             }
         }
         db.savePackage(uid, pkg, htmlPresent)
@@ -394,7 +396,7 @@ class OfflineRepository(context: Context) {
             else -> return null
         }
         fun n(d: Double) = if (d % 1.0 == 0.0) d.toLong().toString() else String.format(java.util.Locale.US, "%.1f", d)
-        val word = when (result) { "pass" -> "Passed"; "fail" -> "Not passed"; else -> "Awaiting review" }
+        val word = when (result) { "pass" -> tr("Passed"); "fail" -> tr("Not passed"); else -> tr("Awaiting review") }
         return "$word ${n(earned)}/${n(total)}"
     }
 
@@ -446,10 +448,10 @@ class OfflineRepository(context: Context) {
 
     /** Problems that would make the website refuse the submission (checked before it is queued). */
     fun submissionProblem(s: Submission, info: AssignmentInfo): String? = when {
-        s.answer.isBlank() -> "Write your answer first."
-        info.maxFiles <= 0 && s.files.isNotEmpty() -> "This assignment does not take files."
-        s.files.size > info.maxFiles -> "At most ${info.maxFiles} file(s)."
-        s.files.any { Math.round(it.size / (1024.0 * 1024.0)) > info.maxFileMb } -> "Each file can be at most ${info.maxFileMb} MB."
+        s.answer.isBlank() -> tr("Write your answer first.")
+        info.maxFiles <= 0 && s.files.isNotEmpty() -> tr("This assignment does not take files.")
+        s.files.size > info.maxFiles -> tr("At most %s file(s).", info.maxFiles)
+        s.files.any { Math.round(it.size / (1024.0 * 1024.0)) > info.maxFileMb } -> tr("Each file can be at most %s MB.", info.maxFileMb)
         else -> null
     }
 
@@ -571,45 +573,45 @@ class OfflineRepository(context: Context) {
             val mine = files.filter { it.lessonId == lesson.id }
             val sub = latestSubmission(lesson.id)
             return when {
-                mine.any { it.state == FileState.FAILED } -> "Download failed"
-                mine.any { it.state != FileState.DONE && it.state != FileState.SKIPPED } -> "Downloading"
-                sub?.state == SubmissionState.PENDING -> "Submitted on this phone · will be sent when online"
-                sub?.state == SubmissionState.REJECTED -> "Not sent: ${sub.reason}"
-                sub?.state == SubmissionState.DRAFT && sub.answer.isNotBlank() -> "Draft saved on this phone"
-                lesson.completedAt > 0 -> "Submitted · instructions and files offline"
-                else -> "Instructions and files offline · submit on the website"
+                mine.any { it.state == FileState.FAILED } -> tr("Download failed")
+                mine.any { it.state != FileState.DONE && it.state != FileState.SKIPPED } -> tr("Downloading")
+                sub?.state == SubmissionState.PENDING -> tr("Submitted on this phone · will be sent when online")
+                sub?.state == SubmissionState.REJECTED -> tr("Not sent: %s", sub.reason)
+                sub?.state == SubmissionState.DRAFT && sub.answer.isNotBlank() -> tr("Draft saved on this phone")
+                lesson.completedAt > 0 -> tr("Submitted · instructions and files offline")
+                else -> tr("Instructions and files offline · submit on the website")
             }
         }
         if (lesson.type == "quiz" && lesson.quizJson.isEmpty()) {
-            return if (lesson.onlineReason.isNotBlank()) "Online only: ${lesson.onlineReason}" else "Online only"
+            return if (lesson.onlineReason.isNotBlank()) tr("Online only: %s", lesson.onlineReason) else tr("Online only")
         }
         if (lesson.isOfflineQuiz) {
-            val quiz = lesson.quiz ?: return "Online only"
+            val quiz = lesson.quiz ?: return tr("Online only")
             val left = QuizEngine.attemptsLeft(quiz.copy(attemptsUsed = lesson.quizAttemptsUsed), pendingQuizAttempts(lesson.id))
             val last = quizResultLabel(lesson)
-            return (if (last != null) "$last · " else "") + "Available offline" + when (left) {
+            return (if (last != null) "$last · " else "") + tr("Available offline") + when (left) {
                 null -> ""
-                0 -> " · no attempts left"
-                else -> " · $left attempt(s) left"
+                0 -> tr(" · no attempts left")
+                else -> tr(" · %s attempt(s) left", left)
             }
         }
-        if (!lesson.isLesson) return "Online only"
+        if (!lesson.isLesson) return tr("Online only")
         val mine = files.filter { it.lessonId == lesson.id }
-        if (!lesson.selected) return "Not downloaded"
+        if (!lesson.selected) return tr("Not downloaded")
         val h5pLibs = if (lesson.h5p.isEmpty()) emptyList() else files.filter { it.lessonId == 0L && it.kind == FileKind.H5P }
-        if (mine.any { it.state == FileState.FAILED } || h5pLibs.any { it.state == FileState.FAILED }) return "Download failed"
-        if (mine.any { it.state != FileState.DONE } || h5pLibs.any { it.state != FileState.DONE }) return "Downloading"
+        if (mine.any { it.state == FileState.FAILED } || h5pLibs.any { it.state == FileState.FAILED }) return tr("Download failed")
+        if (mine.any { it.state != FileState.DONE } || h5pLibs.any { it.state != FileState.DONE }) return tr("Downloading")
         if (lesson.h5p.isNotEmpty()) {
             val offline = lesson.h5p.filter { it.offline }
             val done = h5pDone(lesson.id).keys
             val count = offline.count { it.id in done }
             val online = lesson.h5p.size - offline.size
-            return "Available offline · exercises $count/${offline.size} done" + if (online > 0) " · $online need the website" else ""
+            return tr("Available offline") + tr(" · exercises %s/%s done", count, offline.size) + if (online > 0) tr(" · %s need the website", online) else ""
         }
         return when {
-            lesson.videoOfflineCapable -> "Available offline"
-            lesson.hasVideo && VideoProviders.isOnlineOnly(lesson.videoOnlineProvider) -> "Text offline · video online only"
-            else -> "Available offline"
+            lesson.videoOfflineCapable -> tr("Available offline")
+            lesson.hasVideo && VideoProviders.isOnlineOnly(lesson.videoOnlineProvider) -> tr("Text offline · video online only")
+            else -> tr("Available offline")
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.eduqode.app.offline
 
+import com.eduqode.app.tr
+
 import android.content.ContentValues
 import android.content.Context
 import androidx.work.BackoffPolicy
@@ -87,7 +89,7 @@ class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWork
                     .filter { it.state == FileState.PENDING || it.state == FileState.DOWNLOADING }
                     .sumOf { maxOf(0, it.expectedBytes - it.doneBytes) }
                 if (!OfflineLogic.hasRoom(remaining, repo.freeBytes())) {
-                    val msg = "Not enough storage. Free up ${OfflineLogic.formatBytes(remaining)} and tap Retry."
+                    val msg = tr("Not enough storage. Free up %s and tap Retry.", OfflineLogic.formatBytes(remaining))
                     db.setCourseState(userId, courseId, CourseState.FAILED, msg)
                     Notifier.downloadFailed(applicationContext, courseId, course.title, msg)
                     return@withContext Result.failure()
@@ -101,7 +103,7 @@ class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWork
         } catch (e: IOException) {
             // Network dropped or server busy: try again later (WorkManager waits for the network).
             if (isStopped) return@withContext Result.success()
-            db.setCourseState(userId, courseId, CourseState.QUEUED, "Waiting for a connection…")
+            db.setCourseState(userId, courseId, CourseState.QUEUED, tr("Waiting for a connection…"))
             DownloadProgress.clear(courseId)
             return@withContext Result.retry()
         }
@@ -115,7 +117,7 @@ class DownloadWorker(context: Context, params: WorkerParameters) : CoroutineWork
             })
             Notifier.downloadDone(applicationContext, courseId, course.title)
         } else {
-            val msg = "$failed file(s) could not be downloaded. Tap Retry."
+            val msg = tr("%s file(s) could not be downloaded. Tap Retry.", failed)
             db.setCourseState(userId, courseId, CourseState.FAILED, msg)
             Notifier.downloadFailed(applicationContext, courseId, course.title, msg)
         }

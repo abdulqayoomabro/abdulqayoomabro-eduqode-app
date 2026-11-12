@@ -10,3 +10,4 @@ local.properties
 
 # Fixed test-only key so new test APKs install over old ones
 !app/debug.keystore
+__pycache__/

@@ -145,6 +145,10 @@ class EduQode_App_Auth {
             return new WP_Error( 'eduqode_unauthorized', 'Please log in to the app again.', array( 'status' => 401 ) );
         }
         wp_set_current_user( $user_id );
+        // Answers to the app (reasons, notifications, errors) in the student's language.
+        // The app says which language it shows ("ur" or "en"); otherwise the student's website language.
+        $app_lang = (string) $request->get_header( 'x_eduqode_lang' );
+        eqa_use_user_language( $user_id, 'ur' === $app_lang ? 'ur' : ( 'en' === $app_lang ? 'en_US' : null ) );
         return true;
     }
 }

@@ -1,5 +1,7 @@
 package com.eduqode.app.ui
 
+import com.eduqode.app.tr
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -56,6 +58,7 @@ class OfflineLibraryActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.action_sync -> { syncNow(); true }
                 R.id.action_certificates -> { startActivity(android.content.Intent(this, CertificatesActivity::class.java)); true }
+                R.id.action_language -> { Ui.chooseLanguage(this); true }
                 else -> false
             }
         }
@@ -113,11 +116,11 @@ class OfflineLibraryActivity : AppCompatActivity() {
             is Session.State.LoggedIn -> card.visibility = View.GONE
             is Session.State.NotLoggedIn -> {
                 card.visibility = View.VISIBLE; button.visibility = View.VISIBLE
-                text.text = "Log in to your EduQode account to download courses and use them offline."
+                text.text = tr("Log in to your EduQode account to download courses and use them offline.")
             }
             is Session.State.Offline -> {
                 card.visibility = View.VISIBLE; button.visibility = View.GONE
-                text.text = "You are offline. Connect to the internet once and log in to download courses."
+                text.text = tr("You are offline. Connect to the internet once and log in to download courses.")
             }
             is Session.State.Error -> {
                 card.visibility = View.VISIBLE; button.visibility = View.GONE
@@ -167,18 +170,18 @@ class OfflineLibraryActivity : AppCompatActivity() {
             visibility = if (avail.isEmpty()) View.VISIBLE else View.GONE
             text = when {
                 !loggedIn -> ""
-                !repo.isOnline() -> "Connect to the internet to see your other courses."
-                courses.isEmpty() -> "No enrolled courses found."
-                else -> "All your courses are downloaded."
+                !repo.isOnline() -> tr("Connect to the internet to see your other courses.")
+                courses.isEmpty() -> tr("No enrolled courses found.")
+                else -> tr("All your courses are downloaded.")
             }
         }
         findViewById<TextView>(R.id.storage_text).text =
-            "Offline files: ${OfflineLogic.formatBytes(storage.first)} · Free on phone: ${OfflineLogic.formatBytes(storage.second)} · ${down.size} course(s)"
+            tr("Offline files: %s · Free on phone: %s · %s course(s)", OfflineLogic.formatBytes(storage.first), OfflineLogic.formatBytes(storage.second), down.size)
         val pending = if (uid > 0) withContext(Dispatchers.IO) { repo.db.pendingEvents(uid).size } else 0
         findViewById<TextView>(R.id.sync_text).text = when {
             !loggedIn && repo.userName.isBlank() -> ""
-            pending > 0 -> "$pending progress update(s) waiting to sync" + if (!repo.isOnline()) " (will sync when you are online)" else ""
-            else -> "All progress synced" + (repo.auth.userName.takeIf { it.isNotBlank() }?.let { " · $it" } ?: "")
+            pending > 0 -> tr("%s progress update(s) waiting to sync", pending) + if (!repo.isOnline()) tr(" (will sync when you are online)") else ""
+            else -> tr("All progress synced") + (repo.auth.userName.takeIf { it.isNotBlank() }?.let { " · $it" } ?: "")
         }
         return down.any { it.state == CourseState.DOWNLOADING || it.state == CourseState.QUEUED }
     }
@@ -189,7 +192,7 @@ class OfflineLibraryActivity : AppCompatActivity() {
 
     private fun syncNow() {
         if (!repo.isOnline()) {
-            MaterialAlertDialogBuilder(this).setMessage("You are offline. Progress will sync automatically when you are back online.")
+            MaterialAlertDialogBuilder(this).setMessage(tr("You are offline. Progress will sync automatically when you are back online."))
                 .setPositiveButton(android.R.string.ok, null).show()
             return
         }
@@ -199,10 +202,10 @@ class OfflineLibraryActivity : AppCompatActivity() {
 
     private fun confirmRemove(c: Course) {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Remove download?")
-            .setMessage("This deletes the downloaded files of “${c.title}” from this phone only. Your enrollment and your progress on your account stay as they are.")
+            .setTitle(tr("Remove download?"))
+            .setMessage(tr("This deletes the downloaded files of “%s” from this phone only. Your enrollment and your progress on your account stay as they are.", c.title))
             .setNegativeButton(android.R.string.cancel, null)
-            .setPositiveButton("Remove") { _, _ ->
+            .setPositiveButton(tr("Remove")) { _, _ ->
                 lifecycleScope.launch { repo.removeDownload(c.id); sizesAt = 0; render() }
             }.show()
     }
@@ -210,9 +213,9 @@ class OfflineLibraryActivity : AppCompatActivity() {
     private fun openCourse(c: Course) {
         if (c.accessExpired) {
             MaterialAlertDialogBuilder(this)
-                .setTitle("Access ended")
-                .setMessage("Your access to this course has ended, so its offline copy is locked. The files stay on your phone until you remove them. If you renew your access, it unlocks automatically after the next sync.")
-                .setPositiveButton("Remove download") { _, _ -> confirmRemove(c) }
+                .setTitle(tr("Access ended"))
+                .setMessage(tr("Your access to this course has ended, so its offline copy is locked. The files stay on your phone until you remove them. If you renew your access, it unlocks automatically after the next sync."))
+                .setPositiveButton(tr("Remove download")) { _, _ -> confirmRemove(c) }
                 .setNegativeButton(android.R.string.cancel, null).show()
             return
         }
@@ -259,7 +262,7 @@ class OfflineLibraryActivity : AppCompatActivity() {
             h.title.text = c.title
             h.itemView.setOnClickListener(null)
             if (!downloadedList) {
-                h.line1.text = "${c.lessonCount} lessons · ${c.progress}% complete"
+                h.line1.text = tr("%s lessons · %s%% complete", c.lessonCount, c.progress)
                 h.line2.text = c.categories.joinToString(", ")
                 h.status.text = ""
                 h.progress.visibility = View.GONE
@@ -271,9 +274,9 @@ class OfflineLibraryActivity : AppCompatActivity() {
             }
 
             val x = extras[c.id] ?: Extra(0, 0, c.doneBytes, 0, 0)
-            h.line1.text = "${x.selected} of ${x.total} lessons downloaded · ${OfflineLogic.formatBytes(x.bytes)}" +
+            h.line1.text = tr("%s of %s lessons downloaded · %s", x.selected, x.total, OfflineLogic.formatBytes(x.bytes)) +
                 (if (c.downloadedAt > 0) " · ${Ui.date(this@OfflineLibraryActivity, c.downloadedAt)}" else "")
-            h.line2.text = "${c.progress}% complete · ${Ui.syncLabel(c)}"
+            h.line2.text = tr("%s%% complete", c.progress) + " · " + Ui.syncLabel(c)
             h.status.text = Ui.stateLabel(c)
             h.status.setTextColor(Ui.stateColor(this@OfflineLibraryActivity, c))
 
@@ -287,17 +290,17 @@ class OfflineLibraryActivity : AppCompatActivity() {
             }
 
             h.secondary2.visibility = View.VISIBLE
-            h.secondary2.text = "Remove"
+            h.secondary2.text = tr("Remove")
             h.secondary2.setOnClickListener { confirmRemove(c) }
             h.secondary.visibility = View.VISIBLE
             h.secondary.text = getString(R.string.sync_now)
             h.secondary.setOnClickListener { syncNow() }
             if (c.state == CourseState.DOWNLOADED || c.state == CourseState.FAILED) {
-                h.primary.text = "Open"
+                h.primary.text = tr("Open")
                 h.primary.setOnClickListener { openCourse(c) }
                 h.itemView.setOnClickListener { openCourse(c) }
             } else {
-                h.primary.text = "Details"
+                h.primary.text = tr("Details")
                 h.primary.setOnClickListener { openDownload(c) }
                 h.itemView.setOnClickListener { openDownload(c) }
             }

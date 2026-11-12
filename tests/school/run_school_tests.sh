@@ -111,6 +111,27 @@ has "student: own page with absence" "Absent 1" s_self.html
 get student2 "$(url "view=student&id=$S1")" > s_other.html
 has "student: classmate refused" "You do not have access" s_other.html
 
+# ---- Urdu for users who choose it ----
+code=$(curl -s -o /dev/null -w "%{http_code}" -b jar_student2 "$(url "eduqode_lang=ur")")
+check "language: switching to Urdu redirects back" "$code" "302"
+get student2 "$(url "view=student&id=$S2")" > s_ur.html
+has "language: School page in Urdu" "حاضری" s_ur.html
+has "language: right-to-left" 'dir="rtl"' s_ur.html
+has "language: Urdu font loaded" "Noto+Nastaliq+Urdu" s_ur.html
+DASH=$($WP eval 'echo tutor_utils()->tutor_dashboard_url();')
+get student2 "$DASH" > d_ur.html
+has "language: Tutor LMS dashboard in Urdu" "داخل شدہ کورسز" d_ur.html
+has "language: Tutor LMS page is right-to-left" '<html dir="rtl"' d_ur.html
+has "language: switch on the Tutor dashboard" "eduqode-lang" d_ur.html
+get parent1 "$(url "view=student&id=$S1")" > p_en.html
+has "language: other users stay in English" "Attendance <strong>" p_en.html
+hasnt "language: no RTL for English users" 'dir="rtl"' p_en.html
+curl -s -o /dev/null -b jar_student2 "$(url "eduqode_lang=en")"
+get student2 "$(url "view=student&id=$S2")" > s_en.html
+has "language: back to English" "Attendance <strong>" s_en.html
+get student2 "$DASH" > d_en.html
+hasnt "language: Tutor LMS back in English" '<html dir="rtl"' d_en.html
+
 # ---- admin pages render ----
 check "admin pages render without PHP notices" "$($WP eval 'wp_set_current_user(1); ob_start(); $_GET=[]; EQS_Admin::page_groups(); $_GET["group"]='$SEC'; EQS_Admin::page_groups(); EQS_Admin::page_parents(); EQS_Admin::page_terms(); $h=ob_get_clean(); echo (strpos($h,"Computer Science")!==false && strpos($h,"Ali Father")!==false && strpos($h,"Term 1")!==false) ? "ok" : "missing";' 2>&1 | tail -1)" "ok"
 

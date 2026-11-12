@@ -29,7 +29,17 @@ class EduQode_App_Notifications {
         );
     }
 
-    public static function since( $user_id, $since_ms ) {
+    public static function since( $user_id, $since_ms, $switch_language = true ) {
+        // In the student's own language (Urdu or English). The app's requests are switched already.
+        $switched = $switch_language && eqa_use_user_language( $user_id );
+        $out      = self::collect( $user_id, $since_ms );
+        if ( $switched ) {
+            eqa_restore_language();
+        }
+        return $out;
+    }
+
+    private static function collect( $user_id, $since_ms ) {
         global $wpdb;
         $now     = time();
         // At most 14 days back, so a phone that was off for months does not get a flood.
@@ -64,8 +74,8 @@ class EduQode_App_Notifications {
             if ( EduQode_App_Courses::is_drip_locked( (int) $r->ID ) ) {
                 continue;
             }
-            $kind  = 'tutor_quiz' === $r->post_type ? 'quiz' : ( 'tutor_assignments' === $r->post_type ? 'assignment' : 'lesson' );
-            $out[] = self::item( 'new-' . $r->ID, 'new_content', 'New ' . $kind . ': ' . $r->post_title, $title( $r->course_id ),
+            $fmt   = 'tutor_quiz' === $r->post_type ? eqa__( 'New quiz: %s' ) : ( 'tutor_assignments' === $r->post_type ? eqa__( 'New assignment: %s' ) : eqa__( 'New lesson: %s' ) );
+            $out[] = self::item( 'new-' . $r->ID, 'new_content', sprintf( $fmt, $r->post_title ), $title( $r->course_id ),
                 $r->course_id, get_permalink( $r->ID ), strtotime( $r->post_date_gmt . ' UTC' ) );
         }
 
@@ -95,8 +105,8 @@ class EduQode_App_Notifications {
             }
             $mark  = get_comment_meta( $r->comment_ID, 'assignment_mark', true );
             $total = tutor_utils()->get_assignment_option( $r->comment_post_ID, 'total_mark', 0 );
-            $out[] = self::item( 'graded-' . $r->comment_ID . '-' . $t, 'assignment_graded', 'Assignment graded: ' . $title( $r->comment_post_ID ),
-                '' !== $mark ? sprintf( 'You got %s out of %s.', $mark, $total ) : 'Your teacher checked your work.',
+            $out[] = self::item( 'graded-' . $r->comment_ID . '-' . $t, 'assignment_graded', sprintf( eqa__( 'Assignment graded: %s' ), $title( $r->comment_post_ID ) ),
+                '' !== $mark ? sprintf( eqa__( 'You got %s out of %s.' ), $mark, $total ) : eqa__( 'Your teacher checked your work.' ),
                 $r->comment_parent, get_permalink( $r->comment_post_ID ), $t );
         }
 
@@ -107,8 +117,8 @@ class EduQode_App_Notifications {
             $user_id, gmdate( 'Y-m-d H:i:s', $since + ( (int) tutor_time() - $now ) )
         ) );
         foreach ( (array) $rows as $r ) {
-            $out[] = self::item( 'review-' . $r->attempt_id . '-' . strtotime( $r->manually_reviewed_at ), 'quiz_reviewed', 'Quiz checked: ' . $title( $r->quiz_id ),
-                sprintf( 'Your result: %s out of %s.', 0 + $r->earned_marks, 0 + $r->total_marks ), $r->course_id, get_permalink( $r->quiz_id ),
+            $out[] = self::item( 'review-' . $r->attempt_id . '-' . strtotime( $r->manually_reviewed_at ), 'quiz_reviewed', sprintf( eqa__( 'Quiz checked: %s' ), $title( $r->quiz_id ) ),
+                sprintf( eqa__( 'Your result: %s out of %s.' ), 0 + $r->earned_marks, 0 + $r->total_marks ), $r->course_id, get_permalink( $r->quiz_id ),
                 strtotime( $r->manually_reviewed_at ) - ( (int) tutor_time() - $now ) );
         }
 
@@ -125,8 +135,8 @@ class EduQode_App_Notifications {
                 $deadline = self::deadline( (int) $r->ID, $user_id, (int) $r->course_id );
                 if ( $deadline && $deadline > $now && $deadline - $now <= DAY_IN_SECONDS ) {
                     $hours = max( 1, (int) round( ( $deadline - $now ) / HOUR_IN_SECONDS ) );
-                    $out[] = self::item( 'deadline-' . $r->ID . '-' . $deadline, 'deadline', 'Due soon: ' . $title( $r->ID ),
-                        sprintf( 'Submit within %d hour(s).', $hours ), $r->course_id, get_permalink( $r->ID ), $now );
+                    $out[] = self::item( 'deadline-' . $r->ID . '-' . $deadline, 'deadline', sprintf( eqa__( 'Due soon: %s' ), $title( $r->ID ) ),
+                        sprintf( eqa__( 'Submit within %d hour(s).' ), $hours ), $r->course_id, get_permalink( $r->ID ), $now );
                 }
             }
         }
@@ -162,11 +172,11 @@ class EduQode_App_Notifications {
 
     public static function rest( WP_REST_Request $request ) {
         if ( ! eduqode_app_tutor_ready() ) {
-            return new WP_Error( 'eduqode_no_tutor', 'Tutor LMS is not active.', array( 'status' => 503 ) );
+            return new WP_Error( 'eduqode_no_tutor', eqa__( 'Tutor LMS is not active.' ), array( 'status' => 503 ) );
         }
         return array(
             'server_time'   => time() * 1000,
-            'notifications' => self::since( get_current_user_id(), (int) $request->get_param( 'since' ) ),
+            'notifications' => self::since( get_current_user_id(), (int) $request->get_param( 'since' ), false ),
         );
     }
 }

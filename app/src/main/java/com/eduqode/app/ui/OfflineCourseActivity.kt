@@ -1,5 +1,7 @@
 package com.eduqode.app.ui
 
+import com.eduqode.app.tr
+
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
@@ -53,12 +55,12 @@ class OfflineCourseActivity : AppCompatActivity() {
                         lifecycleScope.launch {
                             val checked = repo.updateDownloadedCourse(courseId, force = true)
                             android.widget.Toast.makeText(this@OfflineCourseActivity,
-                                if (checked) "Synced and checked for course updates" else "Progress synced", android.widget.Toast.LENGTH_SHORT).show()
+                                if (checked) tr("Synced and checked for course updates") else tr("Progress synced"), android.widget.Toast.LENGTH_SHORT).show()
                             render()
                         }
                     }
                     else MaterialAlertDialogBuilder(this@OfflineCourseActivity)
-                        .setMessage("You are offline. Your progress is saved on this phone and will sync automatically when you are online.")
+                        .setMessage(tr("You are offline. Your progress is saved on this phone and will sync automatically when you are online."))
                         .setPositiveButton(android.R.string.ok, null).show()
                     true
                 } else false
@@ -89,8 +91,8 @@ class OfflineCourseActivity : AppCompatActivity() {
             if (expiredShown) return
             expiredShown = true
             MaterialAlertDialogBuilder(this)
-                .setTitle("Access ended")
-                .setMessage("Your access to this course has ended, so the offline copy is locked. It unlocks again after the next sync if your access is renewed.")
+                .setTitle(tr("Access ended"))
+                .setMessage(tr("Your access to this course has ended, so the offline copy is locked. It unlocks again after the next sync if your access is renewed."))
                 .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
                 .setCancelable(false).show()
             return
@@ -108,13 +110,13 @@ class OfflineCourseActivity : AppCompatActivity() {
         val items = lessons.filter { it.isLesson || it.type == "quiz" || it.isAssignment }
         val doneIds = rows.filter { it.done }.map { it.lesson.id }.toSet()
         val done = items.count { it.id in doneIds }
-        findViewById<TextView>(R.id.progress_text).text = "$done of ${items.size} lessons, quizzes and assignments done"
+        findViewById<TextView>(R.id.progress_text).text = tr("%s of %s lessons, quizzes and assignments done", done, items.size)
         findViewById<LinearProgressIndicator>(R.id.progress)
             .setProgressCompat(if (items.isEmpty()) 0 else done * 100 / items.size, false)
         val pending = withContext(Dispatchers.IO) { repo.db.pendingCount(uid, courseId) }
         findViewById<TextView>(R.id.sync_text).text = when {
-            pending > 0 && !repo.isOnline() -> "Pending sync · $pending update(s) saved on this phone, will sync when online"
-            pending > 0 -> "Pending sync · $pending update(s)"
+            pending > 0 && !repo.isOnline() -> tr("Pending sync · %s update(s) saved on this phone, will sync when online", pending)
+            pending > 0 -> tr("Pending sync · %s update(s)", pending)
             else -> Ui.syncLabel(c)
         }
 
@@ -123,8 +125,8 @@ class OfflineCourseActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btn_continue).apply {
             text = when {
                 next == null -> "No lessons"
-                c.lastLessonId == next.id -> "Continue: ${next.title}"
-                else -> "Start: ${next.title}"
+                c.lastLessonId == next.id -> tr("Continue: %s", next.title)
+                else -> tr("Start: %s", next.title)
             }
             isEnabled = next != null
             setOnClickListener { next?.let { open(it) } }
@@ -146,8 +148,8 @@ class OfflineCourseActivity : AppCompatActivity() {
             // Quizzes stay online so answers are never stored in the app.
             if (repo.isOnline()) Ui.openWebsite(this, l.permalink)
             else MaterialAlertDialogBuilder(this)
-                .setTitle("Online only")
-                .setMessage("Quizzes need an internet connection. Connect and tap the quiz again.")
+                .setTitle(tr("Online only"))
+                .setMessage(tr("Quizzes need an internet connection. Connect and tap the quiz again."))
                 .setPositiveButton(android.R.string.ok, null).show()
             return
         }

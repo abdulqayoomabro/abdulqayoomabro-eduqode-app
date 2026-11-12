@@ -285,6 +285,14 @@ check "h5p quiz: H5P result linked to the attempt" "$($WPC eval 'global $wpdb; e
 $WPR eval '$o = get_option("tutor_option", []); $o["disable_complete_lesson_button"] = 0; update_option("tutor_option", $o);' >/dev/null
 fi
 
+# Urdu: the app sets the student's language; answers to the app come in Urdu.
+check "language: app sets Urdu" "$(api -X POST -H "Content-Type: application/json" -d '{"language":"ur"}' "$B/?rest_route=/eduqode/v1/me/language" | python3 -c "import json,sys;print(json.load(sys.stdin)['locale'])")" "ur"
+check "language: online-only reason in Urdu" "$(api "$B/?rest_route=/eduqode/v1/courses/$C/package" | python3 -c "import json,sys;p=json.load(sys.stdin);print([i for t in p['topics'] for i in t['items'] if i['id']==$QUIZ4][0]['online_reason'])")" "ایک H5P سوال آف لائن استعمال کے لیے تیار نہیں ہو سکا۔"
+check "language: /me reports Urdu" "$(api "$B/?rest_route=/eduqode/v1/me" | python3 -c "import json,sys;print(json.load(sys.stdin)['locale'])")" "ur"
+api -X POST -H "Content-Type: application/json" -d '{"language":"en"}' -o /dev/null "$B/?rest_route=/eduqode/v1/me/language"
+check "language: app header X-EduQode-Lang ur wins" "$(api -H "X-EduQode-Lang: ur" "$B/?rest_route=/eduqode/v1/courses/$C/package" | python3 -c "import json,sys;p=json.load(sys.stdin);print([i for t in p['topics'] for i in t['items'] if i['id']==$QUIZ4][0]['online_reason'])")" "ایک H5P سوال آف لائن استعمال کے لیے تیار نہیں ہو سکا۔"
+check "language: back to English" "$(api "$B/?rest_route=/eduqode/v1/courses/$C/package" | python3 -c "import json,sys;p=json.load(sys.stdin);print([i for t in p['topics'] for i in t['items'] if i['id']==$QUIZ4][0]['online_reason'])")" "An H5P question could not be prepared for offline use."
+
 # Speed optimizers (SiteGround) must leave Tutor's scripts alone
 check "optimizer: Tutor scripts excluded from SiteGround minify/combine" "$($WPC eval 'do_action("wp_enqueue_scripts"); $h = apply_filters("sgo_js_minify_exclude", array("x")); $c = apply_filters("sgo_javascript_combine_exclude", array()); $t = array_filter($h, function($x){ return 0 === strpos($x, "tutor"); }); echo (in_array("x", $h) && count($t) > 0 && count(array_intersect($t, $c)) === count($t)) ? "yes" : "no";' 2>/dev/null)" "yes"
 

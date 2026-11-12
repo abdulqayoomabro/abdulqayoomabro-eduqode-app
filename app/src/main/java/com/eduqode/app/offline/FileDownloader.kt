@@ -1,5 +1,7 @@
 package com.eduqode.app.offline
 
+import com.eduqode.app.tr
+
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -49,10 +51,10 @@ class FileDownloader(private val userAgent: String) {
                         return save(part, target)
                     }
                     part.delete()
-                    throw IOException("Range not satisfiable, starting again")
+                    throw IOException(tr("Range not satisfiable, starting again"))
                 }
-                code in 500..599 || code == 429 || code == 408 -> throw IOException("Server busy ($code)")
-                code !in 200..299 -> return Outcome.Failed("Server answered $code")
+                code in 500..599 || code == 429 || code == 408 -> throw IOException(tr("Server busy (%s)", code))
+                code !in 200..299 -> return Outcome.Failed(tr("Server answered %s", code))
             }
 
             // A web page instead of a file: wrong link, file not shared publicly, or (Google Drive)
@@ -60,8 +62,8 @@ class FileDownloader(private val userAgent: String) {
             val wantsHtml = target.name.lowercase().let { it.endsWith(".html") || it.endsWith(".htm") }
             if (!wantsHtml && conn.contentType?.lowercase()?.startsWith("text/html") == true) {
                 return Outcome.Failed(
-                    if (url.contains("google.com")) "Google Drive did not send the file. Check it is shared with “Anyone with the link”, or try again tomorrow (Drive download limit)."
-                    else "The link opens a web page, not a file."
+                    if (url.contains("google.com")) tr("Google Drive did not send the file. Check it is shared with “Anyone with the link”, or try again tomorrow (Drive download limit).")
+                    else tr("The link opens a web page, not a file.")
                 )
             }
 
@@ -93,7 +95,7 @@ class FileDownloader(private val userAgent: String) {
             // Integrity: exactly as many bytes as the server announced.
             if (total > 0 && part.length() != total) {
                 if (part.length() > total) part.delete()
-                throw IOException("Incomplete file (${part.length()} of $total bytes)")
+                throw IOException(tr("Incomplete file (%s of %s bytes)", part.length(), total))
             }
             return save(part, target)
         } finally {
@@ -103,6 +105,6 @@ class FileDownloader(private val userAgent: String) {
 
     private fun save(part: File, target: File): Outcome {
         if (target.exists()) target.delete()
-        return if (part.renameTo(target)) Outcome.Done(target.length()) else Outcome.Failed("Could not save the file")
+        return if (part.renameTo(target)) Outcome.Done(target.length()) else Outcome.Failed(tr("Could not save the file"))
     }
 }

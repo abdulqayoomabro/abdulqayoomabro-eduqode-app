@@ -1,5 +1,7 @@
 package com.eduqode.app.offline
 
+import com.eduqode.app.tr
+
 import android.content.Context
 import android.os.Build
 import com.eduqode.app.BuildConfig
@@ -34,6 +36,8 @@ class ApiClient(context: Context) {
             useCaches = false
             setRequestProperty("User-Agent", USER_AGENT)
             setRequestProperty("Accept", "application/json")
+            // Answers (reasons, notifications, errors) in the app's language.
+            setRequestProperty("X-EduQode-Lang", com.eduqode.app.I18n.language)
         }
 
     private fun read(conn: HttpURLConnection): JSONObject {
@@ -42,17 +46,17 @@ class ApiClient(context: Context) {
         val text = stream?.bufferedReader()?.use { it.readText() } ?: ""
         if (code !in 200..299) {
             val msg = runCatching { JSONObject(text).optString("message") }.getOrNull()
-                ?.takeIf { it.isNotBlank() } ?: "Server error $code"
+                ?.takeIf { it.isNotBlank() } ?: tr("Server error %s", code)
             throw ApiException(code, msg)
         }
         return runCatching { JSONObject(text) }.getOrElse {
             // An HTML page instead of JSON usually means the plugin is not installed or a cache served a page.
-            throw ApiException(404, "The EduQode App Connector plugin is not answering on the website.")
+            throw ApiException(404, tr("The EduQode App Connector plugin is not answering on the website."))
         }
     }
 
     private fun call(path: String, method: String = "GET", body: JSONObject? = null): JSONObject {
-        val token = auth.token ?: throw ApiException(401, "Please log in.")
+        val token = auth.token ?: throw ApiException(401, tr("Please log in."))
         val conn = open("$REST$path&_=${System.currentTimeMillis()}", method)
         try {
             conn.setRequestProperty("X-EduQode-Token", token)
@@ -103,6 +107,9 @@ class ApiClient(context: Context) {
     }
 
     fun me(): JSONObject = call("/me")
+
+    /** The app's language choice also becomes the website's language for this student ("en" or "ur"). */
+    fun setLanguage(language: String): JSONObject = call("/me/language", "POST", JSONObject().put("language", language))
     fun courses(): List<EnrolledCourse> = JsonParsers.enrolledCourses(call("/courses"))
     fun coursePackage(courseId: Long): CoursePackage = JsonParsers.coursePackage(call("/courses/$courseId/package"))
     fun sync(body: JSONObject): JsonParsers.SyncResponse = JsonParsers.syncResponse(call("/sync", "POST", body))
@@ -113,7 +120,7 @@ class ApiClient(context: Context) {
      * The submission id makes a retry safe: the website never stores it twice.
      */
     fun submitAssignment(s: Submission): JSONObject {
-        val token = auth.token ?: throw ApiException(401, "Please log in.")
+        val token = auth.token ?: throw ApiException(401, tr("Please log in."))
         val boundary = "----EduQode" + java.util.UUID.randomUUID().toString().replace("-", "")
         val conn = open("$REST/assignments/${s.assignmentId}/submit&_=${System.currentTimeMillis()}", "POST")
         try {

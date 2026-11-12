@@ -69,12 +69,12 @@ class EduQode_App_Quiz {
     /** Null when the quiz cannot be taken offline (with the reason in $reason). */
     public static function package( $quiz_id, $user_id, &$reason, &$images, &$h5p_libraries = array() ) {
         if ( ! self::tutor_supports_offline() ) {
-            $reason = 'This Tutor LMS version cannot record offline quiz attempts.';
+            $reason = eqa__( 'This Tutor LMS version cannot record offline quiz attempts.' );
             return null;
         }
         $questions = self::questions( $quiz_id );
         if ( ! $questions ) {
-            $reason = 'No questions.';
+            $reason = eqa__( 'No questions.' );
             return null;
         }
         $out   = array();
@@ -82,11 +82,11 @@ class EduQode_App_Quiz {
         if ( in_array( 'h5p', $types, true ) ) {
             // Tutor LMS Pro grades H5P quizzes only when every question is H5P.
             if ( count( $types ) > 1 ) {
-                $reason = 'Mixes H5P and other question types (needs the website).';
+                $reason = eqa__( 'Mixes H5P and other question types (needs the website).' );
                 return null;
             }
             if ( ! EduQode_App_H5P::available() || ! EduQode_App_H5P::tutor_addon_active() ) {
-                $reason = 'H5P quizzes need the H5P plugin and Tutor LMS Pro\'s H5P addon.';
+                $reason = eqa__( 'H5P quizzes need the H5P plugin and Tutor LMS Pro\'s H5P addon.' );
                 return null;
             }
         }
@@ -95,7 +95,7 @@ class EduQode_App_Quiz {
             if ( 'h5p' === $q->question_type ) {
                 $content = EduQode_App_H5P::content( EduQode_App_H5P::question_content_id( $q ), $h5p_libraries );
                 if ( ! $content ) {
-                    $reason = 'An H5P question could not be prepared for offline use.';
+                    $reason = eqa__( 'An H5P question could not be prepared for offline use.' );
                     return null;
                 }
                 $out[] = array(
@@ -113,7 +113,7 @@ class EduQode_App_Quiz {
                 continue;
             }
             if ( ! in_array( $q->question_type, self::OFFLINE_TYPES, true ) ) {
-                $reason = 'Has question types that need the website (' . $q->question_type . ').';
+                $reason = sprintf( eqa__( 'Has question types that need the website (%s).' ), $q->question_type );
                 return null;
             }
             $answers = array();

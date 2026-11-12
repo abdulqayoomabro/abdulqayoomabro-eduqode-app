@@ -65,14 +65,14 @@ class EduQode_App_Assignments {
         $answer        = wp_kses_post( (string) $request->get_param( 'answer' ) );
 
         if ( ! self::available() ) {
-            return self::error( 'unsupported', 'Assignments need Tutor LMS Pro\'s Assignments addon on the website.', 503 );
+            return self::error( 'unsupported', eqa__( 'Assignments need Tutor LMS Pro\'s Assignments addon on the website.' ), 503 );
         }
         if ( 'tutor_assignments' !== get_post_type( $assignment_id ) || 'publish' !== get_post_status( $assignment_id ) ) {
-            return self::error( 'not_found', 'Assignment not found.', 404 );
+            return self::error( 'not_found', eqa__( 'Assignment not found.' ), 404 );
         }
         $course_id = (int) tutor_utils()->get_course_id_by( 'assignment', $assignment_id );
         if ( ! EduQode_App_Courses::can_access( $course_id, $user_id ) ) {
-            return self::error( 'no_access', 'You are not enrolled in this course.', 403 );
+            return self::error( 'no_access', eqa__( 'You are not enrolled in this course.' ), 403 );
         }
         if ( strlen( $client_id ) < 8 ) {
             return self::error( 'bad_request', 'Missing client_id.' );
@@ -83,7 +83,7 @@ class EduQode_App_Assignments {
         }
         // A retry of a submission that did not finish continues the same record.
         if ( in_array( trim( $answer ), array( '', '<p>&nbsp;</p>', '<p></p>' ), true ) ) {
-            return self::error( 'empty', 'The answer is empty.' );
+            return self::error( 'empty', eqa__( 'The answer is empty.' ) );
         }
 
         $opt        = self::options( $assignment_id );
@@ -92,10 +92,10 @@ class EduQode_App_Assignments {
             // Same limits as Tutor LMS Pro's "Start assignment".
             $attempts = self::attempts( $assignment_id, $user_id );
             if ( $opt['retry'] && $attempts > $opt['attempts'] ) {
-                return self::error( 'attempts_exceeded', 'No submissions left for this assignment.', 409 );
+                return self::error( 'attempts_exceeded', eqa__( 'No submissions left for this assignment.' ), 409 );
             }
             if ( ! $opt['retry'] && $attempts ) {
-                return self::error( 'already_submitted', 'This assignment was already submitted.', 409 );
+                return self::error( 'already_submitted', eqa__( 'This assignment was already submitted.' ), 409 );
             }
         }
 
@@ -104,14 +104,14 @@ class EduQode_App_Assignments {
         if ( $files && is_array( $files['name'] ) ) {
             $count = count( array_filter( $files['name'] ) );
             if ( $opt['max_files'] <= 0 && $count ) {
-                return self::error( 'files_not_allowed', 'This assignment does not take files.' );
+                return self::error( 'files_not_allowed', eqa__( 'This assignment does not take files.' ) );
             }
             if ( $count > $opt['max_files'] ) {
-                return self::error( 'too_many_files', sprintf( 'At most %d file(s).', $opt['max_files'] ) );
+                return self::error( 'too_many_files', sprintf( eqa__( 'At most %d file(s).' ), $opt['max_files'] ) );
             }
             foreach ( $files['size'] as $i => $size ) {
                 if ( round( $size / ( 1024 * 1024 ) ) > $opt['max_file_mb'] || UPLOAD_ERR_OK !== (int) $files['error'][ $i ] ) {
-                    return self::error( 'file_too_big', sprintf( 'Each file can be at most %d MB.', $opt['max_file_mb'] ) );
+                    return self::error( 'file_too_big', sprintf( eqa__( 'Each file can be at most %d MB.' ), $opt['max_file_mb'] ) );
                 }
             }
         }
@@ -137,10 +137,10 @@ class EduQode_App_Assignments {
             do_action( 'tutor_after_assignment_submit_start', $submitting );
         }
         if ( ! $submitting ) {
-            return self::error( 'could_not_start', 'Could not start the assignment.', 500 );
+            return self::error( 'could_not_start', eqa__( 'Could not start the assignment.' ), 500 );
         }
         if ( \TUTOR_ASSIGNMENTS\Assignments::is_assignment_expired( $assignment_id, $user_id, $course_id ) ) {
-            return self::error( 'expired', 'The time for this assignment is over.', 409 );
+            return self::error( 'expired', eqa__( 'The time for this assignment is over.' ), 409 );
         }
         // Mark it before submitting: if the connection drops now, a retry is not submitted twice.
         update_comment_meta( $submitting, self::CLIENT_META, $client_id );

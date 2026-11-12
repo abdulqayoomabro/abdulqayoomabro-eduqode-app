@@ -1,5 +1,7 @@
 package com.eduqode.app.ui
 
+import com.eduqode.app.tr
+
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -47,7 +49,7 @@ import java.io.File
 
 /**
  * One lesson, offline: downloaded video (with seek, pause and resume position), lesson text with
- * images, PDFs and other resources, previous/next, and "Mark as complete" (saved on the phone, synced later).
+ * images, PDFs and other resources, previous/next, and tr("Mark as complete") (saved on the phone, synced later).
  */
 @OptIn(UnstableApi::class)
 class LessonActivity : AppCompatActivity() {
@@ -99,6 +101,9 @@ class LessonActivity : AppCompatActivity() {
     private fun setupContentView() {
         val loader = WebViewAssetLoader.Builder()
             .setDomain(ASSET_HOST)
+            .addPathHandler("/assets/fonts/", WebViewAssetLoader.AssetsPathHandler(this).let { h ->
+                WebViewAssetLoader.PathHandler { path -> h.handle("fonts/$path") }
+            })
             .addPathHandler("/offline/", WebViewAssetLoader.InternalStoragePathHandler(this, repo.userDir()))
             .build()
         findViewById<WebView>(R.id.content).apply {
@@ -115,7 +120,7 @@ class LessonActivity : AppCompatActivity() {
                     val url = request.url
                     if (url.host == ASSET_HOST) return false
                     if (!repo.isOnline()) {
-                        Toast.makeText(this@LessonActivity, "This link needs an internet connection.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LessonActivity, tr("This link needs an internet connection."), Toast.LENGTH_SHORT).show()
                     } else if (url.host == Uri.parse(com.eduqode.app.offline.ApiClient.SITE).host) {
                         Ui.openWebsite(this@LessonActivity, url.toString())
                     } else {
@@ -148,7 +153,7 @@ class LessonActivity : AppCompatActivity() {
         if (l.isLesson) repo.recordLessonOpened(courseId, l.id)
 
         if (repo.lessonFile(courseId, l.id).exists()) loadPage("lesson_${l.id}.html")
-        else findViewById<WebView>(R.id.content).loadDataWithBaseURL(null, "<p style='padding:16px;font-family:sans-serif'>This lesson has no text.</p>", "text/html", "utf-8", null)
+        else findViewById<WebView>(R.id.content).loadDataWithBaseURL(null, "<p style='padding:16px;font-family:sans-serif'>" + tr("This lesson has no text.") + "</p>", "text/html", "utf-8", null)
 
         setupVideo(l)
         setupAttachments(l)
@@ -167,14 +172,14 @@ class LessonActivity : AppCompatActivity() {
         val done = repo.h5pDone(l.id)
         val files = repo.db.files(repo.userId, courseId)
         findViewById<TextView>(R.id.h5p_label).text =
-            "Interactive exercises · ${l.h5p.count { it.id in done }}/${l.h5p.count { it.offline }} done" +
-                if (repo.h5pBlocksCompletion(l)) " · finish them to complete the lesson" else ""
+            tr("Interactive exercises · %s/%s done", l.h5p.count { it.id in done }, l.h5p.count { it.offline }) +
+                if (repo.h5pBlocksCompletion(l)) tr(" · finish them to complete the lesson") else ""
         l.h5p.forEachIndexed { i, item ->
-            val name = item.title.ifBlank { "Exercise ${i + 1}" }
+            val name = item.title.ifBlank { tr("Exercise %s", i + 1) }
             val score = done[item.id]
             group.addView(Chip(this).apply {
                 text = when {
-                    !item.offline -> "$name (website)"
+                    !item.offline -> tr("%s (website)", name)
                     score != null -> "✓ $name · ${n(score.first)}/${n(score.second)}"
                     else -> "▶ $name"
                 }
@@ -189,8 +194,8 @@ class LessonActivity : AppCompatActivity() {
         if (!offline || !repo.h5pReady(courseId, contentId, files)) {
             when {
                 repo.isOnline() -> Ui.openWebsite(this, l.permalink)
-                offline -> Toast.makeText(this, "This exercise is still downloading. Connect to the internet to finish the download.", Toast.LENGTH_LONG).show()
-                else -> Toast.makeText(this, "This exercise needs the website. Connect to the internet to open it.", Toast.LENGTH_LONG).show()
+                offline -> Toast.makeText(this, tr("This exercise is still downloading. Connect to the internet to finish the download."), Toast.LENGTH_LONG).show()
+                else -> Toast.makeText(this, tr("This exercise needs the website. Connect to the internet to open it."), Toast.LENGTH_LONG).show()
             }
             return
         }
@@ -231,8 +236,8 @@ class LessonActivity : AppCompatActivity() {
                     if (state == Player.STATE_ENDED) {
                         savePosition(sendNow = true)
                         if (lesson?.completedAt == 0L) {
-                            Snackbar.make(findViewById(R.id.root), "Video finished", Snackbar.LENGTH_LONG)
-                                .setAction("Mark complete") { markComplete() }.show()
+                            Snackbar.make(findViewById(R.id.root), tr("Video finished"), Snackbar.LENGTH_LONG)
+                                .setAction(tr("Mark complete")) { markComplete() }.show()
                         }
                     }
                 }
@@ -243,7 +248,7 @@ class LessonActivity : AppCompatActivity() {
                     if (player?.isPlaying == true) savePosition(sendNow = false)
                 }
             }
-            if (local == null) Toast.makeText(this, "Streaming: this video is not downloaded yet.", Toast.LENGTH_SHORT).show()
+            if (local == null) Toast.makeText(this, tr("Streaming: this video is not downloaded yet."), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -251,10 +256,10 @@ class LessonActivity : AppCompatActivity() {
             onlineOnly.visibility = View.VISIBLE
             val provider = VideoProviders.label(l.videoOnlineProvider)
             findViewById<TextView>(R.id.online_only_text).text =
-                if (l.videoOfflineUrl.isNotEmpty()) "Video not downloaded yet" else "Online Only — Internet Required"
+                if (l.videoOfflineUrl.isNotEmpty()) tr("Video not downloaded yet") else tr("Online Only — Internet Required")
             findViewById<TextView>(R.id.online_only_sub).text = when {
-                l.videoOfflineUrl.isNotEmpty() -> "Open the course's download screen and tap “Download new content” while online."
-                else -> "This video is on $provider and can only be watched with internet. The rest of this lesson is available offline."
+                l.videoOfflineUrl.isNotEmpty() -> tr("Open the course's download screen and tap “Download new content” while online.")
+                else -> tr("This video is on %s and can only be watched with internet. The rest of this lesson is available offline.", provider)
             }
             findViewById<MaterialButton>(R.id.btn_watch_online).apply {
                 isEnabled = repo.isOnline()
@@ -305,7 +310,7 @@ class LessonActivity : AppCompatActivity() {
         l.attachments.forEach { a ->
             val local = repo.localFile(courseId, a.url)
             group.addView(Chip(this).apply {
-                text = (if (isPdf(a)) "PDF · " else "") + a.name + if (local == null) " (online)" else ""
+                text = (if (isPdf(a)) "PDF · " else "") + a.name + if (local == null) tr(" (online)") else ""
                 setOnClickListener { openAttachment(a, local) }
             })
         }
@@ -316,7 +321,7 @@ class LessonActivity : AppCompatActivity() {
     private fun openAttachment(a: Attachment, local: File?) {
         if (local == null) {
             if (repo.isOnline()) runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(a.url))) }
-            else Toast.makeText(this, "This file is not downloaded. Connect to the internet to open it.", Toast.LENGTH_LONG).show()
+            else Toast.makeText(this, tr("This file is not downloaded. Connect to the internet to open it."), Toast.LENGTH_LONG).show()
             return
         }
         if (isPdf(a)) {
@@ -330,7 +335,7 @@ class LessonActivity : AppCompatActivity() {
         try {
             startActivity(view)
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this, "No app on this phone can open this file.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, tr("No app on this phone can open this file."), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -359,10 +364,10 @@ class LessonActivity : AppCompatActivity() {
             val sub = repo.latestSubmission(l.id)
             findViewById<MaterialButton>(R.id.btn_complete).apply {
                 text = when (sub?.state) {
-                    com.eduqode.app.offline.SubmissionState.SUBMITTED -> "Submitted ✓"
-                    com.eduqode.app.offline.SubmissionState.PENDING -> "Submitted · waiting to send"
-                    com.eduqode.app.offline.SubmissionState.REJECTED -> "Not sent · fix and submit"
-                    else -> if (l.completedAt > 0) "Submitted ✓ · submit again" else "Write your answer"
+                    com.eduqode.app.offline.SubmissionState.SUBMITTED -> tr("Submitted ✓")
+                    com.eduqode.app.offline.SubmissionState.PENDING -> tr("Submitted · waiting to send")
+                    com.eduqode.app.offline.SubmissionState.REJECTED -> tr("Not sent · fix and submit")
+                    else -> if (l.completedAt > 0) tr("Submitted ✓ · submit again") else tr("Write your answer")
                 }
                 isEnabled = true
                 setOnClickListener {
@@ -375,7 +380,7 @@ class LessonActivity : AppCompatActivity() {
         if (l != null && l.isAssignment) {
             // Assignments are submitted on the website (answers and files go to the teacher there).
             findViewById<MaterialButton>(R.id.btn_complete).apply {
-                text = if (l.completedAt > 0) "Submitted ✓ · open on website" else "Submit on the website"
+                text = if (l.completedAt > 0) tr("Submitted ✓ · open on website") else tr("Submit on the website")
                 isEnabled = repo.isOnline()
                 setOnClickListener { Ui.openWebsite(this@LessonActivity, l.permalink) }
             }
@@ -385,9 +390,9 @@ class LessonActivity : AppCompatActivity() {
         val blocked = !done && lesson?.let { repo.h5pBlocksCompletion(it) } == true
         findViewById<MaterialButton>(R.id.btn_complete).apply {
             text = when {
-                done -> "Completed ✓"
-                blocked -> "Finish exercises first"
-                else -> "Mark as complete"
+                done -> tr("Completed ✓")
+                blocked -> tr("Finish exercises first")
+                else -> tr("Mark as complete")
             }
             isEnabled = !done && !blocked
             setOnClickListener { markComplete() }
@@ -398,13 +403,13 @@ class LessonActivity : AppCompatActivity() {
         val l = lesson ?: return
         if (l.completedAt > 0) return
         if (repo.h5pBlocksCompletion(l)) {
-            Snackbar.make(findViewById(R.id.root), "Finish the interactive exercises of this lesson first.", Snackbar.LENGTH_LONG).show()
+            Snackbar.make(findViewById(R.id.root), tr("Finish the interactive exercises of this lesson first."), Snackbar.LENGTH_LONG).show()
             return
         }
         repo.markLessonComplete(courseId, l.id)
         lesson = repo.db.lesson(repo.userId, l.id)
         updateCompleteButton()
-        val msg = if (repo.isOnline()) "Lesson completed. Saving to your account…" else "Lesson completed. Saved on this phone; it will sync when you are online."
+        val msg = if (repo.isOnline()) tr("Lesson completed. Saving to your account…") else tr("Lesson completed. Saved on this phone; it will sync when you are online.")
         Snackbar.make(findViewById(R.id.root), msg, Snackbar.LENGTH_SHORT).show()
     }
 

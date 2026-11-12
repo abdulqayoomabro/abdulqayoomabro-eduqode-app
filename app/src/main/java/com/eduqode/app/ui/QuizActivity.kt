@@ -1,5 +1,7 @@
 package com.eduqode.app.ui
 
+import com.eduqode.app.tr
+
 import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.os.Bundle
@@ -107,10 +109,10 @@ class QuizActivity : AppCompatActivity() {
             override fun handleOnBackPressed() {
                 if (!inProgress) { finish(); return }
                 MaterialAlertDialogBuilder(this@QuizActivity)
-                    .setTitle("Leave the quiz?")
-                    .setMessage("Your answers in this attempt will be lost. It will not count as an attempt.")
-                    .setNegativeButton("Stay", null)
-                    .setPositiveButton("Leave") { _, _ -> timer?.cancel(); finish() }.show()
+                    .setTitle(tr("Leave the quiz?"))
+                    .setMessage(tr("Your answers in this attempt will be lost. It will not count as an attempt."))
+                    .setNegativeButton(tr("Stay"), null)
+                    .setPositiveButton(tr("Leave")) { _, _ -> timer?.cancel(); finish() }.show()
             }
         })
         showIntro()
@@ -167,11 +169,11 @@ class QuizActivity : AppCompatActivity() {
 
         content.addView(text(lesson.title, com.google.android.material.R.style.TextAppearance_Material3_HeadlineSmall))
         content.addView(card {
-            addView(text("Questions: $total"))
-            addView(text("Time limit: " + if (quiz.timeLimitSeconds > 0) formatTime(quiz.timeLimitSeconds.toLong()) + " (min:sec)" else "none"))
-            addView(text("Passing grade: ${fmt(quiz.passingGrade)}%"))
-            addView(text("Attempts left: " + (attemptsLeft?.toString() ?: "unlimited")))
-            addView(text("Works without internet. Your result shows right away; it is saved to your account when you are online.",
+            addView(text(tr("Questions: %s", total)))
+            addView(text(tr("Time limit: %s", if (quiz.timeLimitSeconds > 0) formatTime(quiz.timeLimitSeconds.toLong()) + tr(" (min:sec)") else tr("none"))))
+            addView(text(tr("Passing grade: %s%%", fmt(quiz.passingGrade))))
+            addView(text(tr("Attempts left: %s", attemptsLeft?.toString() ?: tr("unlimited"))))
+            addView(text(tr("Works without internet. Your result shows right away; it is saved to your account when you are online."),
                 0, R.color.text_secondary, 8))
         })
 
@@ -179,19 +181,19 @@ class QuizActivity : AppCompatActivity() {
         val serverLast = lesson.quizLastJson.takeIf { it.isNotEmpty() }?.let { runCatching { QuizEngine.attemptSummary(JSONObject(it)) }.getOrNull() }
         if (attempts.isNotEmpty() || serverLast != null) {
             content.addView(card {
-                addView(text("Previous attempts", com.google.android.material.R.style.TextAppearance_Material3_TitleSmall))
+                addView(text(tr("Previous attempts"), com.google.android.material.R.style.TextAppearance_Material3_TitleSmall))
                 attempts.take(5).forEach { a ->
-                    val official = if (a.serverEarned != null) " · website: ${fmt(a.serverEarned)}/${fmt(a.serverTotal ?: a.total)}" else ""
+                    val official = if (a.serverEarned != null) tr(" · website: %s/%s", fmt(a.serverEarned), fmt(a.serverTotal ?: a.total)) else ""
                     val state = when (a.state) {
-                        "pending" -> "waiting to sync"
-                        "rejected" -> if (a.reason == "attempts_exceeded") "not saved: no attempts left" else "not saved (${a.reason})"
-                        else -> "saved to your account"
+                        "pending" -> tr("waiting to sync")
+                        "rejected" -> if (a.reason == "attempts_exceeded") tr("not saved: no attempts left") else tr("not saved (%s)", a.reason)
+                        else -> tr("saved to your account")
                     }
                     addView(text("${Ui.date(this@QuizActivity, a.endedAt)} · ${fmt(a.earned)}/${fmt(a.total)} · ${label(a.result)}$official · $state",
                         0, R.color.text_secondary, 6))
                 }
                 if (attempts.isEmpty() && serverLast != null) {
-                    addView(text("On the website: ${fmt(serverLast.earned)}/${fmt(serverLast.total)} · ${label(serverLast.result.ifBlank { serverLast.status })}",
+                    addView(text(tr("On the website: %s/%s · %s", fmt(serverLast.earned), fmt(serverLast.total), label(serverLast.result.ifBlank { serverLast.status })),
                         0, R.color.text_secondary, 6))
                 }
             })
@@ -200,14 +202,14 @@ class QuizActivity : AppCompatActivity() {
         left.visibility = View.GONE
         right.visibility = View.VISIBLE
         right.isEnabled = attemptsLeft != 0
-        right.text = if (attemptsLeft == 0) "No attempts left" else "Start quiz"
+        right.text = if (attemptsLeft == 0) tr("No attempts left") else tr("Start quiz")
         right.setOnClickListener { startQuiz() }
     }
 
     private fun label(result: String) = when (result) {
-        "pass" -> "Passed"
-        "fail" -> "Not passed"
-        "pending", "review_required" -> "Waiting for teacher review"
+        "pass" -> tr("Passed")
+        "fail" -> tr("Not passed")
+        "pending", "review_required" -> tr("Waiting for teacher review")
         else -> result
     }
 
@@ -223,9 +225,9 @@ class QuizActivity : AppCompatActivity() {
         inProgress = true
         if (quiz.timeLimitSeconds > 0) {
             timer = object : CountDownTimer(quiz.timeLimitSeconds * 1000L, 1000) {
-                override fun onTick(ms: Long) { toolbar.subtitle = "Time left ${formatTime(ms / 1000)}" }
+                override fun onTick(ms: Long) { toolbar.subtitle = tr("Time left %s", formatTime(ms / 1000)) }
                 override fun onFinish() {
-                    toolbar.subtitle = "Time is up"
+                    toolbar.subtitle = tr("Time is up")
                     saveCurrent()
                     finishQuiz()
                 }
@@ -247,8 +249,8 @@ class QuizActivity : AppCompatActivity() {
             visibility = View.VISIBLE
             setProgressCompat((index + 1) * 100 / questions.size, true)
         }
-        if (quiz.timeLimitSeconds == 0) toolbar.subtitle = "Question ${index + 1} of ${questions.size}"
-        content.addView(text("Question ${index + 1} of ${questions.size} · ${fmt(q.mark)} mark(s)",
+        if (quiz.timeLimitSeconds == 0) toolbar.subtitle = tr("Question %s of %s", index + 1, questions.size)
+        content.addView(text(tr("Question %s of %s · %s mark(s)", index + 1, questions.size, fmt(q.mark)),
             com.google.android.material.R.style.TextAppearance_Material3_LabelMedium, R.color.text_secondary))
         content.addView(text(q.title, com.google.android.material.R.style.TextAppearance_Material3_TitleMedium, top = 6))
         if (q.descriptionHtml.isNotBlank() && q.type != "fill_in_the_blank") {
@@ -259,11 +261,11 @@ class QuizActivity : AppCompatActivity() {
         collect = buildInput(q, box, responses[q.id])
 
         left.visibility = if (index > 0) View.VISIBLE else View.INVISIBLE
-        left.text = "‹ Previous"
+        left.text = tr("‹ Previous")
         left.setOnClickListener { saveCurrent(); index--; showQuestion(); scrollTop() }
         right.visibility = View.VISIBLE
         right.isEnabled = true
-        right.text = if (index == questions.size - 1) "Finish" else "Next ›"
+        right.text = if (index == questions.size - 1) tr("Finish") else tr("Next ›")
         right.setOnClickListener {
             saveCurrent()
             if (index == questions.size - 1) confirmFinish() else { index++; showQuestion(); scrollTop() }
@@ -300,7 +302,7 @@ class QuizActivity : AppCompatActivity() {
                         if (a.image.isNotEmpty()) image(a.image)?.let { box.addView(it) }
                     }
                 }
-                box.addView(text("Select all correct answers.", 0, R.color.text_secondary, 4))
+                box.addView(text(tr("Select all correct answers."), 0, R.color.text_secondary, 4))
                 return {
                     val ids = boxes.filter { it.isChecked }.map { it.tag as Long }.toSet()
                     if (ids.isEmpty()) null else QuizResponse.Choices(ids)
@@ -314,7 +316,7 @@ class QuizActivity : AppCompatActivity() {
                 val prev = (current as? QuizResponse.Blanks)?.values ?: emptyList()
                 val fields = (0 until QuizEngine.blankCount(q)).map { i ->
                     EditText(this).apply {
-                        hint = "Blank ${i + 1}"; setText(prev.getOrNull(i) ?: ""); inputType = InputType.TYPE_CLASS_TEXT
+                        hint = tr("Blank %s", i + 1); setText(prev.getOrNull(i) ?: ""); inputType = InputType.TYPE_CLASS_TEXT
                         isSingleLine = true
                     }.also { box.addView(it) }
                 }
@@ -325,13 +327,13 @@ class QuizActivity : AppCompatActivity() {
             }
             "open_ended", "short_answer" -> {
                 val field = EditText(this).apply {
-                    hint = "Your answer"; setText((current as? QuizResponse.Text)?.value ?: "")
+                    hint = tr("Your answer"); setText((current as? QuizResponse.Text)?.value ?: "")
                     inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
                     minLines = if (q.type == "open_ended") 5 else 2
                     gravity = Gravity.TOP
                 }
                 box.addView(field)
-                box.addView(text("Your teacher checks this answer after it syncs.", 0, R.color.text_secondary, 4))
+                box.addView(text(tr("Your teacher checks this answer after it syncs."), 0, R.color.text_secondary, 4))
                 return { field.text.toString().takeIf { it.isNotBlank() }?.let { QuizResponse.Text(it) } }
             }
             "ordering" -> {
@@ -359,7 +361,7 @@ class QuizActivity : AppCompatActivity() {
                     }
                 }
                 render()
-                box.addView(text("Put the items in the right order.", 0, R.color.text_secondary))
+                box.addView(text(tr("Put the items in the right order."), 0, R.color.text_secondary))
                 box.addView(list)
                 return { QuizResponse.Sequence(order.map { it.id }) }
             }
@@ -370,12 +372,12 @@ class QuizActivity : AppCompatActivity() {
                 val prev = (current as? QuizResponse.Sequence)?.answerIds ?: emptyList()
                 val spinners = slots.mapIndexed { i, slot ->
                     if (q.type == "image_matching" && slot.image.isNotEmpty()) {
-                        image(slot.image)?.let { box.addView(it) } ?: box.addView(text("Picture ${i + 1}", top = 8))
+                        image(slot.image)?.let { box.addView(it) } ?: box.addView(text(tr("Picture %s", i + 1), top = 8))
                     } else {
-                        box.addView(text(slot.match.ifBlank { "Item ${i + 1}" }, com.google.android.material.R.style.TextAppearance_Material3_TitleSmall, top = 10))
+                        box.addView(text(slot.match.ifBlank { tr("Item %s", i + 1) }, com.google.android.material.R.style.TextAppearance_Material3_TitleSmall, top = 10))
                     }
                     Spinner(this).apply {
-                        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, listOf("Choose…") + options.map { it.title })
+                        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, listOf(tr("Choose…")) + options.map { it.title })
                         val sel = prev.getOrNull(i)?.let { id -> options.indexOfFirst { it.id == id } } ?: -1
                         setSelection(if (sel >= 0) sel + 1 else 0)
                         onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -394,7 +396,7 @@ class QuizActivity : AppCompatActivity() {
                 val fields = q.answers.sortedBy { it.order }.map { a ->
                     if (a.image.isNotEmpty()) image(a.image)?.let { box.addView(it) }
                     a.id to EditText(this).apply {
-                        hint = "What is in the picture?"; setText(prev[a.id] ?: ""); isSingleLine = true
+                        hint = tr("What is in the picture?"); setText(prev[a.id] ?: ""); isSingleLine = true
                     }.also { box.addView(it) }
                 }
                 return {
@@ -406,15 +408,15 @@ class QuizActivity : AppCompatActivity() {
                 val content = q.h5pContent
                 val done = current as? QuizResponse.H5P
                 if (content == null || !repo.h5pReady(courseId, content.id)) {
-                    box.addView(text("This exercise is not downloaded yet. Connect to the internet and open the course to finish the download.", 0, R.color.error_red))
+                    box.addView(text(tr("This exercise is not downloaded yet. Connect to the internet and open the course to finish the download."), 0, R.color.error_red))
                     return { done }
                 }
                 box.addView(text(
-                    if (done != null) "Your score: ${fmt(done.raw)}/${fmt(done.max)}. You can try it again before finishing the quiz."
-                    else "Interactive exercise: ${content.title.ifBlank { "open it to answer" }}",
+                    if (done != null) tr("Your score: %s/%s. You can try it again before finishing the quiz.", fmt(done.raw), fmt(done.max))
+                    else tr("Interactive exercise: %s", content.title.ifBlank { tr("open it to answer") }),
                     0, if (done != null) R.color.ok_green else R.color.text_secondary))
                 box.addView(MaterialButton(this).apply {
-                    text = if (done != null) "Try the exercise again" else "Start the exercise"
+                    text = if (done != null) tr("Try the exercise again") else tr("Start the exercise")
                     setOnClickListener {
                         h5pQuestionId = q.id
                         h5pLauncher.launch(android.content.Intent(this@QuizActivity, H5PActivity::class.java)
@@ -426,7 +428,7 @@ class QuizActivity : AppCompatActivity() {
                 return { responses[q.id] as? QuizResponse.H5P }
             }
             else -> {
-                box.addView(text("This question needs the website.", 0, R.color.error_red))
+                box.addView(text(tr("This question needs the website."), 0, R.color.error_red))
                 return { null }
             }
         }
@@ -436,10 +438,10 @@ class QuizActivity : AppCompatActivity() {
         val unanswered = questions.count { responses[it.id] == null }
         if (unanswered == 0) { finishQuiz(); return }
         MaterialAlertDialogBuilder(this)
-            .setTitle("Finish the quiz?")
-            .setMessage("$unanswered question(s) are not answered.")
-            .setNegativeButton("Go back", null)
-            .setPositiveButton("Finish") { _, _ -> finishQuiz() }.show()
+            .setTitle(tr("Finish the quiz?"))
+            .setMessage(tr("%s question(s) are not answered.", unanswered))
+            .setNegativeButton(tr("Go back"), null)
+            .setPositiveButton(tr("Finish")) { _, _ -> finishQuiz() }.show()
     }
 
     private fun finishQuiz() {
@@ -465,23 +467,23 @@ class QuizActivity : AppCompatActivity() {
 
     private fun showResult(result: QuizResult, attemptId: String) {
         findViewById<LinearProgressIndicator>(R.id.quiz_progress).visibility = View.GONE
-        toolbar.subtitle = "Result"
+        toolbar.subtitle = tr("Result")
         content.removeAllViews()
         val color = when (result.result) { "pass" -> R.color.ok_green; "fail" -> R.color.error_red; else -> R.color.warn_orange }
         content.addView(card {
             addView(text(label(result.result), com.google.android.material.R.style.TextAppearance_Material3_HeadlineSmall, color))
-            addView(text("Score: ${fmt(result.earned)} / ${fmt(result.total)}  (${fmt(Math.round(result.percent * 10) / 10.0)}%)",
+            addView(text(tr("Score: %s / %s  (%s%%)", fmt(result.earned), fmt(result.total), fmt(Math.round(result.percent * 10) / 10.0)),
                 com.google.android.material.R.style.TextAppearance_Material3_TitleMedium, top = 4))
-            addView(text("Passing grade: ${fmt(quiz.passingGrade)}%", 0, R.color.text_secondary, 2))
+            addView(text(tr("Passing grade: %s%%", fmt(quiz.passingGrade)), 0, R.color.text_secondary, 2))
             val status = text("", 0, R.color.text_secondary, 8)
             addView(status)
             lifecycleScope.launch {
                 while (true) {
                     val a = repo.db.quizAttempt(repo.userId, attemptId)
                     status.text = when (a?.state) {
-                        "synced" -> "Saved to your account" + (a.serverEarned?.let { " · website score ${fmt(it)}/${fmt(a.serverTotal ?: result.total)}" } ?: "")
-                        "rejected" -> if (a.reason == "attempts_exceeded") "Not saved: no attempts left on the website." else "Not saved on the website (${a.reason})."
-                        else -> if (repo.isOnline()) "Saving to your account…" else "Saved on this phone. It will be sent when you are online."
+                        "synced" -> tr("Saved to your account") + (a.serverEarned?.let { tr(" · website score %s/%s", fmt(it), fmt(a.serverTotal ?: result.total)) } ?: "")
+                        "rejected" -> if (a.reason == "attempts_exceeded") tr("Not saved: no attempts left on the website.") else tr("Not saved on the website (%s).", a.reason)
+                        else -> if (repo.isOnline()) tr("Saving to your account…") else tr("Saved on this phone. It will be sent when you are online.")
                     }
                     if (a?.state != "pending") break
                     delay(1500)
@@ -493,25 +495,25 @@ class QuizActivity : AppCompatActivity() {
             content.addView(card {
                 addView(text("${i + 1}. ${q.title}", com.google.android.material.R.style.TextAppearance_Material3_TitleSmall))
                 val (msg, c) = when {
-                    r.needsReview -> "Teacher will check this answer" to R.color.warn_orange
-                    q.type in QuizEngine.REVIEW_TYPES -> "Not answered" to R.color.error_red
-                    r.correct -> "Correct · ${fmt(r.earned)}/${fmt(r.max)}" to R.color.ok_green
-                    else -> "Wrong · 0/${fmt(r.max)}" to R.color.error_red
+                    r.needsReview -> tr("Teacher will check this answer") to R.color.warn_orange
+                    q.type in QuizEngine.REVIEW_TYPES -> tr("Not answered") to R.color.error_red
+                    r.correct -> tr("Correct · %s/%s", fmt(r.earned), fmt(r.max)) to R.color.ok_green
+                    else -> tr("Wrong · 0/%s", fmt(r.max)) to R.color.error_red
                 }
                 addView(text(msg, 0, c, 4))
                 if (!r.correct && q.type !in QuizEngine.REVIEW_TYPES && q.type != "h5p") {
-                    addView(text("Correct answer: " + correctAnswerText(q), 0, R.color.text_secondary, 4).apply { setTypeface(typeface, Typeface.ITALIC) })
+                    addView(text(tr("Correct answer: %s", correctAnswerText(q)), 0, R.color.text_secondary, 4).apply { setTypeface(typeface, Typeface.ITALIC) })
                 }
                 if (q.explanation.isNotBlank()) addView(text(q.explanation, 0, R.color.text_secondary, 4))
             })
         }
         left.visibility = View.VISIBLE
-        left.text = "Done"
+        left.text = tr("Done")
         left.setOnClickListener { finish() }
         lesson = repo.db.lesson(repo.userId, lesson.id) ?: lesson
         val again = repo.quizAttemptsLeft(lesson)
         right.visibility = if (again == 0) View.GONE else View.VISIBLE
-        right.text = "Try again"
+        right.text = tr("Try again")
         right.isEnabled = true
         right.setOnClickListener { showIntro() }
         scrollTop()

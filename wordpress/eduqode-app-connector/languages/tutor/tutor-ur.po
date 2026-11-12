@@ -1,0 +1,2839 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ur\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: tutor\n"
+
+msgid "Email"
+msgstr "ای میل"
+
+msgid "Courses"
+msgstr "کورسز"
+
+msgid "Categories"
+msgstr "زمرے"
+
+msgid "Tags"
+msgstr "ٹیگز"
+
+msgid "Students"
+msgstr "طلبہ"
+
+msgid "Announcements"
+msgstr "اعلانات"
+
+msgid "Quiz Attempts"
+msgstr "کوئز کی کوششیں"
+
+msgid "Q&A"
+msgstr "سوال و جواب"
+
+msgid "Instructors"
+msgstr "اساتذہ"
+
+msgid "Settings"
+msgstr "ترتیبات"
+
+msgid "Permission Denied"
+msgstr "اجازت نہیں"
+
+msgid "Access Denied"
+msgstr "رسائی نہیں"
+
+msgid "Complete"
+msgstr "مکمل"
+
+msgid "Publish"
+msgstr "شائع کریں"
+
+msgid "Draft"
+msgstr "مسودہ"
+
+msgid "On Hold"
+msgstr "رُکا ہوا"
+
+msgid "Pending"
+msgstr "زیرِ التوا"
+
+msgid "Processing"
+msgstr "جاری"
+
+msgid "Cancel"
+msgstr "منسوخ"
+
+msgid "Trash"
+msgstr "ردی"
+
+msgid "Active"
+msgstr "فعال"
+
+msgid "Inactive"
+msgstr "غیر فعال"
+
+msgid "Invalid password"
+msgstr "غلط پاس ورڈ"
+
+msgid "Video source is required"
+msgstr "ویڈیو کا ذریعہ ضروری ہے"
+
+msgid "Invalid video source"
+msgstr "ویڈیو کا ذریعہ درست نہیں"
+
+msgid "The enrollment start date cannot be earlier than the course start date"
+msgstr "داخلے کی تاریخ کورس شروع ہونے کی تاریخ سے پہلے نہیں ہو سکتی"
+
+msgid "Invalid course categories"
+msgstr "کورس کے زمرے درست نہیں"
+
+msgid "Invalid course tags"
+msgstr "کورس کے ٹیگز درست نہیں"
+
+msgid "Invalid price type"
+msgstr "قیمت کی قسم درست نہیں"
+
+msgid "Product already linked with course"
+msgstr "پروڈکٹ پہلے ہی کورس سے منسلک ہے"
+
+msgid "Invalid product"
+msgstr "پروڈکٹ درست نہیں"
+
+msgid "Price is required"
+msgstr "قیمت ضروری ہے"
+
+msgid "New Course"
+msgstr "نیا کورس"
+
+msgid "Draft course created"
+msgstr "کورس کا مسودہ بن گیا"
+
+msgid "Course list retrieved successfully!"
+msgstr "کورسز کی فہرست مل گئی!"
+
+msgid "Invalid input"
+msgid_plural "Invalid inputs"
+msgstr[0] "غلط معلومات"
+msgstr[1] "غلط معلومات"
+
+msgid "Course created successfully"
+msgstr "کورس بن گیا"
+
+msgid "Invalid course id"
+msgstr "کورس آئی ڈی درست نہیں"
+
+msgid "Course updated successfully."
+msgstr "کورس اپ ڈیٹ ہو گیا۔"
+
+msgid "Builder unlinked successfully."
+msgstr "بلڈر الگ کر دیا گیا۔"
+
+msgid "Course contents fetched successfully"
+msgstr "کورس کا مواد مل گیا"
+
+msgid "Data retrieved successfully!"
+msgstr "معلومات مل گئیں!"
+
+msgid "You cannot edit this course because it is in the Trash. Please restore it and try again"
+msgstr "یہ کورس ردی میں ہے اس لیے اس میں تبدیلی نہیں ہو سکتی۔ اسے بحال کر کے دوبارہ کوشش کریں"
+
+msgid "Products retrieved successfully!"
+msgstr "پروڈکٹس مل گئیں!"
+
+msgid "One product can not be added to multiple course!"
+msgstr "ایک پروڈکٹ کئی کورسز میں شامل نہیں ہو سکتی!"
+
+msgid "Product not found"
+msgstr "پروڈکٹ نہیں ملی"
+
+msgid "Sorting order is required"
+msgstr "ترتیب ضروری ہے"
+
+msgid "Course content order updated successfully!"
+msgstr "کورس کے مواد کی ترتیب اپ ڈیٹ ہو گئی!"
+
+msgid "Fully Booked"
+msgstr "نشستیں پوری ہو گئیں"
+
+msgid "Topic title is required!"
+msgstr "موضوع کا عنوان ضروری ہے!"
+
+msgid "Invalid inputs"
+msgstr "غلط معلومات"
+
+msgid "Topic updated successfully!"
+msgstr "موضوع اپ ڈیٹ ہو گیا!"
+
+msgid "Topic created successfully!"
+msgstr "موضوع بن گیا!"
+
+msgid "Topic deleted successfully!"
+msgstr "موضوع حذف ہو گیا!"
+
+msgid "Please Sign In first"
+msgstr "براہِ کرم پہلے سائن اِن کریں"
+
+msgid "You do not have permission to enroll in this course"
+msgstr "آپ کو اس کورس میں داخلے کی اجازت نہیں"
+
+msgid "Please Sign-In"
+msgstr "براہِ کرم سائن اِن کریں"
+
+msgid "User is not enrolled in course"
+msgstr "صارف اس کورس میں داخل نہیں"
+
+msgid "You do not have permission to complete this course."
+msgstr "آپ کو یہ کورس مکمل کرنے کی اجازت نہیں۔"
+
+msgid "Invalid course"
+msgstr "کورس درست نہیں"
+
+msgid "You are not enrolled in this course"
+msgstr "آپ اس کورس میں داخل نہیں ہیں"
+
+msgid "Course completed successfully"
+msgstr "کورس کامیابی سے مکمل ہو گیا"
+
+msgid "Only main instructor can delete this course"
+msgstr "صرف مرکزی استاد یہ کورس حذف کر سکتے ہیں"
+
+msgid "Course has been trashed successfully "
+msgstr "کورس ردی میں ڈال دیا گیا "
+
+msgid "Complete all lessons to mark this course as complete"
+msgstr "کورس مکمل کرنے کے لیے تمام اسباق مکمل کریں"
+
+msgid "quiz"
+msgid_plural "quizzes"
+msgstr[0] "کوئز"
+msgstr[1] "کوئز"
+
+msgid "assignment"
+msgid_plural "assignments"
+msgstr[0] "اسائنمنٹ"
+msgstr[1] "اسائنمنٹس"
+
+msgid "You have to pass %1$s %2$s to complete this course."
+msgstr "یہ کورس مکمل کرنے کے لیے آپ کو %1$s %2$s پاس کرنا ہو گا۔"
+
+msgid "You have to pass %1$s %2$s and %3$s %4$s to complete this course."
+msgstr "یہ کورس مکمل کرنے کے لیے آپ کو %1$s %2$s اور %3$s %4$s پاس کرنا ہوں گے۔"
+
+msgid "You do not have permission to reset this course."
+msgstr "آپ کو یہ کورس دوبارہ ترتیب دینے کی اجازت نہیں۔"
+
+msgid "You do not have permission to retake this course."
+msgstr "آپ کو یہ کورس دوبارہ کرنے کی اجازت نہیں۔"
+
+msgid "Invalid Course ID or Access Denied."
+msgstr "کورس آئی ڈی غلط ہے یا رسائی نہیں۔"
+
+msgid "This course is password protected"
+msgstr "یہ کورس پاس ورڈ سے محفوظ ہے"
+
+msgid "Please purchase the course before enrolling"
+msgstr "داخلے سے پہلے کورس خریدیں"
+
+msgid "Enrollment successfully done!"
+msgstr "داخلہ ہو گیا!"
+
+msgid "Enrollment failed, please try again!"
+msgstr "داخلہ نہیں ہو سکا، دوبارہ کوشش کریں!"
+
+msgid "Completed"
+msgstr "مکمل"
+
+msgid "Resume"
+msgstr "جاری رکھیں"
+
+msgid "Start"
+msgstr "شروع کریں"
+
+msgid "You have not completed all required lessons and assessments. "
+msgstr "آپ نے تمام ضروری اسباق اور جائزے مکمل نہیں کیے۔ "
+
+msgid "Your Progress"
+msgstr "آپ کی پیش رفت"
+
+msgid "Complete the Course"
+msgstr "کورس مکمل کریں"
+
+msgid "Retake this Course"
+msgstr "یہ کورس دوبارہ کریں"
+
+msgid "Invalid course or topic ID"
+msgstr "کورس یا موضوع کی آئی ڈی درست نہیں"
+
+msgid "No topics provided"
+msgstr "کوئی موضوع نہیں دیا گیا"
+
+msgid "Invalid topic id provided"
+msgstr "موضوع کی آئی ڈی درست نہیں"
+
+msgid "Invalid content id provided"
+msgstr "مواد کی آئی ڈی درست نہیں"
+
+msgid "All"
+msgstr "سب"
+
+msgid "Published"
+msgstr "شائع شدہ"
+
+msgid "Scheduled"
+msgstr "طے شدہ"
+
+msgid "Private"
+msgstr "نجی"
+
+msgid "Category"
+msgstr "زمرہ"
+
+msgid "Profile"
+msgstr "پروفائل"
+
+msgid "Reviews"
+msgstr "تبصرے"
+
+msgid "Billing"
+msgstr "بلنگ"
+
+msgid "Withdrawals"
+msgstr "رقم نکلوانا"
+
+msgid "Quiz attempts"
+msgstr "کوئز کی کوششیں"
+
+msgid "Quiz details"
+msgstr "کوئز کی تفصیل"
+
+msgid "%1$s - %2$s"
+msgstr "%1$s - %2$s"
+
+msgid "Current Stats"
+msgstr "موجودہ اعداد و شمار"
+
+msgid "Earnings Over Time"
+msgstr "وقت کے ساتھ آمدنی"
+
+msgid "Course Completion Rate"
+msgstr "کورس مکمل کرنے کی شرح"
+
+msgid "Top Performing Courses"
+msgstr "بہترین کورسز"
+
+msgid "Upcoming Tasks"
+msgstr "آنے والے کام"
+
+msgid "Recent Student Reviews"
+msgstr "طلبہ کے حالیہ تبصرے"
+
+msgid "Revenue"
+msgstr "آمدنی"
+
+msgid "Student"
+msgstr "طالب علم"
+
+msgid "First name field is required"
+msgstr "پہلا نام ضروری ہے"
+
+msgid "Last name field is required"
+msgstr "آخری نام ضروری ہے"
+
+msgid "E-Mail field is required"
+msgstr "ای میل ضروری ہے"
+
+msgid "User Name field is required"
+msgstr "یوزر نیم ضروری ہے"
+
+msgid "Password field is required"
+msgstr "پاس ورڈ ضروری ہے"
+
+msgid "Password Confirmation field is required"
+msgstr "پاس ورڈ کی تصدیق ضروری ہے"
+
+msgid "Valid E-Mail is required"
+msgstr "درست ای میل ضروری ہے"
+
+msgid "Your passwords should match each other. Please recheck."
+msgstr "دونوں پاس ورڈ ایک جیسے ہونے چاہییں۔ دوبارہ چیک کریں۔"
+
+msgid "Total Earnings"
+msgstr "کل آمدنی"
+
+msgid "Total Courses"
+msgstr "کل کورسز"
+
+msgid "Total Students"
+msgstr "کل طلبہ"
+
+msgid "Enrolled"
+msgstr "داخل"
+
+msgid "In Progress"
+msgstr "جاری"
+
+msgid "Cancelled"
+msgstr "منسوخ"
+
+msgid "Invalid comment ID"
+msgstr "تبصرے کی آئی ڈی درست نہیں"
+
+msgid "Comment deleted successfully"
+msgstr "تبصرہ حذف ہو گیا"
+
+msgid "You are not allowed to delete this comment"
+msgstr "آپ یہ تبصرہ حذف نہیں کر سکتے"
+
+msgid "Lesson data fetched successfully"
+msgstr "سبق کی معلومات مل گئیں"
+
+msgid "Lesson updated successfully"
+msgstr "سبق اپ ڈیٹ ہو گیا"
+
+msgid "Lesson created successfully"
+msgstr "سبق بن گیا"
+
+msgid "Lesson"
+msgstr "سبق"
+
+msgid "Assignment"
+msgstr "اسائنمنٹ"
+
+msgid "%s deleted successfully"
+msgstr "%s حذف ہو گیا"
+
+msgid " ago"
+msgstr " پہلے"
+
+msgid "Overview"
+msgstr "جائزہ"
+
+msgid "Exercise Files"
+msgstr "مشق کی فائلیں"
+
+msgid "Comments"
+msgstr "تبصرے"
+
+msgid "Reading"
+msgstr "پڑھائی"
+
+msgid "Video"
+msgstr "ویڈیو"
+
+msgid "Video - %s mins"
+msgstr "ویڈیو - %s منٹ"
+
+msgid "Dashboard Page"
+msgstr "ڈیش بورڈ صفحہ"
+
+msgid "Course"
+msgid_plural "Courses"
+msgstr[0] "کورس"
+msgstr[1] "کورسز"
+
+msgid "Quiz"
+msgstr "کوئز"
+
+msgid "Withdraw"
+msgstr "رقم نکلوائیں"
+
+msgid "Appearance"
+msgstr "ظاہری شکل"
+
+msgid "Learning Mode"
+msgstr "سیکھنے کا انداز"
+
+msgid "Tag"
+msgstr "ٹیگ"
+
+msgid "Dashboard"
+msgstr "ڈیش بورڈ"
+
+msgid "Wishlist"
+msgstr "پسندیدہ"
+
+msgid "Level"
+msgstr "لیول"
+
+msgid "Duration"
+msgstr "دورانیہ"
+
+msgid "Total Enrolled"
+msgstr "کل داخلے"
+
+msgid "Description"
+msgstr "تفصیل"
+
+msgid "Requirements"
+msgstr "ضروریات"
+
+msgid "Review"
+msgstr "تبصرہ"
+
+msgid "Instructor Registration Page"
+msgstr "استاد رجسٹریشن صفحہ"
+
+msgid "Student Registration Page"
+msgstr "طالب علم رجسٹریشن صفحہ"
+
+msgid "Edit Course"
+msgstr "کورس میں ترمیم کریں"
+
+msgid "View Course"
+msgstr "کورس دیکھیں"
+
+msgid "Seconds"
+msgstr "سیکنڈ"
+
+msgid "Minutes"
+msgstr "منٹ"
+
+msgid "Hours"
+msgstr "گھنٹے"
+
+msgid "Days"
+msgstr "دن"
+
+msgid "Weeks"
+msgstr "ہفتے"
+
+msgid "Default"
+msgstr "پہلے سے طے شدہ"
+
+msgid "Answers shown after quiz is finished"
+msgstr "کوئز ختم ہونے کے بعد جوابات دکھائے جائیں گے"
+
+msgid "Reveal Mode"
+msgstr "جواب دکھانے کا انداز"
+
+msgid "Show result after the attempt."
+msgstr "کوشش کے بعد نتیجہ دکھائیں۔"
+
+msgid "Retry Mode"
+msgstr "دوبارہ کوشش کا انداز"
+
+msgid "Reattempt quiz any number of times. Define Attempts Allowed below."
+msgstr "کوئز جتنی بار چاہیں دوبارہ دیں۔ نیچے کوششوں کی حد لکھیں۔"
+
+msgid "Set question layout view"
+msgstr "سوالات کا انداز چنیں"
+
+msgid "Single Question"
+msgstr "ایک وقت میں ایک سوال"
+
+msgid "Question Pagination"
+msgstr "سوالات صفحہ وار"
+
+msgid "Question below each other"
+msgstr "سوالات ایک کے نیچے ایک"
+
+msgid "Random"
+msgstr "بے ترتیب"
+
+msgid "Sorting"
+msgstr "ترتیب"
+
+msgid "Ascending"
+msgstr "بڑھتی ترتیب"
+
+msgid "Descending"
+msgstr "گھٹتی ترتیب"
+
+msgid "Invalid request data"
+msgstr "درخواست کی معلومات درست نہیں"
+
+msgid "Could not save feedback"
+msgstr "رائے محفوظ نہیں ہو سکی"
+
+msgid "Feedback saved successfully"
+msgstr "رائے محفوظ ہو گئی"
+
+msgid "Feedback removed"
+msgstr "رائے ہٹا دی گئی"
+
+msgid "Could not delete feedback"
+msgstr "رائے حذف نہیں ہو سکی"
+
+msgid "Feedback deleted successfully"
+msgstr "رائے حذف ہو گئی"
+
+msgid "Please sign in to do this operation"
+msgstr "یہ کام کرنے کے لیے سائن اِن کریں"
+
+msgid "No active quiz attempt found"
+msgstr "کوئز کی کوئی جاری کوشش نہیں ملی"
+
+msgid "Quiz has been timeout already"
+msgstr "کوئز کا وقت پہلے ہی ختم ہو چکا"
+
+msgid "Operation not allowed, attempt not found or permission denied"
+msgstr "اجازت نہیں: کوشش نہیں ملی یا رسائی نہیں"
+
+msgid "Quiz attempt is not in progress"
+msgstr "کوئز کی کوشش جاری نہیں"
+
+msgid "Answer reveal is disabled for this quiz"
+msgstr "اس کوئز میں جواب دکھانا بند ہے"
+
+msgid "Question not found or does not belong to this quiz"
+msgstr "سوال نہیں ملا یا اس کوئز کا نہیں"
+
+msgid "This question type does not support instant answer verification"
+msgstr "اس قسم کے سوال کا جواب فوراً چیک نہیں ہو سکتا"
+
+msgid "An answer is required to verify this question"
+msgstr "یہ سوال چیک کرنے کے لیے جواب ضروری ہے"
+
+msgid "Answer has already been committed for this question"
+msgstr "اس سوال کا جواب پہلے ہی جمع ہو چکا"
+
+msgid "Failed to save answer"
+msgstr "جواب محفوظ نہیں ہو سکا"
+
+msgid "Review update failed"
+msgstr "تبصرہ اپ ڈیٹ نہیں ہو سکا"
+
+msgid "No changes to update"
+msgstr "کوئی تبدیلی نہیں"
+
+msgid "Review updated successfully"
+msgstr "تبصرہ اپ ڈیٹ ہو گیا"
+
+msgid "Quiz data fetched successfully"
+msgstr "کوئز کی معلومات مل گئیں"
+
+msgid "Invalid quiz"
+msgstr "کوئز درست نہیں"
+
+msgid "Quiz deleted successfully"
+msgstr "کوئز حذف ہو گیا"
+
+msgid "Access Denied."
+msgstr "رسائی نہیں۔"
+
+msgid "Invalid attempt ID"
+msgstr "کوشش کی آئی ڈی درست نہیں"
+
+msgid "Attempt deleted successfully!"
+msgstr "کوشش حذف ہو گئی!"
+
+msgid "Questions"
+msgstr "سوالات"
+
+msgid "Quiz Time"
+msgstr "کوئز کا وقت"
+
+msgid "Total Marks"
+msgstr "کل نمبر"
+
+msgid "Passing Grade"
+msgstr "پاس ہونے کے نمبر"
+
+msgid "Earned Grade"
+msgstr "حاصل کردہ نمبر"
+
+msgid "Total Attempts"
+msgstr "کل کوششیں"
+
+msgid "No Limit"
+msgstr "کوئی حد نہیں"
+
+msgid "Attempts"
+msgstr "کوششیں"
+
+msgid "Marks"
+msgstr "نمبر"
+
+msgid "Time"
+msgstr "وقت"
+
+msgid "Result"
+msgstr "نتیجہ"
+
+msgid "Skip Quiz"
+msgstr "کوئز چھوڑیں"
+
+msgid "Yes, Skip This"
+msgstr "ہاں، چھوڑ دیں"
+
+msgid "Do You Want to Skip This Quiz?"
+msgstr "کیا آپ یہ کوئز چھوڑنا چاہتے ہیں؟"
+
+msgid "Are you sure you want to skip this quiz? Please confirm your choice."
+msgstr "کیا آپ واقعی یہ کوئز چھوڑنا چاہتے ہیں؟ براہِ کرم تصدیق کریں۔"
+
+msgid "Retry Quiz"
+msgstr "کوئز دوبارہ دیں"
+
+msgid "Start Quiz"
+msgstr "کوئز شروع کریں"
+
+msgid "Continue Lesson"
+msgstr "سبق جاری رکھیں"
+
+msgid "Retry Quiz?"
+msgstr "کوئز دوبارہ دیں؟"
+
+msgid "Retrying this quiz will reset your current attempt. Your answers and score from this attempt will be lost."
+msgstr "کوئز دوبارہ دینے سے موجودہ کوشش ختم ہو جائے گی۔ اس کوشش کے جوابات اور نمبر ختم ہو جائیں گے۔"
+
+msgid "Pass"
+msgstr "پاس"
+
+msgid "Fail"
+msgstr "فیل"
+
+msgid "Failed"
+msgstr "ناکام"
+
+msgid "Passed"
+msgstr "پاس"
+
+msgid "Details"
+msgstr "تفصیل"
+
+msgid "More options"
+msgstr "مزید اختیارات"
+
+msgid "Delete"
+msgstr "حذف کریں"
+
+msgid "Something went wrong!"
+msgstr "کچھ غلط ہو گیا!"
+
+msgid "Profile Updated"
+msgstr "پروفائل اپ ڈیٹ ہو گئی"
+
+msgid "Incorrect Previous Password"
+msgstr "پرانا پاس ورڈ غلط ہے"
+
+msgid "New Password Required"
+msgstr "نیا پاس ورڈ ضروری ہے"
+
+msgid "Confirm Password Required"
+msgstr "پاس ورڈ کی تصدیق ضروری ہے"
+
+msgid "New password and confirm password does not matched"
+msgstr "نیا پاس ورڈ اور تصدیقی پاس ورڈ ایک جیسے نہیں"
+
+msgid "Password Changed"
+msgstr "پاس ورڈ تبدیل ہو گیا"
+
+msgid "Social Profile Updated"
+msgstr "سوشل پروفائل اپ ڈیٹ ہو گئی"
+
+msgid "Course Info"
+msgstr "کورس کی معلومات"
+
+msgid "Status"
+msgstr "حالت"
+
+msgid "Dismiss"
+msgstr "بند کریں"
+
+msgid " left"
+msgstr " باقی"
+
+msgid "Home"
+msgstr "ہوم"
+
+msgid "Retrieve Password"
+msgstr "پاس ورڈ واپس حاصل کریں"
+
+msgid "Account"
+msgstr "اکاؤنٹ"
+
+msgid "Discussions"
+msgstr "گفتگو"
+
+msgid "Create Course"
+msgstr "کورس بنائیں"
+
+msgid "Create Bundle"
+msgstr "بنڈل بنائیں"
+
+msgid "Approved"
+msgstr "منظور شدہ"
+
+msgid "Blocked"
+msgstr "بلاک"
+
+msgid "Ratings"
+msgstr "ریٹنگز"
+
+msgid "Rating"
+msgstr "ریٹنگ"
+
+msgid "All Levels"
+msgstr "تمام لیول"
+
+msgid "Beginner"
+msgstr "ابتدائی"
+
+msgid "Intermediate"
+msgstr "درمیانہ"
+
+msgid "Expert"
+msgstr "ماہر"
+
+msgid "Facebook"
+msgstr "Facebook"
+
+msgid "X"
+msgstr "X"
+
+msgid "Linkedin"
+msgstr "Linkedin"
+
+msgid "Github"
+msgstr "Github"
+
+msgid "Website"
+msgstr "ویب سائٹ"
+
+msgid "Not Taken"
+msgstr "نہیں دیا"
+
+msgid "Cart"
+msgstr "کارٹ"
+
+msgid "Checkout"
+msgstr "چیک آؤٹ"
+
+msgid "Set Your Profile Photo"
+msgstr "اپنی پروفائل تصویر لگائیں"
+
+msgid "Add Your Social Links"
+msgstr "اپنے سوشل لنک شامل کریں"
+
+msgid "Set Your Bio"
+msgstr "اپنا تعارف لکھیں"
+
+msgid "Set Withdraw Method"
+msgstr "رقم نکلوانے کا طریقہ چنیں"
+
+msgid "Try adjusting your filters."
+msgstr "فلٹر تبدیل کر کے دیکھیں۔"
+
+msgid "Try using different keywords."
+msgstr "کوئی اور الفاظ لکھ کر دیکھیں۔"
+
+msgid "All Time"
+msgstr "تمام وقت"
+
+msgid "Today"
+msgstr "آج"
+
+msgid "Last 30 Days"
+msgstr "پچھلے 30 دن"
+
+msgid "Last 90 Days"
+msgstr "پچھلے 90 دن"
+
+msgid "Last 365 Days"
+msgstr "پچھلے 365 دن"
+
+msgid "Custom"
+msgstr "اپنی مرضی"
+
+msgid "No Data Available in this Section"
+msgstr "اس حصے میں کوئی معلومات نہیں"
+
+msgid "No Data Found from your Search/Filter"
+msgstr "آپ کی تلاش/فلٹر سے کچھ نہیں ملا"
+
+msgid "HTML 5 (mp4)"
+msgstr "HTML 5 (mp4)"
+
+msgid "External URL"
+msgstr "بیرونی لنک"
+
+msgid "YouTube"
+msgstr "YouTube"
+
+msgid "Vimeo"
+msgstr "Vimeo"
+
+msgid "Embedded"
+msgstr "ایمبیڈ"
+
+msgid "Shortcode"
+msgstr "شارٹ کوڈ"
+
+msgid "Something went wrong"
+msgstr "کچھ غلط ہو گیا"
+
+msgid "You are not authorzied to perform this action"
+msgstr "آپ کو یہ کام کرنے کی اجازت نہیں"
+
+msgid "Nonce not matched. Action failed!"
+msgstr "سیکیورٹی چیک ناکام۔ کام نہیں ہو سکا!"
+
+msgid "Invalid request"
+msgstr "درخواست درست نہیں"
+
+msgid "Authentication failed"
+msgstr "تصدیق ناکام"
+
+msgid "Authorization required"
+msgstr "اجازت درکار ہے"
+
+msgid "Requested resource not found"
+msgstr "مطلوبہ چیز نہیں ملی"
+
+msgid "Internal server error"
+msgstr "سرور میں اندرونی خرابی"
+
+msgid "Request timed out"
+msgstr "درخواست کا وقت ختم ہو گیا"
+
+msgid "Access to this resource is forbidden"
+msgstr "اس تک رسائی منع ہے"
+
+msgid "HTTP method not allowed"
+msgstr "یہ طریقہ استعمال نہیں ہو سکتا"
+
+msgid "Too many requests"
+msgstr "بہت زیادہ درخواستیں"
+
+msgid "Validation error"
+msgstr "معلومات میں خرابی"
+
+msgid "Database operation failed"
+msgstr "ڈیٹا بیس کا کام ناکام"
+
+msgid "Requested file not found"
+msgstr "مطلوبہ فائل نہیں ملی"
+
+msgid "Unsupported media type"
+msgstr "یہ فائل کی قسم قابلِ قبول نہیں"
+
+msgid "Gutenberg"
+msgstr "Gutenberg"
+
+msgid "Droip"
+msgstr "Droip"
+
+msgid "Elementor"
+msgstr "Elementor"
+
+msgid "Classic Editor"
+msgstr "Classic Editor"
+
+msgid "%s left"
+msgstr "%s باقی"
+
+msgid "Rejected"
+msgstr "مسترد"
+
+msgid "Yes"
+msgstr "ہاں"
+
+msgid "Close"
+msgstr "بند کریں"
+
+msgid "Page"
+msgstr "صفحہ"
+
+msgid "of"
+msgstr "میں سے"
+
+msgid "Previous page"
+msgstr "پچھلا صفحہ"
+
+msgid "Next page"
+msgstr "اگلا صفحہ"
+
+msgid "Buy Now"
+msgstr "ابھی خریدیں"
+
+msgid "View Cart"
+msgstr "کارٹ دیکھیں"
+
+msgid "Course:"
+msgstr "کورس:"
+
+msgid "Live"
+msgstr "لائیو"
+
+msgid "%s ago"
+msgstr "%s پہلے"
+
+msgid "Read"
+msgstr "پڑھا ہوا"
+
+msgid "Unread"
+msgstr "نہ پڑھا ہوا"
+
+msgid "Important"
+msgstr "اہم"
+
+msgid "Archived"
+msgstr "محفوظ شدہ"
+
+msgid "Correct"
+msgstr "درست"
+
+msgid "Wrong"
+msgstr "غلط"
+
+msgid "Incomplete"
+msgstr "نامکمل"
+
+msgid "Expired"
+msgstr "میعاد ختم"
+
+msgid "Trial"
+msgstr "آزمائشی"
+
+msgid "Partially Refunded"
+msgstr "جزوی رقم واپس"
+
+msgid "Refunded"
+msgstr "رقم واپس"
+
+msgid "Unpaid"
+msgstr "ادائیگی باقی"
+
+msgid "Paid"
+msgstr "ادا شدہ"
+
+msgid "Partially Paid"
+msgstr "جزوی ادا شدہ"
+
+msgctxt "true/false question options"
+msgid "True"
+msgstr "درست"
+
+msgctxt "true/false question options"
+msgid "False"
+msgstr "غلط"
+
+msgid "Day"
+msgstr "دن"
+
+msgid "Hour"
+msgstr "گھنٹہ"
+
+msgid "Minute"
+msgstr "منٹ"
+
+msgid "Second"
+msgstr "سیکنڈ"
+
+msgid "Exclusive"
+msgstr "علاوہ"
+
+msgid "Inclusive"
+msgstr "شامل"
+
+msgctxt "Week name"
+msgid "Monday"
+msgstr "پیر"
+
+msgctxt "Week name"
+msgid "Tuesday"
+msgstr "منگل"
+
+msgctxt "Week name"
+msgid "Wednesday"
+msgstr "بدھ"
+
+msgctxt "Week name"
+msgid "Thursday"
+msgstr "جمعرات"
+
+msgctxt "Week name"
+msgid "Friday"
+msgstr "جمعہ"
+
+msgctxt "Week name"
+msgid "Saturday"
+msgstr "ہفتہ"
+
+msgctxt "Week name"
+msgid "Sunday"
+msgstr "اتوار"
+
+msgctxt "Month name"
+msgid "January"
+msgstr "جنوری"
+
+msgctxt "Month name"
+msgid "February"
+msgstr "فروری"
+
+msgctxt "Month name"
+msgid "March"
+msgstr "مارچ"
+
+msgctxt "Month name"
+msgid "April"
+msgstr "اپریل"
+
+msgctxt "Month name"
+msgid "May"
+msgstr "مئی"
+
+msgctxt "Month name"
+msgid "June"
+msgstr "جون"
+
+msgctxt "Month name"
+msgid "July"
+msgstr "جولائی"
+
+msgctxt "Month name"
+msgid "August"
+msgstr "اگست"
+
+msgctxt "Month name"
+msgid "September"
+msgstr "ستمبر"
+
+msgctxt "Month name"
+msgid "October"
+msgstr "اکتوبر"
+
+msgctxt "Month name"
+msgid "November"
+msgstr "نومبر"
+
+msgctxt "Month name"
+msgid "December"
+msgstr "دسمبر"
+
+msgid "Incl. tax"
+msgstr "ٹیکس شامل"
+
+msgid "Course Enrolled"
+msgstr "کورس میں داخلہ"
+
+msgid "Pay"
+msgstr "ادائیگی کریں"
+
+msgid "Edit"
+msgstr "ترمیم کریں"
+
+msgid "Back"
+msgstr "واپس"
+
+msgid "By"
+msgstr "از"
+
+msgid "In"
+msgstr "میں"
+
+msgid "View Details"
+msgstr "تفصیل دیکھیں"
+
+msgid "Release Date (newest first)"
+msgstr "تاریخ (نئے پہلے)"
+
+msgid "Release Date (oldest first)"
+msgstr "تاریخ (پرانے پہلے)"
+
+msgid "Course Title (a-z)"
+msgstr "کورس کا نام (ا-ی)"
+
+msgid "Course Title (z-a)"
+msgstr "کورس کا نام (ی-ا)"
+
+msgid "Free"
+msgstr "مفت"
+
+msgid "Search"
+msgstr "تلاش"
+
+msgid "Price"
+msgstr "قیمت"
+
+msgid "Clear All Filters"
+msgstr "تمام فلٹر ہٹائیں"
+
+msgid "My Courses"
+msgstr "میرے کورسز"
+
+msgid "Menu"
+msgstr "مینیو"
+
+msgid "Your application is under review"
+msgstr "آپ کی درخواست زیرِ غور ہے"
+
+msgid "Only your dashboard home is available while your instructor application is pending."
+msgstr "استاد کی درخواست زیرِ غور ہونے تک صرف ڈیش بورڈ کا ہوم صفحہ دستیاب ہے۔"
+
+msgid "Order History"
+msgstr "آرڈرز کی تاریخ"
+
+msgid "Invoice"
+msgstr "انوائس"
+
+msgid "No Orders Found!"
+msgstr "کوئی آرڈر نہیں ملا!"
+
+msgid "Clear all"
+msgstr "سب ہٹائیں"
+
+msgid "Receipt"
+msgstr "رسید"
+
+msgid "Delete your Review?"
+msgstr "اپنا تبصرہ حذف کریں؟"
+
+msgid "Are you sure you want to delete this review? This action cannot be undone."
+msgstr "کیا آپ واقعی یہ تبصرہ حذف کرنا چاہتے ہیں؟ یہ واپس نہیں ہو سکے گا۔"
+
+msgid "Yes, Delete This"
+msgstr "ہاں، حذف کریں"
+
+msgid "No Reviews Found"
+msgstr "کوئی تبصرہ نہیں ملا"
+
+msgid "Bundle"
+msgstr "بنڈل"
+
+msgid "Reviewed on: %s"
+msgstr "تبصرہ کیا: %s"
+
+msgid "Edit Review"
+msgstr "تبصرے میں ترمیم کریں"
+
+msgid "Delete Review"
+msgstr "تبصرہ حذف کریں"
+
+msgid "Review Actions"
+msgstr "تبصرے کے اختیارات"
+
+msgid "Review content is required"
+msgstr "تبصرہ لکھنا ضروری ہے"
+
+msgid "Cmd/Ctrl +"
+msgstr "Cmd/Ctrl +"
+
+msgid "Enter to Save"
+msgstr "Enter سے محفوظ کریں"
+
+msgid "Save and Continue"
+msgstr "محفوظ کریں اور آگے بڑھیں"
+
+msgid "Name, email, phone number, profiles"
+msgstr "نام، ای میل، فون نمبر، پروفائلز"
+
+msgid "Security"
+msgstr "سیکیورٹی"
+
+msgid "Password, 2FA"
+msgstr "پاس ورڈ، 2FA"
+
+msgid "Social Accounts"
+msgstr "سوشل اکاؤنٹس"
+
+msgid "Linked social media profiles"
+msgstr "منسلک سوشل میڈیا پروفائلز"
+
+msgid "Withdrawal and refund"
+msgstr "رقم نکلوانا اور واپسی"
+
+msgid "Preferences"
+msgstr "ترجیحات"
+
+msgid "Sound effects, animations, theme"
+msgstr "آواز، اینیمیشن، تھیم"
+
+msgid "Edit Cover Photo"
+msgstr "کور فوٹو تبدیل کریں"
+
+msgid "Upload Photo"
+msgstr "تصویر اپ لوڈ کریں"
+
+msgid "Remove Photo"
+msgstr "تصویر ہٹائیں"
+
+msgid "Profile Photo Size: 200x200 pixels Cover Photo Size: 700x430 pixels"
+msgstr "پروفائل تصویر کا سائز: 200x200 پکسل، کور فوٹو کا سائز: 700x430 پکسل"
+
+msgid "Cover Photo Info"
+msgstr "کور فوٹو کی معلومات"
+
+msgid "User Avatar"
+msgstr "صارف کی تصویر"
+
+msgid "Profile Photo"
+msgstr "پروفائل تصویر"
+
+msgid "First Name"
+msgstr "پہلا نام"
+
+msgid "Enter your first name"
+msgstr "اپنا پہلا نام لکھیں"
+
+msgid "Last Name"
+msgstr "آخری نام"
+
+msgid "Enter your last name"
+msgstr "اپنا آخری نام لکھیں"
+
+msgid "Username"
+msgstr "یوزر نیم"
+
+msgid "Enter your username"
+msgstr "اپنا یوزر نیم لکھیں"
+
+msgid "Phone Number"
+msgstr "فون نمبر"
+
+msgid "Enter your phone number"
+msgstr "اپنا فون نمبر لکھیں"
+
+msgid "Skill/Occupation"
+msgstr "مہارت/پیشہ"
+
+msgid "Enter your skill/occupation"
+msgstr "اپنی مہارت/پیشہ لکھیں"
+
+msgid "Timezone"
+msgstr "ٹائم زون"
+
+msgid "Select your timezone"
+msgstr "اپنا ٹائم زون چنیں"
+
+msgid "Public Profile"
+msgstr "عوامی پروفائل"
+
+msgid "Display Name"
+msgstr "ظاہر ہونے والا نام"
+
+msgid "Enter your display name"
+msgstr "ظاہر ہونے والا نام لکھیں"
+
+msgid "Bio"
+msgstr "تعارف"
+
+msgid "Enter your bio"
+msgstr "اپنا تعارف لکھیں"
+
+msgid "Unsaved changes"
+msgstr "تبدیلیاں محفوظ نہیں ہوئیں"
+
+msgid "Discard"
+msgstr "رد کریں"
+
+msgid "Save"
+msgstr "محفوظ کریں"
+
+msgid "Course Content"
+msgstr "کورس کا مواد"
+
+msgid "Reset to Default"
+msgstr "پہلی حالت پر واپس"
+
+msgid "Reset your Preferences?"
+msgstr "اپنی ترجیحات دوبارہ ترتیب دیں؟"
+
+msgid "This will reset your learning preferences to the default settings. Your progress and account data won’t be affected."
+msgstr "اس سے آپ کی سیکھنے کی ترجیحات پہلی حالت پر آ جائیں گی۔ آپ کی پیش رفت اور اکاؤنٹ پر کوئی اثر نہیں پڑے گا۔"
+
+msgid "Reset Preferences"
+msgstr "ترجیحات دوبارہ ترتیب دیں"
+
+msgid "Auto-play next lesson"
+msgstr "اگلا سبق خود چلائیں"
+
+msgid "Interactive Effects"
+msgstr "انٹرایکٹو اثرات"
+
+msgid "Motion Effects"
+msgstr "حرکت کے اثرات"
+
+msgid "Limit animations and motion effects to reduce visual strain."
+msgstr "آنکھوں کے آرام کے لیے اینیمیشن اور حرکت کم کریں۔"
+
+msgid "Theme"
+msgstr "تھیم"
+
+msgid "Select theme..."
+msgstr "تھیم چنیں..."
+
+msgid "Select mode"
+msgstr "انداز چنیں"
+
+msgid "Accessibility"
+msgstr "رسائی کی سہولت"
+
+msgid "Font Size"
+msgstr "لکھائی کا سائز"
+
+msgid "Adjust the text size for better readability."
+msgstr "آسانی سے پڑھنے کے لیے لکھائی کا سائز تبدیل کریں۔"
+
+msgid "Select font size..."
+msgstr "لکھائی کا سائز چنیں..."
+
+msgid "High Contrast"
+msgstr "زیادہ کنٹراسٹ"
+
+msgid "Increase contrast to improve text and element visibility."
+msgstr "لکھائی اور چیزیں واضح دیکھنے کے لیے کنٹراسٹ بڑھائیں۔"
+
+msgid "Vision"
+msgstr "بینائی"
+
+msgid "Choose a color filter based on your visual needs."
+msgstr "اپنی بینائی کے مطابق رنگ کا فلٹر چنیں۔"
+
+msgid "Select vision..."
+msgstr "بینائی کا انداز چنیں..."
+
+msgid "Current Password"
+msgstr "موجودہ پاس ورڈ"
+
+msgid "New Password"
+msgstr "نیا پاس ورڈ"
+
+msgid "Type Password"
+msgstr "پاس ورڈ لکھیں"
+
+msgid "Confirm New Password"
+msgstr "نیا پاس ورڈ دوبارہ لکھیں"
+
+msgid "Login Info"
+msgstr "لاگ اِن معلومات"
+
+msgid "Account Email"
+msgstr "اکاؤنٹ ای میل"
+
+msgid "Enter Your Email"
+msgstr "اپنی ای میل لکھیں"
+
+msgid "Reset Password"
+msgstr "پاس ورڈ ری سیٹ کریں"
+
+msgid "Update Password"
+msgstr "پاس ورڈ اپ ڈیٹ کریں"
+
+msgid "Change Account Password"
+msgstr "اکاؤنٹ کا پاس ورڈ تبدیل کریں"
+
+msgid "Social Profile Link"
+msgstr "سوشل پروفائل لنک"
+
+msgid "Please enter a valid %s URL"
+msgstr "براہِ کرم درست %s لنک لکھیں"
+
+msgid "Withdrawal Method"
+msgstr "رقم نکلوانے کا طریقہ"
+
+msgid "There's no Withdrawal method selected yet! To select a Withdraw method, please contact the Site Admin."
+msgstr "ابھی رقم نکلوانے کا کوئی طریقہ نہیں چنا گیا! طریقہ چننے کے لیے سائٹ ایڈمن سے رابطہ کریں۔"
+
+msgid "Select Method"
+msgstr "طریقہ چنیں"
+
+msgid "Select a withdrawal method"
+msgstr "رقم نکلوانے کا طریقہ چنیں"
+
+msgid "Minimum withdraw amount is %s"
+msgstr "کم از کم رقم %s ہے"
+
+msgid "Available Balance"
+msgstr "دستیاب رقم"
+
+msgid "Selected Payment Method"
+msgstr "منتخب ادائیگی کا طریقہ"
+
+msgid "Amount"
+msgstr "رقم"
+
+msgid "Minimum withdrawal amount is: %s"
+msgstr "کم از کم نکلوانے کی رقم: %s"
+
+msgid "Request Withdrawal"
+msgstr "رقم نکلوانے کی درخواست کریں"
+
+msgid "Please contact the site administrator for more information."
+msgstr "مزید معلومات کے لیے سائٹ ایڈمن سے رابطہ کریں۔"
+
+msgid "Withdrawal request is pending approval, please hold tight."
+msgstr "رقم نکلوانے کی درخواست منظوری کی منتظر ہے، تھوڑا انتظار کریں۔"
+
+msgid "Available for Withdrawal"
+msgstr "نکلوانے کے لیے دستیاب"
+
+msgid "Withdrawal Request"
+msgstr "رقم نکلوانے کی درخواست"
+
+msgid "Net Income"
+msgstr "خالص آمدنی"
+
+msgid "Pending Withdrawals"
+msgstr "زیرِ التوا رقم"
+
+msgid "Total amount requested but not yet processed."
+msgstr "درخواست کی گئی مگر ابھی ادا نہیں ہوئی کل رقم۔"
+
+msgid "Withdrawal Total"
+msgstr "کل نکلوائی گئی رقم"
+
+msgid "You can update your %s."
+msgstr "آپ اپنا %s اپ ڈیٹ کر سکتے ہیں۔"
+
+msgid "Withdraw Preference"
+msgstr "رقم نکلوانے کی ترجیح"
+
+msgid "The preferred payment method is selected as %1$s. %2$s"
+msgstr "ترجیحی ادائیگی کا طریقہ %1$s ہے۔ %2$s"
+
+msgid "Withdrawal History"
+msgstr "رقم نکلوانے کی تاریخ"
+
+msgid "No withdrawal records found"
+msgstr "رقم نکلوانے کا کوئی ریکارڈ نہیں"
+
+msgid "New Announcement"
+msgstr "نیا اعلان"
+
+msgid "Search announcements..."
+msgstr "اعلانات تلاش کریں..."
+
+msgid "No Announcements Found"
+msgstr "کوئی اعلان نہیں ملا"
+
+msgid "Announcement actions"
+msgstr "اعلان کے اختیارات"
+
+msgid "Delete This Announcement?"
+msgstr "یہ اعلان حذف کریں؟"
+
+msgid "Are you sure you want to delete this announcement permanently? Please confirm your choice."
+msgstr "کیا آپ واقعی یہ اعلان ہمیشہ کے لیے حذف کرنا چاہتے ہیں؟ براہِ کرم تصدیق کریں۔"
+
+msgid "Select Course"
+msgstr "کورس چنیں"
+
+msgid "Select a course"
+msgstr "کورس چنیں"
+
+msgid "Announcement Title"
+msgstr "اعلان کا عنوان"
+
+msgid "Announcement title"
+msgstr "اعلان کا عنوان"
+
+msgid "Write a short announcement description."
+msgstr "اعلان کی مختصر تفصیل لکھیں۔"
+
+msgid "Logout"
+msgstr "لاگ آؤٹ"
+
+msgctxt "greetings"
+msgid "Hi,"
+msgstr "السلام علیکم،"
+
+msgid "<span class=\"tutor-font-medium\">%s</span> active course"
+msgid_plural "<span class=\"tutor-font-medium\">%s</span> active courses"
+msgstr[0] "<span class=\"tutor-font-medium\">%s</span> فعال کورس"
+msgstr[1] "<span class=\"tutor-font-medium\">%s</span> فعال کورسز"
+
+msgid "<span class=\"tutor-font-medium\">%s</span> student enrolled"
+msgid_plural "<span class=\"tutor-font-medium\">%s</span> students enrolled"
+msgstr[0] "<span class=\"tutor-font-medium\">%s</span> طالب علم داخل"
+msgstr[1] "<span class=\"tutor-font-medium\">%s</span> طلبہ داخل"
+
+msgid "Open user menu"
+msgstr "صارف کا مینیو کھولیں"
+
+msgid "Application Under Review"
+msgstr "درخواست زیرِ غور"
+
+msgid "Become an Instructor"
+msgstr "استاد بنیں"
+
+msgid "Switch to Learner"
+msgstr "طالب علم کے انداز میں جائیں"
+
+msgid "Switch to Instructor"
+msgstr "استاد کے انداز میں جائیں"
+
+msgid "Complete Your Profile"
+msgstr "اپنی پروفائل مکمل کریں"
+
+msgid "Toggle profile completion"
+msgstr "پروفائل کی تکمیل دکھائیں/چھپائیں"
+
+msgid "Student: "
+msgstr "طالب علم: "
+
+msgid "%d correct"
+msgstr "%d درست"
+
+msgid "%d incorrect"
+msgstr "%d غلط"
+
+msgid "Explore"
+msgstr "دریافت کریں"
+
+msgid "More"
+msgstr "مزید"
+
+msgid "Back to Site"
+msgstr "سائٹ پر واپس"
+
+msgid "Explore Courses"
+msgstr "کورسز دیکھیں"
+
+msgid "Enrolled Courses"
+msgstr "داخل شدہ کورسز"
+
+msgid "Active Courses"
+msgstr "جاری کورسز"
+
+msgid "Completed Courses"
+msgstr "مکمل کورسز"
+
+msgid "No Courses Found"
+msgstr "کوئی کورس نہیں ملا"
+
+msgid "lesson"
+msgid_plural "lessons"
+msgstr[0] "سبق"
+msgstr[1] "اسباق"
+
+msgid "%1$s of %2$s %3$s"
+msgid_plural "%1$s of %2$s %3$s"
+msgstr[0] "%2$s میں سے %1$s %3$s"
+msgstr[1] "%2$s میں سے %1$s %3$s"
+
+msgid "%1$s%% Complete"
+msgstr "%1$s%% مکمل"
+
+msgid "Lesson Comments"
+msgstr "سبق پر تبصرے"
+
+msgid "comment on"
+msgstr "پر تبصرہ"
+
+msgid "in"
+msgstr "میں"
+
+msgid "Reply"
+msgstr "جواب دیں"
+
+msgid "Write your comment"
+msgstr "اپنا تبصرہ لکھیں"
+
+msgid "Write your reply"
+msgstr "اپنا جواب لکھیں"
+
+msgid "Update"
+msgstr "اپ ڈیٹ کریں"
+
+msgid "Please enter a comment"
+msgstr "براہِ کرم تبصرہ لکھیں"
+
+msgid "No Comments Found!"
+msgstr "کوئی تبصرہ نہیں ملا!"
+
+msgid "Delete This Comment?"
+msgstr "یہ تبصرہ حذف کریں؟"
+
+msgid "Are you sure you want to delete this comment permanently? Please confirm your choice."
+msgstr "کیا آپ واقعی یہ تبصرہ ہمیشہ کے لیے حذف کرنا چاہتے ہیں؟ براہِ کرم تصدیق کریں۔"
+
+msgid "Replies"
+msgstr "جوابات"
+
+msgid "No Comments Found"
+msgstr "کوئی تبصرہ نہیں ملا"
+
+msgid "Go to Lesson"
+msgstr "سبق پر جائیں"
+
+msgid "Just drop your response here!"
+msgstr "اپنا جواب یہاں لکھیں!"
+
+msgid "Mark as Read"
+msgstr "پڑھا ہوا نشان زد کریں"
+
+msgid "Mark as Unread"
+msgstr "نہ پڑھا ہوا نشان زد کریں"
+
+msgid "asked in"
+msgstr "سوال کیا گیا"
+
+msgctxt "human-readable time difference"
+msgid "%s ago"
+msgstr "%s پہلے"
+
+msgid "Mark as Unresolved"
+msgstr "حل نہ شدہ نشان زد کریں"
+
+msgid "Mark as Solved"
+msgstr "حل شدہ نشان زد کریں"
+
+msgid "Solved"
+msgstr "حل شدہ"
+
+msgid "Unresolved"
+msgstr "حل نہ شدہ"
+
+msgid "Mark as Not Important"
+msgstr "غیر اہم نشان زد کریں"
+
+msgid "Mark as Important"
+msgstr "اہم نشان زد کریں"
+
+msgid "This conversation is important"
+msgstr "یہ گفتگو اہم ہے"
+
+msgid "Mark this conversation as important"
+msgstr "اس گفتگو کو اہم نشان زد کریں"
+
+msgid "Un-Archive"
+msgstr "محفوظ شدہ سے نکالیں"
+
+msgid "Archive"
+msgstr "محفوظ کریں"
+
+msgid "Write your question"
+msgstr "اپنا سوال لکھیں"
+
+msgid "Please enter your response."
+msgstr "براہِ کرم اپنا جواب لکھیں۔"
+
+msgid "No Questions Found!"
+msgstr "کوئی سوال نہیں ملا!"
+
+msgid "Delete This Question?"
+msgstr "یہ سوال حذف کریں؟"
+
+msgid "Are you sure you want to delete this question permanently? Please confirm your choice."
+msgstr "کیا آپ واقعی یہ سوال ہمیشہ کے لیے حذف کرنا چاہتے ہیں؟ براہِ کرم تصدیق کریں۔"
+
+msgid "Write your answer"
+msgstr "اپنا جواب لکھیں"
+
+msgid "Go to all Q&A"
+msgstr "تمام سوال و جواب دیکھیں"
+
+msgid "No course found"
+msgstr "کوئی کورس نہیں ملا"
+
+msgid "Sort By"
+msgstr "ترتیب"
+
+msgid "ASC"
+msgstr "بڑھتی"
+
+msgid "DESC"
+msgstr "گھٹتی"
+
+msgid "Create Date"
+msgstr "بنانے کی تاریخ"
+
+msgid "Loading..."
+msgstr "لوڈ ہو رہا ہے..."
+
+msgid "vs"
+msgstr "بمقابلہ"
+
+msgid "Instructor Application"
+msgstr "استاد کی درخواست"
+
+msgid "Do you want to start your career as an instructor?"
+msgstr "کیا آپ بطور استاد اپنا کیریئر شروع کرنا چاہتے ہیں؟"
+
+msgid "Tell us your qualifications, show us your passion, and begin teaching with us!"
+msgstr "اپنی قابلیت اور شوق بتائیں، اور ہمارے ساتھ پڑھانا شروع کریں!"
+
+msgid "Apply Now"
+msgstr "ابھی درخواست دیں"
+
+msgid "You're ready to start %s teaching!"
+msgstr "آپ %s پڑھانا شروع کرنے کے لیے تیار ہیں!"
+
+msgid "Create your first course and share your %s knowledge with learners around the world."
+msgstr "اپنا پہلا کورس بنائیں اور اپنا %s علم دنیا بھر کے طلبہ کے ساتھ بانٹیں۔"
+
+msgid "Create Your First Course"
+msgstr "اپنا پہلا کورس بنائیں"
+
+msgid "Thank you for applying to %s become an Instructor!"
+msgstr "%s استاد بننے کی درخواست کا شکریہ!"
+
+msgid "Our team is reviewing your application. Once %1$s approved, you'll be able to create and publish %2$s courses."
+msgstr "ہماری ٹیم آپ کی درخواست دیکھ رہی ہے۔ منظوری %1$s کے بعد آپ کورسز %2$s بنا اور شائع کر سکیں گے۔"
+
+msgid "Filter dashboard sections"
+msgstr "ڈیش بورڈ کے حصے فلٹر کریں"
+
+msgid "JavaScript is required to load your dashboard statistics. Please enable JavaScript in your browser to view your dashboard."
+msgstr "ڈیش بورڈ کے اعداد و شمار کے لیے JavaScript ضروری ہے۔ براہِ کرم اپنے براؤزر میں JavaScript چالو کریں۔"
+
+msgid "Earnings"
+msgstr "آمدنی"
+
+msgid "By: "
+msgstr "از: "
+
+msgid "Live Session"
+msgstr "لائیو سیشن"
+
+msgid "Open"
+msgstr "کھولیں"
+
+msgid "Thank you for applying to become an instructor. Our team is reviewing your application."
+msgstr "استاد بننے کی درخواست کا شکریہ۔ ہماری ٹیم آپ کی درخواست دیکھ رہی ہے۔"
+
+msgid "Application Approved"
+msgstr "درخواست منظور"
+
+msgid "Your application has been approved. You can now create and publish courses."
+msgstr "آپ کی درخواست منظور ہو گئی ہے۔ اب آپ کورسز بنا اور شائع کر سکتے ہیں۔"
+
+msgid "You have been rejected from being an instructor."
+msgstr "آپ کی استاد بننے کی درخواست مسترد ہو گئی ہے۔"
+
+msgid "Your application will be reviewed and the results will be sent to you by email."
+msgstr "آپ کی درخواست کا جائزہ لیا جائے گا اور نتیجہ ای میل سے بھیجا جائے گا۔"
+
+msgid "Your application has been accepted. Further necessary details have been sent to your registered email account."
+msgstr "آپ کی درخواست منظور ہو گئی ہے۔ مزید تفصیل آپ کی رجسٹرڈ ای میل پر بھیج دی گئی ہے۔"
+
+msgid "You have been blocked from being an instructor."
+msgstr "آپ کو بطور استاد بلاک کر دیا گیا ہے۔"
+
+msgid "Instructor Application Received"
+msgstr "استاد کی درخواست موصول"
+
+msgid "Thank you for registering as an instructor! "
+msgstr "بطور استاد رجسٹر ہونے کا شکریہ! "
+
+msgid "Congratulations! You are now registered as an instructor."
+msgstr "مبارک ہو! آپ اب بطور استاد رجسٹر ہیں۔"
+
+msgid "Unfortunately, your instructor status has been removed."
+msgstr "افسوس، آپ کی استاد کی حیثیت ختم کر دی گئی ہے۔"
+
+msgid "We've received your application, and we will review it soon. Please hang tight!"
+msgstr "ہمیں آپ کی درخواست مل گئی ہے، جلد اس کا جائزہ لیا جائے گا۔ تھوڑا انتظار کریں!"
+
+msgid "Start building your first course today and let your eLearning journey begin."
+msgstr "آج ہی اپنا پہلا کورس بنانا شروع کریں اور اپنا آن لائن تدریسی سفر شروع کریں۔"
+
+msgid "Please contact the site administrator for further information."
+msgstr "مزید معلومات کے لیے سائٹ ایڈمن سے رابطہ کریں۔"
+
+msgid "Go to Dashboard"
+msgstr "ڈیش بورڈ پر جائیں"
+
+msgid "Statistics"
+msgstr "اعداد و شمار"
+
+msgid "Ooh! Access Denied"
+msgstr "اوہ! رسائی نہیں"
+
+msgid "You do not have access to this area of the application. Please refer to your system  administrator."
+msgstr "آپ کو اس حصے تک رسائی نہیں۔ براہِ کرم اپنے سسٹم ایڈمن سے رابطہ کریں۔"
+
+msgid "Go to Home"
+msgstr "ہوم پر جائیں"
+
+msgid "User Name"
+msgstr "یوزر نیم"
+
+msgid "E-Mail"
+msgstr "ای میل"
+
+msgid "Password"
+msgstr "پاس ورڈ"
+
+msgid "Toggle password visibility"
+msgstr "پاس ورڈ دکھائیں/چھپائیں"
+
+msgid "Password confirmation"
+msgstr "پاس ورڈ کی تصدیق"
+
+msgid "Password Confirmation"
+msgstr "پاس ورڈ کی تصدیق"
+
+msgid "By signing up, you agree to the "
+msgstr "سائن اپ کر کے آپ ان سے متفق ہیں: "
+
+msgid "Terms and Conditions"
+msgstr "شرائط و ضوابط"
+
+msgid "Register as instructor"
+msgstr "بطور استاد رجسٹر کریں"
+
+msgid "Already have an account?"
+msgstr "پہلے سے اکاؤنٹ ہے؟"
+
+msgid "Login"
+msgstr "لاگ اِن"
+
+msgid "You are already logged in"
+msgstr "آپ پہلے ہی لاگ اِن ہیں"
+
+msgid "Schedule"
+msgstr "شیڈول"
+
+msgid "Search courses..."
+msgstr "کورسز تلاش کریں..."
+
+msgid "Plan:"
+msgstr "پلان:"
+
+msgid "Course Actions"
+msgstr "کورس کے اختیارات"
+
+msgid "Submit"
+msgstr "جمع کریں"
+
+msgid "Cancel Submission"
+msgstr "جمع کرنا منسوخ کریں"
+
+msgid "Duplicate"
+msgstr "نقل بنائیں"
+
+msgid "Move to Draft"
+msgstr "مسودے میں ڈالیں"
+
+msgid "Delete This Course?"
+msgstr "یہ کورس حذف کریں؟"
+
+msgid "Are you sure you want to delete this course permanently from the site? Please confirm your choice."
+msgstr "کیا آپ واقعی یہ کورس سائٹ سے ہمیشہ کے لیے حذف کرنا چاہتے ہیں؟ براہِ کرم تصدیق کریں۔"
+
+msgid "Quiz info"
+msgstr "کوئز کی معلومات"
+
+msgid "Previous Attempts"
+msgstr "پچھلی کوششیں"
+
+msgid "No Quiz Attempts Found"
+msgstr "کوئز کی کوئی کوشش نہیں ملی"
+
+msgid "Retake Quiz?"
+msgstr "کوئز دوبارہ دیں؟"
+
+msgid "Search quizzes..."
+msgstr "کوئز تلاش کریں..."
+
+msgid "Do You Want to Delete This?"
+msgstr "کیا آپ اسے حذف کرنا چاہتے ہیں؟"
+
+msgid "Would you like to delete Quiz Attempt permanently? We suggest you proceed with caution."
+msgstr "کیا آپ کوئز کی یہ کوشش ہمیشہ کے لیے حذف کرنا چاہتے ہیں؟ احتیاط سے آگے بڑھیں۔"
+
+msgid "Instructor Feedback"
+msgstr "استاد کی رائے"
+
+msgid "Write your feedback"
+msgstr "اپنی رائے لکھیں"
+
+msgid "Attempt not found or access permission denied"
+msgstr "کوشش نہیں ملی یا رسائی کی اجازت نہیں"
+
+msgid "Oooh! Access Denied"
+msgstr "اوہ! رسائی نہیں"
+
+msgid "Register"
+msgstr "رجسٹر کریں"
+
+msgid "Continue Learning"
+msgstr "پڑھائی جاری رکھیں"
+
+msgid "See All"
+msgstr "سب دیکھیں"
+
+msgid "Discussions are a great place to ask questions"
+msgstr "سوال پوچھنے کے لیے گفتگو بہترین جگہ ہے"
+
+msgid "You can pause and resume courses any time"
+msgstr "آپ کسی بھی وقت کورس روک کر دوبارہ شروع کر سکتے ہیں"
+
+msgid "Welcome to %s"
+msgstr "%s میں خوش آمدید"
+
+msgid "Confetti"
+msgstr "مبارک باد"
+
+msgid "You haven't enrolled in %s a course yet."
+msgstr "آپ نے ابھی %s کسی کورس میں داخلہ نہیں لیا۔"
+
+msgid "Explore course and start building your %s skills today."
+msgstr "کورسز دیکھیں اور آج ہی اپنی %s مہارت بڑھانا شروع کریں۔"
+
+msgid "Quick Tips"
+msgstr "مفید مشورے"
+
+msgid "Make the most of your learning experience"
+msgstr "اپنی پڑھائی سے بھرپور فائدہ اٹھائیں"
+
+msgctxt "abbreviation for hours with plus sign"
+msgid "h+"
+msgstr "گھنٹے+"
+
+msgctxt "abbreviation for minutes with plus sign"
+msgid "m+"
+msgstr "منٹ+"
+
+msgctxt "time unit"
+msgid "hours"
+msgstr "گھنٹے"
+
+msgctxt "time unit"
+msgid "minutes"
+msgstr "منٹ"
+
+msgid "%1$d %2$s"
+msgstr "%1$d %2$s"
+
+msgid "%1$d+ %2$s"
+msgstr "%1$d+ %2$s"
+
+msgid "Time Spent"
+msgstr "گزارا گیا وقت"
+
+msgid "That's %1$s minutes, and %2$s seconds! Incredible!"
+msgstr "یہ %1$s منٹ اور %2$s سیکنڈ ہیں! زبردست!"
+
+msgid "That's %1$s minutes! Incredible!"
+msgstr "یہ %1$s منٹ ہیں! زبردست!"
+
+msgid "That's %1$s seconds! Incredible!"
+msgstr "یہ %1$s سیکنڈ ہیں! زبردست!"
+
+msgid "That's 0 seconds! Incredible!"
+msgstr "یہ 0 سیکنڈ ہیں! زبردست!"
+
+msgid "Fantastic,"
+msgstr "شاندار،"
+
+msgid "You've dedicated over"
+msgstr "آپ نے پڑھائی کو دیا ہے"
+
+msgid "I'm Happy"
+msgstr "میں خوش ہوں"
+
+msgid "Learners"
+msgstr "طلبہ"
+
+msgid "Phone"
+msgstr "فون"
+
+msgid "Please define alert class"
+msgstr "براہِ کرم الرٹ کلاس بتائیں"
+
+msgid "Size"
+msgstr "سائز"
+
+msgid "No Attachment Found"
+msgstr "کوئی منسلک فائل نہیں ملی"
+
+msgid "Instructor Cover Photo"
+msgstr "استاد کی کور فوٹو"
+
+msgid "Back to dashboard"
+msgstr "ڈیش بورڈ پر واپس"
+
+msgid "Toggle course sidebar"
+msgstr "کورس کی سائیڈ بار دکھائیں/چھپائیں"
+
+msgid "Close course sidebar"
+msgstr "کورس کی سائیڈ بار بند کریں"
+
+msgid "%s Completed"
+msgstr "%s مکمل"
+
+msgid "Reset Progress"
+msgstr "پیش رفت ری سیٹ کریں"
+
+msgid "Reset Course Progress?"
+msgstr "کورس کی پیش رفت ری سیٹ کریں؟"
+
+msgid "This will remove your completed lessons, quizzes, and assignments. You will start the course from the beginning."
+msgstr "اس سے آپ کے مکمل اسباق، کوئز اور اسائنمنٹس ہٹ جائیں گے۔ آپ کورس شروع سے کریں گے۔"
+
+msgid "No, Keep My Progress"
+msgstr "نہیں، میری پیش رفت رہنے دیں"
+
+msgid "Yes, Reset Everything"
+msgstr "ہاں، سب ری سیٹ کریں"
+
+msgid "Expand panel"
+msgstr "پینل کھولیں"
+
+msgid "Collapse panel"
+msgstr "پینل بند کریں"
+
+msgid "Exit fullscreen"
+msgstr "فل اسکرین سے باہر"
+
+msgid "Enter fullscreen"
+msgstr "فل اسکرین"
+
+msgid "Learning area"
+msgstr "سیکھنے کی جگہ"
+
+msgid "Quiz Attempt Details: %s"
+msgstr "کوئز کی کوشش کی تفصیل: %s"
+
+msgid "Quiz: %s"
+msgstr "کوئز: %s"
+
+msgid "Finish Course Early?"
+msgstr "کورس جلدی ختم کریں؟"
+
+msgid "Go Back to Course"
+msgstr "کورس پر واپس جائیں"
+
+msgid "Complete Anyway"
+msgstr "پھر بھی مکمل کریں"
+
+msgid "Start the Course Again?"
+msgstr "کورس دوبارہ شروع کریں؟"
+
+msgid "Retaking the course will reset your progress and start everything from the beginning."
+msgstr "کورس دوبارہ کرنے سے آپ کی پیش رفت ری سیٹ ہو جائے گی اور سب کچھ شروع سے ہو گا۔"
+
+msgid "Start Retake"
+msgstr "دوبارہ شروع کریں"
+
+msgid "Collapse all replies"
+msgstr "تمام جوابات بند کریں"
+
+msgid "%d more reply"
+msgid_plural "%d more replies"
+msgstr[0] "%d مزید جواب"
+msgstr[1] "%d مزید جوابات"
+
+msgid "Join The Conversation"
+msgstr "گفتگو میں شامل ہوں"
+
+msgid "Write your comment..."
+msgstr "اپنا تبصرہ لکھیں..."
+
+msgid "Be the first to ask a question about this lesson!"
+msgstr "اس سبق کے بارے میں پہلا سوال آپ پوچھیں!"
+
+msgid "Delete This Item?"
+msgstr "یہ آئٹم حذف کریں؟"
+
+msgid "This action cannot be undone."
+msgstr "یہ واپس نہیں ہو سکے گا۔"
+
+msgid "Previous"
+msgstr "پچھلا"
+
+msgid "Mark as Complete"
+msgstr "مکمل نشان زد کریں"
+
+msgid "Next"
+msgstr "اگلا"
+
+msgid "Your quiz was abandoned automatically because time expired before you submitted it."
+msgstr "جمع کرانے سے پہلے وقت ختم ہو گیا، اس لیے آپ کا کوئز خود بخود ختم کر دیا گیا۔"
+
+msgid "Your quiz has been submitted automatically."
+msgstr "آپ کا کوئز خود بخود جمع ہو گیا ہے۔"
+
+msgid "Stay Here"
+msgstr "یہیں رہیں"
+
+msgid "Question No: %s"
+msgstr "سوال نمبر: %s"
+
+msgid "Nicely Done!"
+msgstr "بہت خوب!"
+
+msgid "Wrong Answer"
+msgstr "غلط جواب"
+
+msgid "Skip Question"
+msgstr "سوال چھوڑیں"
+
+msgid "Submit Quiz"
+msgstr "کوئز جمع کریں"
+
+msgid "Leave this Quiz?"
+msgstr "یہ کوئز چھوڑ دیں؟"
+
+msgid "If you leave now, your quiz will be submitted with the answers completed so far."
+msgstr "اگر آپ ابھی چھوڑیں گے تو اب تک کے جوابات کے ساتھ کوئز جمع ہو جائے گا۔"
+
+msgid "Yes, Leave Quiz"
+msgstr "ہاں، کوئز چھوڑ دیں"
+
+msgid "Quiz Submitted"
+msgstr "کوئز جمع ہو گیا"
+
+msgid "Your answers are locked in. Ready to check your score?"
+msgstr "آپ کے جوابات جمع ہو گئے۔ اپنا نتیجہ دیکھنے کے لیے تیار ہیں؟"
+
+msgid "View Results"
+msgstr "نتیجہ دیکھیں"
+
+msgid "Times up!"
+msgstr "وقت ختم!"
+
+msgid "Starting Quiz in"
+msgstr "کوئز شروع ہو رہا ہے"
+
+msgid "You answered <strong x-text=\"payload?.attempted ?? 0\"></strong> of <strong x-text=\"payload?.total ?? 0\"></strong> questions. %s"
+msgstr "آپ نے <strong x-text=\"payload?.total ?? 0\"></strong> میں سے <strong x-text=\"payload?.attempted ?? 0\"></strong> سوالات کے جواب دیے۔ %s"
+
+msgid "OK"
+msgstr "ٹھیک ہے"
+
+msgid "Quit"
+msgstr "چھوڑ دیں"
+
+msgid "Points: "
+msgstr "پوائنٹس: "
+
+msgid "The answer for this question is required"
+msgstr "اس سوال کا جواب ضروری ہے"
+
+msgid "Type your answer here"
+msgstr "اپنا جواب یہاں لکھیں"
+
+msgid "Write your answer here"
+msgstr "اپنا جواب یہاں لکھیں"
+
+msgid "Drop here"
+msgstr "یہاں چھوڑیں"
+
+msgid "Clear matched option"
+msgstr "ملایا ہوا جواب ہٹائیں"
+
+msgid "Drag from here"
+msgstr "یہاں سے کھینچیں"
+
+msgid "Drag matching option"
+msgstr "ملانے والا جواب کھینچیں"
+
+msgid "Please select an option to answer"
+msgstr "جواب دینے کے لیے ایک اختیار چنیں"
+
+msgid "Please select at least one option to answer."
+msgstr "جواب دینے کے لیے کم از کم ایک اختیار چنیں۔"
+
+msgid "The answer exceeds the allowed character limit"
+msgstr "جواب حروف کی حد سے زیادہ ہے"
+
+msgid "Character Remaining: "
+msgstr "باقی حروف: "
+
+msgid "Reorder item"
+msgstr "آئٹم کی ترتیب بدلیں"
+
+msgid "No Announcements Found!"
+msgstr "کوئی اعلان نہیں ملا!"
+
+msgid "By:"
+msgstr "از:"
+
+msgid "%s Student"
+msgid_plural "%s Students"
+msgstr[0] "%s طالب علم"
+msgstr[1] "%s طلبہ"
+
+msgid "Student Ratings"
+msgstr "طلبہ کی ریٹنگ"
+
+msgid "%s File"
+msgid_plural "%s Files"
+msgstr[0] "%s فائل"
+msgstr[1] "%s فائلیں"
+
+msgid "Resources"
+msgstr "وسائل"
+
+msgid "Materials"
+msgstr "مواد"
+
+msgid "Audience"
+msgstr "کس کے لیے"
+
+msgid "%s Last Updated"
+msgstr "آخری اپ ڈیٹ %s"
+
+msgid "by %s"
+msgstr "از %s"
+
+msgid "About this Course"
+msgstr "اس کورس کے بارے میں"
+
+msgid "What you'll learn"
+msgstr "آپ کیا سیکھیں گے"
+
+msgid "Question & Answer"
+msgstr "سوال و جواب"
+
+msgid "Asked questions..."
+msgstr "پوچھے گئے سوالات..."
+
+msgid "Write a Review"
+msgstr "تبصرہ لکھیں"
+
+msgid "How Was Your Experience?"
+msgstr "آپ کا تجربہ کیسا رہا؟"
+
+msgid "Your feedback helps others find the right course."
+msgstr "آپ کی رائے دوسروں کو صحیح کورس چننے میں مدد دیتی ہے۔"
+
+msgid "No Reviews Found!"
+msgstr "کوئی تبصرہ نہیں ملا!"
+
+msgid "Student Ratings & Reviews"
+msgstr "طلبہ کی ریٹنگ اور تبصرے"
+
+msgid "Based on %s rating"
+msgid_plural "Based on %s ratings"
+msgstr[0] "%s ریٹنگ کی بنیاد پر"
+msgstr[1] "%s ریٹنگز کی بنیاد پر"
+
+msgid "%s rating"
+msgid_plural "%s ratings"
+msgstr[0] "%s ریٹنگ"
+msgstr[1] "%s ریٹنگز"
+
+msgid "Rating is required"
+msgstr "ریٹنگ ضروری ہے"
+
+msgid "Write Your Review"
+msgstr "اپنا تبصرہ لکھیں"
+
+msgid "Tell us about your experience. Was it a good match for you?"
+msgstr "اپنا تجربہ بتائیں۔ کیا یہ کورس آپ کے لیے مناسب تھا؟"
+
+msgid "Submit Review"
+msgstr "تبصرہ جمع کریں"
+
+msgid "Your Review"
+msgstr "آپ کا تبصرہ"
+
+msgid "Username or Email Address"
+msgstr "یوزر نیم یا ای میل"
+
+msgid "Keep me signed in"
+msgstr "مجھے لاگ اِن رکھیں"
+
+msgid "Forgot Password?"
+msgstr "پاس ورڈ بھول گئے؟"
+
+msgid "Sign In"
+msgstr "سائن اِن"
+
+msgid "Don't have an account?"
+msgstr "اکاؤنٹ نہیں ہے؟"
+
+msgid "Register Now"
+msgstr "ابھی رجسٹر کریں"
+
+msgid "Hi, Welcome back!"
+msgstr "خوش آمدید!"
+
+msgid "No EDD product for this course"
+msgstr "اس کورس کے لیے کوئی EDD پروڈکٹ نہیں"
+
+msgid "Add to Cart"
+msgstr "کارٹ میں ڈالیں"
+
+msgid "Start Learning"
+msgstr "پڑھائی شروع کریں"
+
+msgid "Review Progress"
+msgstr "پیش رفت دیکھیں"
+
+msgid "Enroll Course"
+msgstr "کورس میں داخلہ لیں"
+
+msgid "% Booked"
+msgstr "% بک ہو چکا"
+
+msgid "Ok"
+msgstr "ٹھیک ہے"
+
+msgid "You don't have permission to access this page"
+msgstr "آپ کو اس صفحے تک رسائی کی اجازت نہیں"
+
+msgid "Please make sure you are logged in to correct account if the content needs authorization."
+msgstr "اگر مواد کے لیے اجازت درکار ہے تو یقینی بنائیں کہ آپ درست اکاؤنٹ سے لاگ اِن ہیں۔"
+
+msgid "Bio data is empty"
+msgstr "تعارف خالی ہے"
+
+msgid "No course yet."
+msgstr "ابھی کوئی کورس نہیں۔"
+
+msgid "Courses Enrolled"
+msgstr "داخل شدہ کورسز"
+
+msgid "Courses Completed"
+msgstr "مکمل کیے گئے کورسز"
+
+msgid "Course Completed"
+msgstr "کورس مکمل"
+
+msgid "Biography"
+msgstr "تعارف"
+
+msgid "Attempt not found"
+msgstr "کوشش نہیں ملی"
+
+msgid "Quiz Summary"
+msgstr "کوئز کا خلاصہ"
+
+msgid "Review your answers"
+msgstr "اپنے جوابات دیکھیں"
+
+msgid "Score: %1$s/%2$s"
+msgstr "نمبر: %1$s/%2$s"
+
+msgid "Mark as correct"
+msgstr "درست نشان زد کریں"
+
+msgid "Mark as incorrect"
+msgstr "غلط نشان زد کریں"
+
+msgid "Quiz questions"
+msgstr "کوئز کے سوالات"
+
+msgid "Given Answer"
+msgstr "دیا گیا جواب"
+
+msgid "Correct Answer"
+msgstr "درست جواب"
+
+msgid "Mark cannot be negative"
+msgstr "نمبر منفی نہیں ہو سکتے"
+
+msgid "Mark cannot exceed %s"
+msgstr "نمبر %s سے زیادہ نہیں ہو سکتے"
+
+msgid "Mark is required"
+msgstr "نمبر ضروری ہیں"
+
+msgid "No answer submitted"
+msgstr "کوئی جواب جمع نہیں ہوا"
+
+msgid "Obtained marks"
+msgstr "حاصل کردہ نمبر"
+
+msgid "Add Feedback"
+msgstr "رائے شامل کریں"
+
+msgid "Show Feedback"
+msgstr "رائے دیکھیں"
+
+msgid "Edit Feedback"
+msgstr "رائے میں ترمیم کریں"
+
+msgid "Write feedback"
+msgstr "رائے لکھیں"
+
+msgid "Write feedback for the student..."
+msgstr "طالب علم کے لیے رائے لکھیں..."
+
+msgid "Feedback from instructor"
+msgstr "استاد کی رائے"
+
+msgid "Topic"
+msgstr "موضوع"
+
+msgid "Earned Marks"
+msgstr "حاصل کردہ نمبر"
+
+msgid "Pass Marks"
+msgstr "پاس ہونے کے نمبر"
+
+msgid "of %s"
+msgstr "%s میں سے"
+
+msgid "Attempted on: %s"
+msgstr "کوشش کی تاریخ: %s"
+
+msgid "Attempted by:"
+msgstr "کوشش کرنے والا:"
+
+msgid "Edited by Instructor"
+msgstr "استاد نے تبدیل کیا"
+
+msgid "No Questions Answered."
+msgstr "کسی سوال کا جواب نہیں دیا گیا۔"
+
+msgid "%d Attempts"
+msgstr "%d کوششیں"
+
+msgid "Attempt %d"
+msgstr "کوشش %d"
+
+msgid "Take the Tour"
+msgstr "تعارفی دورہ کریں"
+
+msgid "Get Started"
+msgstr "شروع کریں"
+
+msgid "Skip"
+msgstr "چھوڑیں"
+
+msgid "Your learning experience just got a whole lot better"
+msgstr "آپ کا سیکھنے کا تجربہ اب بہت بہتر ہو گیا ہے"
+
+msgid "Find quiz attempts inside your courses"
+msgstr "کوئز کی کوششیں اپنے کورسز کے اندر دیکھیں"
+
+msgid "Access all your lesson & video notes in one place"
+msgstr "اپنے تمام سبق اور ویڈیو نوٹس ایک جگہ دیکھیں"
+
+msgid "Everything about your account now lives in one place"
+msgstr "آپ کے اکاؤنٹ کی ہر چیز اب ایک جگہ ہے"
+
+msgid "Switch between dark and light mode whenever you like"
+msgstr "جب چاہیں ڈارک اور لائٹ موڈ تبدیل کریں"
+
+msgid "Relevant"
+msgstr "متعلقہ"
+
+msgid "New"
+msgstr "نیا"
+
+msgid "Popular"
+msgstr "مقبول"
+
+msgid "Filters"
+msgstr "فلٹرز"
+
+msgid "Clear"
+msgstr "صاف کریں"
+
+msgid "Show More"
+msgstr "مزید دکھائیں"
+
+msgid "Search any instructor..."
+msgstr "کوئی بھی استاد تلاش کریں..."
+
+msgid "Sort by"
+msgstr "ترتیب"
+
+msgid "Your Progress:"
+msgstr "آپ کی پیش رفت:"
+
+msgid "of "
+msgstr "میں سے "
+
+msgid "Please make sure that your EDD product exists and valid for this course"
+msgstr "یقینی بنائیں کہ آپ کا EDD پروڈکٹ موجود اور اس کورس کے لیے درست ہے"
+
+msgid "Please make sure that your product exists and valid for this course"
+msgstr "یقینی بنائیں کہ آپ کا پروڈکٹ موجود اور اس کورس کے لیے درست ہے"
+
+msgid "Continue to lesson"
+msgstr "سبق جاری رکھیں"
+
+msgid "What Will You Learn?"
+msgstr "آپ کیا سیکھیں گے؟"
+
+msgid "About Course"
+msgstr "کورس کے بارے میں"
+
+msgid "Last Updated"
+msgstr "آخری اپ ڈیٹ"
+
+msgid "Course Progress"
+msgstr "کورس کی پیش رفت"
+
+msgid "Retake This Course"
+msgstr "یہ کورس دوبارہ کریں"
+
+msgid "Complete Course"
+msgstr "کورس مکمل کریں"
+
+msgid "You enrolled in this course on"
+msgstr "آپ نے اس کورس میں داخلہ لیا"
+
+msgid "This course is full right now. We limit the number of students to create an optimized and productive group dynamic."
+msgstr "یہ کورس ابھی بھرا ہوا ہے۔ بہتر تدریس کے لیے طلبہ کی تعداد محدود رکھی جاتی ہے۔"
+
+msgid "Enroll Now"
+msgstr "ابھی داخلہ لیں"
+
+msgid "Free access this course"
+msgstr "اس کورس تک مفت رسائی"
+
+msgid "Load More"
+msgstr "مزید لوڈ کریں"
+
+msgid "A course by"
+msgstr "کورس از"
+
+msgid "Categories:"
+msgstr "زمرے:"
+
+msgid "Uncategorized"
+msgstr "بغیر زمرہ"
+
+msgid "Material Includes"
+msgstr "شامل مواد"
+
+msgid "This feature has been disabled by the administrator"
+msgstr "یہ سہولت ایڈمن نے بند کر دی ہے"
+
+msgid "No Review Yet"
+msgstr "ابھی کوئی تبصرہ نہیں"
+
+msgid "Total "
+msgstr "کل "
+
+msgid " Rating"
+msgid_plural " Ratings"
+msgstr[0] " ریٹنگ"
+msgstr[1] " ریٹنگز"
+
+msgid "%s Rating"
+msgid_plural "%s Ratings"
+msgstr[0] "%s ریٹنگ"
+msgstr[1] "%s ریٹنگز"
+
+msgid "Write a review"
+msgstr "تبصرہ لکھیں"
+
+msgid "Edit review"
+msgstr "تبصرے میں ترمیم کریں"
+
+msgid "write a review"
+msgstr "تبصرہ لکھیں"
+
+msgid "Join the conversation"
+msgstr "گفتگو میں شامل ہوں"
+
+msgid "Write your comment here…"
+msgstr "اپنا تبصرہ یہاں لکھیں…"
+
+msgid "Please enroll in this course to view course content."
+msgstr "کورس کا مواد دیکھنے کے لیے اس کورس میں داخلہ لیں۔"
+
+msgid "Course name : %s"
+msgstr "کورس کا نام: %s"
+
+msgid "No questions yet"
+msgstr "ابھی کوئی سوال نہیں"
+
+msgid "Describe what you're trying to achieve and where you're getting stuck"
+msgstr "بتائیں آپ کیا کرنا چاہتے ہیں اور کہاں مشکل آ رہی ہے"
+
+msgid "Back to course list"
+msgstr "کورسز کی فہرست پر واپس"
+
+msgid "Course is locked"
+msgstr "کورس بند ہے"
+
+msgid "Enter your password"
+msgstr "اپنا پاس ورڈ لکھیں"
+
+msgid "Show password"
+msgstr "پاس ورڈ دکھائیں"
+
+msgid "Finish"
+msgstr "ختم کریں"
+
+msgid "No course found for this quiz"
+msgstr "اس کوئز کا کوئی کورس نہیں ملا"
+
+msgid "It seems there is no course belongs with this quiz, you can not attempt on this quiz without a course belongs, please notify to your instructor to fix this issue."
+msgstr "لگتا ہے یہ کوئز کسی کورس سے منسلک نہیں، اس لیے آپ یہ کوئز نہیں دے سکتے۔ براہِ کرم اپنے استاد کو بتائیں۔"
+
+msgid "Drag your answer"
+msgstr "اپنا جواب کھینچیں"
+
+msgid "Questions No"
+msgstr "سوال نمبر"
+
+msgid "Total Attempted"
+msgstr "کل کوششیں"
+
+msgid "Attempts Allowed"
+msgstr "اجازت شدہ کوششیں"
+
+msgid "No limit"
+msgstr "کوئی حد نہیں"
+
+msgid "Time remaining: "
+msgstr "باقی وقت: "
+
+msgid "Reattempt"
+msgstr "دوبارہ کوشش"
+
+msgid "Marks : "
+msgstr "نمبر: "
+
+msgid "Submit &amp; Next"
+msgstr "جمع کریں اور آگے"
+
+msgid "Week"
+msgstr "ہفتہ"
+
+msgid "%1$s %2$s"
+msgstr "%1$s %2$s"
+
+msgid "Enter Password and Confirm Password to reset your password"
+msgstr "پاس ورڈ ری سیٹ کرنے کے لیے نیا پاس ورڈ اور اس کی تصدیق لکھیں"
+
+msgid "Confirm Password"
+msgstr "پاس ورڈ کی تصدیق"
+
+msgid "Reset password"
+msgstr "پاس ورڈ ری سیٹ کریں"
+
+msgid "Lost your password? Please enter your username or email address. You will receive a link to create a new password via email."
+msgstr "پاس ورڈ بھول گئے؟ اپنا یوزر نیم یا ای میل لکھیں۔ نیا پاس ورڈ بنانے کا لنک آپ کو ای میل کر دیا جائے گا۔"
+
+msgid "Username or email"
+msgstr "یوزر نیم یا ای میل"
+
+msgid "Edit Profile"
+msgstr "پروفائل میں ترمیم کریں"
+
+msgid "… Read more"
+msgstr "… مزید پڑھیں"
+
+msgid "Read less"
+msgstr "کم دکھائیں"
+
+msgid "Member since"
+msgstr "رکن بنے"
+
+msgid "Date"
+msgstr "تاریخ"
+
+msgid "Published Date"
+msgstr "شائع ہونے کی تاریخ"
+
+msgid "Are you sure you want to delete this Announcement permanently from the site? Please confirm your choice."
+msgstr "کیا آپ واقعی یہ اعلان سائٹ سے ہمیشہ کے لیے حذف کرنا چاہتے ہیں؟ براہِ کرم تصدیق کریں۔"
+
+msgid "Edit Announcement"
+msgstr "اعلان میں ترمیم کریں"
+
+msgid "Create Announcement"
+msgstr "اعلان بنائیں"
+
+msgid "Upload Attachments"
+msgstr "فائلیں اپ لوڈ کریں"
+
+msgid "Select or Upload Media Of Your Chosen Persuasion"
+msgstr "میڈیا چنیں یا اپ لوڈ کریں"
+
+msgid "Use this media"
+msgstr "یہ میڈیا استعمال کریں"
+
+msgid "Size: "
+msgstr "سائز: "
+
+msgid "700x430 pixels"
+msgstr "700x430 پکسل"
+
+msgid "File Support: "
+msgstr "قابلِ قبول فائلیں: "
+
+msgctxt "tutor-supported-image-type"
+msgid ".jpg, .jpeg,. gif, or .png"
+msgstr ".jpg, .jpeg, .gif یا .png"
+
+msgid "Upload Image"
+msgstr "تصویر اپ لوڈ کریں"
+
+msgid "Type"
+msgstr "قسم"
+
+msgid "Action"
+msgstr "عمل"
+
+msgid "Write here..."
+msgstr "یہاں لکھیں..."
+
+msgid "Question"
+msgstr "سوال"
+
+msgid "Waiting Since"
+msgstr "کب سے انتظار"
+
+msgid "Do you have any questions?"
+msgstr "کیا آپ کا کوئی سوال ہے؟"
+
+msgid "Ask a New Question"
+msgstr "نیا سوال پوچھیں"
+
+msgid "Ask Question"
+msgstr "سوال پوچھیں"
+
+msgid "ago"
+msgstr "پہلے"
+
+msgid "Do You Want to Delete This Question?"
+msgstr "کیا آپ یہ سوال حذف کرنا چاہتے ہیں؟"
+
+msgid "All the replies also will be deleted."
+msgstr "اس کے تمام جوابات بھی حذف ہو جائیں گے۔"
+
+msgid "Un-archive"
+msgstr "محفوظ شدہ سے نکالیں"
+
+msgid "Mark as read"
+msgstr "پڑھا ہوا نشان زد کریں"
+
+msgid "Instructor Note"
+msgstr "استاد کا نوٹ"
+
+msgid "Quiz Overview"
+msgstr "کوئز کا جائزہ"
+
+msgid "Save mark"
+msgstr "نمبر محفوظ کریں"
+
+msgid "Show feedback"
+msgstr "رائے دیکھیں"
+
+msgid "Add feedback"
+msgstr "رائے شامل کریں"
+
+msgid "(Overrides the auto-graded result)"
+msgstr "(خودکار نتیجے کی جگہ لے گا)"
+
+msgid "No answered questions to display"
+msgstr "دکھانے کے لیے کوئی جواب شدہ سوال نہیں"
+
+msgid "Are you sure you want to delete this feedback?"
+msgstr "کیا آپ واقعی یہ رائے حذف کرنا چاہتے ہیں؟"
+
+msgid "No, keep it"
+msgstr "نہیں، رہنے دیں"
+
+msgid "Yes, delete"
+msgstr "ہاں، حذف کریں"
+
+msgid "Student:"
+msgstr "طالب علم:"
+
+msgid "Quiz Info"
+msgstr "کوئز کی معلومات"
+
+msgid "Incorrect Answer"
+msgstr "غلط جواب"
+
+msgid "Attempt By"
+msgstr "کوشش کرنے والا"
+
+msgid "Attempt Time"
+msgstr "کوشش کا وقت"
+
+msgid "No"
+msgstr "نہیں"
+
+msgid "Passing Marks"
+msgstr "پاس ہونے کے نمبر"
+
+msgid "Updated"
+msgstr "اپ ڈیٹ"

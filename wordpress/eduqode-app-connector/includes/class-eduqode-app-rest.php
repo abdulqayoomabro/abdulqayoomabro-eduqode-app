@@ -98,6 +98,15 @@ class EduQode_App_Rest {
         );
         register_rest_route(
             self::NS,
+            '/me/language',
+            array(
+                'methods'             => 'POST',
+                'callback'            => array( __CLASS__, 'set_language' ),
+                'permission_callback' => $auth,
+            )
+        );
+        register_rest_route(
+            self::NS,
             '/notifications',
             array(
                 'methods'             => 'GET',
@@ -137,7 +146,19 @@ class EduQode_App_Rest {
             'server_time' => time() * 1000,
             'offline'     => EduQode_App_Courses::offline_enabled(),
             'version'     => EDUQODE_APP_VERSION,
+            'locale'      => (string) get_user_meta( $user->ID, 'locale', true ),
         );
+    }
+
+    /** The app's language choice also changes the website's language for this user ("ur" or "en"). */
+    public static function set_language( $request ) {
+        $want   = (string) $request->get_param( 'language' );
+        $locale = 'ur' === $want ? 'ur' : ( 'en' === $want ? 'en_US' : null );
+        if ( null === $locale ) {
+            return new WP_Error( 'eduqode_bad_language', 'Use "ur" or "en".', array( 'status' => 400 ) );
+        }
+        eduqode_set_user_language( get_current_user_id(), $locale );
+        return array( 'locale' => $locale );
     }
 
     public static function courses() {

@@ -1,5 +1,7 @@
 package com.eduqode.app.offline
 
+import com.eduqode.app.tr
+
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -20,12 +22,12 @@ object Notifier {
     private const val CH_SYNC = "sync"
     private const val CH_NEWS = "news"
 
-    private fun ensureChannels(context: Context) {
+    fun ensureChannels(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val nm = context.getSystemService(NotificationManager::class.java)
-        nm.createNotificationChannel(NotificationChannel(CH_DOWNLOADS, "Course downloads", NotificationManager.IMPORTANCE_LOW))
-        nm.createNotificationChannel(NotificationChannel(CH_SYNC, "Progress sync", NotificationManager.IMPORTANCE_LOW))
-        nm.createNotificationChannel(NotificationChannel(CH_NEWS, "Course news (new lessons, results, deadlines)", NotificationManager.IMPORTANCE_DEFAULT))
+        nm.createNotificationChannel(NotificationChannel(CH_DOWNLOADS, tr("Course downloads"), NotificationManager.IMPORTANCE_LOW))
+        nm.createNotificationChannel(NotificationChannel(CH_SYNC, tr("Progress sync"), NotificationManager.IMPORTANCE_LOW))
+        nm.createNotificationChannel(NotificationChannel(CH_NEWS, tr("Course news (new lessons, results, deadlines)"), NotificationManager.IMPORTANCE_DEFAULT))
     }
 
     private fun allowed(context: Context): Boolean {
@@ -60,19 +62,19 @@ object Notifier {
     private fun downloadId(courseId: Long) = (1000 + courseId % 100000).toInt()
 
     fun downloadProgress(context: Context, courseId: Long, title: String, percent: Int) =
-        show(context, CH_DOWNLOADS, downloadId(courseId), "Downloading: $title", "$percent%", ongoing = true, progress = percent)
+        show(context, CH_DOWNLOADS, downloadId(courseId), tr("Downloading: %s", title), "$percent%", ongoing = true, progress = percent)
 
     fun downloadStarted(context: Context, courseId: Long, title: String) =
-        show(context, CH_DOWNLOADS, downloadId(courseId), "Download started", title, ongoing = true, progress = 0)
+        show(context, CH_DOWNLOADS, downloadId(courseId), tr("Download started"), title, ongoing = true, progress = 0)
 
     fun downloadDone(context: Context, courseId: Long, title: String) =
-        show(context, CH_DOWNLOADS, downloadId(courseId), "Ready offline", "$title can now be studied without internet.")
+        show(context, CH_DOWNLOADS, downloadId(courseId), tr("Ready offline"), tr("%s can now be studied without internet.", title))
 
     fun downloadPaused(context: Context, courseId: Long, title: String) =
-        show(context, CH_DOWNLOADS, downloadId(courseId), "Download paused", title)
+        show(context, CH_DOWNLOADS, downloadId(courseId), tr("Download paused"), title)
 
     fun downloadFailed(context: Context, courseId: Long, title: String, reason: String) =
-        show(context, CH_DOWNLOADS, downloadId(courseId), "Download problem: $title", reason)
+        show(context, CH_DOWNLOADS, downloadId(courseId), tr("Download problem: %s", title), reason)
 
     fun cancel(context: Context, courseId: Long) = NotificationManagerCompat.from(context).cancel(downloadId(courseId))
 
@@ -104,8 +106,8 @@ object Notifier {
     }
 
     fun syncDone(context: Context, count: Int) =
-        show(context, CH_SYNC, 900, "Progress synced", "$count offline update(s) saved to your account.")
+        show(context, CH_SYNC, 900, tr("Progress synced"), tr("%s offline update(s) saved to your account.", count))
 
     fun syncFailed(context: Context, reason: String) =
-        show(context, CH_SYNC, 900, "Progress not synced yet", reason)
+        show(context, CH_SYNC, 900, tr("Progress not synced yet"), reason)
 }

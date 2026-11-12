@@ -24,19 +24,19 @@ class EduQode_App_Backup_Admin {
     }
 
     public static function menu() {
-        add_management_page( 'EduQode Backup', 'EduQode Backup', 'manage_options', self::SLUG, array( __CLASS__, 'page' ) );
+        add_management_page( eqa__( 'EduQode Backup' ), eqa__( 'EduQode Backup' ), 'manage_options', self::SLUG, array( __CLASS__, 'page' ) );
     }
 
     public static function download() {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( 'Not allowed.' );
+            wp_die( eqa__( 'Not allowed.' ) );
         }
         check_admin_referer( 'eduqode_backup_export' );
         @set_time_limit( 0 );
         $all     = ! empty( $_POST['all_courses'] );
         $courses = $all ? array() : array_map( 'absint', (array) ( $_POST['courses'] ?? array() ) );
         if ( ! $all && ! $courses ) {
-            wp_safe_redirect( admin_url( 'tools.php?page=' . self::SLUG . '&error=' . rawurlencode( 'Choose at least one course.' ) ) );
+            wp_safe_redirect( admin_url( 'tools.php?page=' . self::SLUG . '&error=' . rawurlencode( eqa__( 'Choose at least one course.' ) ) ) );
             exit;
         }
         try {
@@ -57,13 +57,13 @@ class EduQode_App_Backup_Admin {
 
     public static function restore() {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( 'Not allowed.' );
+            wp_die( eqa__( 'Not allowed.' ) );
         }
         check_admin_referer( 'eduqode_backup_import' );
         @set_time_limit( 0 );
         $upload = $_FILES['backup'] ?? null;
         if ( ! $upload || UPLOAD_ERR_OK !== (int) $upload['error'] || ! is_uploaded_file( $upload['tmp_name'] ) ) {
-            wp_safe_redirect( admin_url( 'tools.php?page=' . self::SLUG . '&error=' . rawurlencode( 'Upload failed. Check the file size limit of the server.' ) ) );
+            wp_safe_redirect( admin_url( 'tools.php?page=' . self::SLUG . '&error=' . rawurlencode( eqa__( 'Upload failed. Check the file size limit of the server.' ) ) ) );
             exit;
         }
         try {
@@ -78,24 +78,24 @@ class EduQode_App_Backup_Admin {
 
     public static function report_lines( $r ) {
         $lines = array(
-            sprintf( '%d course(s) found on this site.', $r['courses'] ),
-            sprintf( 'H5P exercises: %d imported, %d already there, %d failed.', $r['h5p_imported'], $r['h5p_reused'], $r['h5p_failed'] ),
-            sprintf( '%d lesson(s) and %d H5P quiz question(s) now use the restored exercises.', $r['shortcodes'], $r['questions'] ),
-            sprintf( '%d offline video link(s), %d app setting(s) restored.', $r['video_links'], $r['settings'] ),
+            sprintf( eqa__( '%d course(s) found on this site.' ), $r['courses'] ),
+            sprintf( eqa__( 'H5P exercises: %d imported, %d already there, %d failed.' ), $r['h5p_imported'], $r['h5p_reused'], $r['h5p_failed'] ),
+            sprintf( eqa__( '%d lesson(s) and %d H5P quiz question(s) now use the restored exercises.' ), $r['shortcodes'], $r['questions'] ),
+            sprintf( eqa__( '%d offline video link(s), %d app setting(s) restored.' ), $r['video_links'], $r['settings'] ),
         );
         if ( $r['students_skipped'] ) {
-            $lines[] = 'Students\' results of this backup were restored before, so they were not added again.';
+            $lines[] = eqa__( 'Students\' results of this backup were restored before, so they were not added again.' );
         } else {
-            $lines[] = sprintf( 'Students: %d student(s), %d result row(s) restored.', $r['students'], $r['student_rows'] );
+            $lines[] = sprintf( eqa__( 'Students: %d student(s), %d result row(s) restored.' ), $r['students'], $r['student_rows'] );
         }
         if ( $r['courses_missing'] ) {
-            $lines[] = 'Not found on this site (import them with Tutor LMS → Tools → Import first): ' . implode( ', ', $r['courses_missing'] );
+            $lines[] = eqa__( 'Not found on this site (import them with Tutor LMS → Tools → Import first): ' ) . implode( ', ', $r['courses_missing'] );
         }
         if ( $r['users_missing'] ) {
-            $lines[] = sprintf( '%d result(s) skipped: the student (same email) does not exist on this site.', $r['users_missing'] );
+            $lines[] = sprintf( eqa__( '%d result(s) skipped: the student (same email) does not exist on this site.' ), $r['users_missing'] );
         }
         if ( $r['attempts_missing'] ) {
-            $lines[] = sprintf( '%d H5P quiz result(s) skipped: the quiz attempt was not imported by Tutor LMS (choose "Keep user data" when exporting).', $r['attempts_missing'] );
+            $lines[] = sprintf( eqa__( '%d H5P quiz result(s) skipped: the quiz attempt was not imported by Tutor LMS (choose "Keep user data" when exporting).' ), $r['attempts_missing'] );
         }
         return $lines;
     }
@@ -109,46 +109,46 @@ class EduQode_App_Backup_Admin {
         $report  = ! empty( $_GET['restored'] ) ? get_transient( 'eduqode_backup_report_' . get_current_user_id() ) : null;
         ?>
         <div class="wrap">
-            <h1>EduQode Backup</h1>
+            <h1><?php echo esc_html( eqa__( 'EduQode Backup' ) ); ?></h1>
             <?php if ( ! empty( $_GET['error'] ) ) : ?>
                 <div class="notice notice-error"><p><?php echo esc_html( wp_unslash( $_GET['error'] ) ); ?></p></div>
             <?php endif; ?>
             <?php if ( is_array( $report ) ) : ?>
-                <div class="notice notice-success"><p><strong>Restore finished.</strong></p><ul style="list-style:disc;margin-left:20px">
+                <div class="notice notice-success"><p><strong><?php echo esc_html( eqa__( 'Restore finished.' ) ); ?></strong></p><ul style="list-style:disc;margin-left:20px">
                     <?php foreach ( self::report_lines( $report ) as $line ) : ?><li><?php echo esc_html( $line ); ?></li><?php endforeach; ?>
                 </ul></div>
             <?php endif; ?>
 
-            <p>Moving courses to another Tutor LMS site takes two files:</p>
+            <p><?php echo esc_html( eqa__( 'Moving courses to another Tutor LMS site takes two files:' ) ); ?></p>
             <ol>
-                <li><strong>Tutor LMS → Tools → Export</strong> (Tutor LMS Pro): courses, lessons, quizzes, settings, media. Turn on <em>Keep user data</em> to move students' enrollments and progress.</li>
-                <li><strong>This page</strong>: what Tutor does not export — H5P exercises, students' H5P results, offline video links and the app settings.</li>
+                <li><strong><?php echo esc_html( eqa__( 'Tutor LMS → Tools → Export' ) ); ?></strong> <?php echo esc_html( eqa__( '(Tutor LMS Pro): courses, lessons, quizzes, settings, media. Turn on' ) ); ?> <em><?php echo esc_html( eqa__( 'Keep user data' ) ); ?></em> <?php echo esc_html( eqa__( 'to move students\' enrollments and progress.' ) ); ?></li>
+                <li><strong><?php echo esc_html( eqa__( 'This page' ) ); ?></strong><?php echo esc_html( eqa__( ': what Tutor does not export — H5P exercises, students\' H5P results, offline video links and the app settings.' ) ); ?></li>
             </ol>
-            <p>On the new site: first <strong>Tutor LMS → Tools → Import</strong>, then restore this backup below. Students are matched by email.</p>
+            <p><?php echo esc_html( eqa__( 'On the new site: first' ) ); ?> <strong><?php echo esc_html( eqa__( 'Tutor LMS → Tools → Import' ) ); ?></strong><?php echo esc_html( eqa__( ', then restore this backup below. Students are matched by email.' ) ); ?></p>
 
-            <h2>Create a backup</h2>
+            <h2><?php echo esc_html( eqa__( 'Create a backup' ) ); ?></h2>
             <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                 <?php wp_nonce_field( 'eduqode_backup_export' ); ?>
                 <input type="hidden" name="action" value="eduqode_backup_export">
-                <p><label><input type="checkbox" name="all_courses" value="1" checked onchange="document.getElementById('eq-courses').style.display=this.checked?'none':'block'"> All courses</label></p>
+                <p><label><input type="checkbox" name="all_courses" value="1" checked onchange="document.getElementById('eq-courses').style.display=this.checked?'none':'block'"> <?php echo esc_html( eqa__( 'All courses' ) ); ?></label></p>
                 <div id="eq-courses" style="display:none;max-height:260px;overflow:auto;border:1px solid #c3c4c7;padding:8px 12px;background:#fff">
                     <?php foreach ( $courses as $c ) : ?>
                         <label style="display:block;margin:2px 0"><input type="checkbox" name="courses[]" value="<?php echo (int) $c->ID; ?>"> <?php echo esc_html( $c->post_title ); ?> <span style="color:#646970">(#<?php echo (int) $c->ID; ?>)</span></label>
                     <?php endforeach; ?>
                 </div>
-                <p><label><input type="checkbox" name="students" value="1" checked> Include students' results (H5P scores, "exercises finished", video positions)</label></p>
-                <p><label><input type="checkbox" name="settings" value="1" checked> Include app settings</label></p>
-                <?php submit_button( 'Download backup', 'primary', 'submit', false ); ?>
+                <p><label><input type="checkbox" name="students" value="1" checked> <?php echo esc_html( eqa__( 'Include students\' results (H5P scores, "exercises finished", video positions)' ) ); ?></label></p>
+                <p><label><input type="checkbox" name="settings" value="1" checked> <?php echo esc_html( eqa__( 'Include app settings' ) ); ?></label></p>
+                <?php submit_button( eqa__( 'Download backup' ), 'primary', 'submit', false ); ?>
             </form>
 
-            <h2 style="margin-top:32px">Restore a backup</h2>
+            <h2 style="margin-top:32px"><?php echo esc_html( eqa__( 'Restore a backup' ) ); ?></h2>
             <form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                 <?php wp_nonce_field( 'eduqode_backup_import' ); ?>
                 <input type="hidden" name="action" value="eduqode_backup_import">
                 <p><input type="file" name="backup" accept=".zip" required></p>
-                <p><label><input type="checkbox" name="settings" value="1" checked> Restore app settings too</label></p>
-                <p class="description">Safe to run again: exercises are not imported twice and students' results are added only once.</p>
-                <?php submit_button( 'Restore backup', 'secondary', 'submit', false ); ?>
+                <p><label><input type="checkbox" name="settings" value="1" checked> <?php echo esc_html( eqa__( 'Restore app settings too' ) ); ?></label></p>
+                <p class="description"><?php echo esc_html( eqa__( 'Safe to run again: exercises are not imported twice and students\' results are added only once.' ) ); ?></p>
+                <?php submit_button( eqa__( 'Restore backup' ), 'secondary', 'submit', false ); ?>
             </form>
         </div>
         <?php
@@ -200,7 +200,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
             foreach ( EduQode_App_Backup_Admin::report_lines( $report ) as $line ) {
                 WP_CLI::line( $line );
             }
-            WP_CLI::success( 'Restore finished.' );
+            WP_CLI::success( eqa__( 'Restore finished.' ) );
         }
     }
 }

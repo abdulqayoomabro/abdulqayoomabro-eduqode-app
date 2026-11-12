@@ -1,5 +1,7 @@
 package com.eduqode.app.offline
 
+import com.eduqode.app.tr
+
 import android.content.Context
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -108,7 +110,7 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
                 }.forEach { e ->
                     db.unmarkCompleted(userId, e.lessonId)
                     db.setSyncState(userId, e.courseId, SyncState.FAILED,
-                        "A lesson could not be marked complete offline. Please complete it on the website.")
+                        tr("A lesson could not be marked complete offline. Please complete it on the website."))
                 }
                 if (events.size < 200) break
             }
@@ -123,7 +125,7 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
                 } catch (e: ApiClient.ApiException) {
                     // 4xx: the website refused it (for example no submissions left); the student is told why.
                     if (e.code in 400..499 && e.code !in setOf(401, 408, 429)) {
-                        db.setSubmissionState(s.id, SubmissionState.REJECTED, e.message ?: "refused by the website")
+                        db.setSubmissionState(s.id, SubmissionState.REJECTED, e.message ?: tr("refused by the website"))
                         if (db.lesson(userId, s.assignmentId)?.assignment?.submitted != true) db.unmarkCompleted(userId, s.assignmentId)
                     } else throw e
                 }
@@ -142,17 +144,17 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
         } catch (e: ApiClient.ApiException) {
             if (e.code == 401) {
                 db.courses(userId).filter { db.pendingCount(userId, it.id) > 0 }.forEach {
-                    db.setSyncState(userId, it.id, SyncState.FAILED, "Log in again in the app to sync your progress.")
+                    db.setSyncState(userId, it.id, SyncState.FAILED, tr("Log in again in the app to sync your progress."))
                 }
-                Notifier.syncFailed(applicationContext, "Log in again in the app to sync your progress.")
+                Notifier.syncFailed(applicationContext, tr("Log in again in the app to sync your progress."))
                 Result.failure()
             } else {
-                markFailed(db, userId, e.message ?: "Server error")
+                markFailed(db, userId, e.message ?: tr("Server error"))
                 Result.retry()
             }
         } catch (e: IOException) {
-            markFailed(db, userId, "No connection. Will try again automatically.")
-            if (runAttemptCount >= 4) Notifier.syncFailed(applicationContext, "Will try again when the connection is stable.")
+            markFailed(db, userId, tr("No connection. Will try again automatically."))
+            if (runAttemptCount >= 4) Notifier.syncFailed(applicationContext, tr("Will try again when the connection is stable."))
             Result.retry()
         }
     }

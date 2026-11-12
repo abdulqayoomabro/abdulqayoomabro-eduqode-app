@@ -1,5 +1,7 @@
 package com.eduqode.app.offline
 
+import com.eduqode.app.tr
+
 import android.content.Context
 import android.webkit.CookieManager
 import kotlinx.coroutines.Dispatchers
@@ -56,10 +58,10 @@ object Session {
                     State.NotLoggedIn
                 }
             } catch (e: ApiClient.ApiException) {
-                if (e.code == 404) State.Error("Please ask the site admin to install the EduQode App Connector plugin (version 2).")
-                else State.Error(e.message ?: "Could not connect")
+                if (e.code == 404) State.Error(tr("Please ask the site admin to install the EduQode App Connector plugin (version 2)."))
+                else State.Error(e.message ?: tr("Could not connect"))
             } catch (e: Exception) {
-                if (auth.isLoggedIn) State.LoggedIn else State.Error("Could not connect. Check your internet.")
+                if (auth.isLoggedIn) State.LoggedIn else State.Error(tr("Could not connect. Check your internet."))
             }
         }
     }

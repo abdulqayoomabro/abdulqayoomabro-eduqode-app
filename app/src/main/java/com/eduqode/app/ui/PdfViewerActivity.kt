@@ -1,5 +1,7 @@
 package com.eduqode.app.ui
 
+import com.eduqode.app.tr
+
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
@@ -51,7 +53,7 @@ class PdfViewerActivity : AppCompatActivity() {
             fd = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
             renderer = PdfRenderer(fd!!)
         } catch (e: Exception) {
-            Toast.makeText(this, "This PDF could not be opened.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, tr("This PDF could not be opened."), Toast.LENGTH_LONG).show()
             finish()
             return
         }

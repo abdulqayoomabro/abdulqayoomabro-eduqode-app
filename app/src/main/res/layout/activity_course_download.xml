@@ -51,35 +51,35 @@
 
             <com.google.android.material.button.MaterialButton android:id="@+id/btn_download_all"
                 android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp"
-                android:text="Download complete course" />
+                android:text="@string/ui_download_complete_course" />
             <com.google.android.material.button.MaterialButton android:id="@+id/btn_download_selected"
                 style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Download selected lessons" />
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/ui_download_selected_lessons" />
             <com.google.android.material.button.MaterialButton android:id="@+id/btn_open"
                 android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp"
-                android:text="Open offline course" />
+                android:text="@string/ui_open_offline_course" />
 
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
                 <com.google.android.material.button.MaterialButton android:id="@+id/btn_pause"
                     style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Pause" />
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_pause" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/btn_resume"
-                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Resume" />
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/ui_resume" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/btn_retry"
                     android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                    android:layout_marginStart="8dp" android:text="Retry failed" />
+                    android:layout_marginStart="8dp" android:text="@string/ui_retry_failed" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/btn_cancel"
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                    android:layout_marginStart="8dp" android:text="Cancel download" />
+                    android:layout_marginStart="8dp" android:text="@string/ui_cancel_download" />
             </LinearLayout>
             <com.google.android.material.button.MaterialButton android:id="@+id/btn_remove"
                 style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Remove download"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/ui_remove_download"
                 android:textColor="@color/error_red" />
 
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp"
-                android:text="Lessons" android:textAppearance="?attr/textAppearanceTitleMedium" />
+                android:text="@string/ui_lessons" android:textAppearance="?attr/textAppearanceTitleMedium" />
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/lessons"
                 android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp"
                 android:nestedScrollingEnabled="false" />

@@ -1,0 +1,315 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ur\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Settings"
+msgstr "ترتیبات"
+
+msgid "EduQode App"
+msgstr "EduQode ایپ"
+
+msgid "Not allowed."
+msgstr "اجازت نہیں ہے۔"
+
+msgid "plugin version"
+msgstr "پلگ ان ورژن"
+
+msgid "Saved."
+msgstr "محفوظ ہو گیا۔"
+
+msgid "Tutor LMS is not active. Offline packs need Tutor LMS."
+msgstr "Tutor LMS فعال نہیں ہے۔ آف لائن پیک کے لیے Tutor LMS ضروری ہے۔"
+
+msgid "Offline downloads"
+msgstr "آف لائن ڈاؤن لوڈ"
+
+msgid "Offline packs"
+msgstr "آف لائن پیک"
+
+msgid "Students can download enrolled courses in the app"
+msgstr "طلبہ اپنے داخل شدہ کورس ایپ میں ڈاؤن لوڈ کر سکتے ہیں"
+
+msgid "Test video URL"
+msgstr "ٹیسٹ ویڈیو کا لنک"
+
+msgid "A direct MP4 link you own or are allowed to distribute. Used only for the lessons listed below, so you can test offline video before moving real videos off YouTube."
+msgstr "براہِ راست MP4 لنک جو آپ کی ملکیت ہو یا جسے بانٹنے کی اجازت ہو۔ صرف نیچے دیے گئے اسباق کے لیے استعمال ہوتا ہے، تاکہ اصل ویڈیوز یوٹیوب سے ہٹانے سے پہلے آف لائن ویڈیو آزمائی جا سکے۔"
+
+msgid "Use test video on lesson IDs"
+msgstr "ان سبق نمبروں پر ٹیسٹ ویڈیو"
+
+msgid "Lesson IDs are shown in the table below."
+msgstr "سبق نمبر نیچے جدول میں دیے گئے ہیں۔"
+
+msgid "Save settings"
+msgstr "ترتیبات محفوظ کریں"
+
+msgid "App settings"
+msgstr "ایپ کی ترتیبات"
+
+msgid "The Android app reads these settings each time it starts (no app update needed)."
+msgstr "اینڈرائیڈ ایپ ہر بار کھلنے پر یہ ترتیبات پڑھتی ہے (ایپ اپ ڈیٹ کی ضرورت نہیں)۔"
+
+msgid "Google login in the app"
+msgstr "ایپ میں گوگل لاگ ان"
+
+msgid "Off (show a message)"
+msgstr "بند (پیغام دکھائیں)"
+
+msgid "On (log in through a browser tab)"
+msgstr "آن (براؤزر ٹیب کے ذریعے لاگ ان)"
+
+msgid "Pages blocked in the app"
+msgstr "ایپ میں بند صفحات"
+
+msgid "One per line, e.g. /cart. Links containing these open nowhere in the app."
+msgstr "ہر سطر میں ایک، مثلاً /cart۔ ان پر مشتمل لنک ایپ میں نہیں کھلتے۔"
+
+msgid "Blocked link parameters"
+msgstr "بند لنک پیرامیٹرز"
+
+msgid "CSS added to pages in the app"
+msgstr "ایپ میں صفحات پر لگنے والی CSS"
+
+msgid "Used to hide prices and buy buttons inside the app. Applies only inside the app."
+msgstr "ایپ کے اندر قیمتیں اور خریدنے کے بٹن چھپانے کے لیے۔ صرف ایپ کے اندر لاگو ہوتی ہے۔"
+
+msgid "Save app settings"
+msgstr "ایپ کی ترتیبات محفوظ کریں"
+
+msgid "Offline video links"
+msgstr "آف لائن ویڈیو لنکس"
+
+msgid "YouTube and Vimeo videos stay online-only. To make a lesson's video available offline, paste a direct MP4 link that you own (your server, Bunny, S3, ...). Videos uploaded to Tutor as \"HTML5 (mp4)\" are offline automatically."
+msgstr "یوٹیوب اور ویمیو کی ویڈیوز صرف آن لائن رہتی ہیں۔ کسی سبق کی ویڈیو آف لائن کرنے کے لیے اپنی ملکیت کا براہِ راست MP4 لنک لگائیں (اپنا سرور، Bunny، S3 وغیرہ)۔ Tutor میں \"HTML5 (mp4)\" کے طور پر اپ لوڈ کی گئی ویڈیوز خود بخود آف لائن ہوتی ہیں۔"
+
+msgid "Google Drive:"
+msgstr "گوگل ڈرائیو:"
+
+msgid "paste the share link of the video file (not a folder), shared as \"Anyone with the link\". Good for testing and small groups; Drive blocks a file for about 24 hours when it is downloaded too many times."
+msgstr "ویڈیو فائل کا شیئر لنک لگائیں (فولڈر کا نہیں)، \"Anyone with the link\" کے ساتھ شیئر کیا ہوا۔ آزمائش اور چھوٹے گروپس کے لیے ٹھیک ہے؛ زیادہ ڈاؤن لوڈ پر ڈرائیو فائل کو تقریباً 24 گھنٹے کے لیے روک دیتی ہے۔"
+
+msgid "Choose a course"
+msgstr "کورس منتخب کریں"
+
+msgid "Show lessons"
+msgstr "اسباق دکھائیں"
+
+msgid "ID"
+msgstr "نمبر"
+
+msgid "Lesson"
+msgstr "سبق"
+
+msgid "Website video"
+msgstr "ویب سائٹ ویڈیو"
+
+msgid "Offline video (MP4 link)"
+msgstr "آف لائن ویڈیو (MP4 لنک)"
+
+msgid "Offline status"
+msgstr "آف لائن حالت"
+
+msgid "Quiz / other content"
+msgstr "کوئز / دیگر مواد"
+
+msgid "Online only"
+msgstr "صرف آن لائن"
+
+msgid "Offline (%s)"
+msgstr "آف لائن (%s)"
+
+msgid "No video"
+msgstr "کوئی ویڈیو نہیں"
+
+msgid "Folder link: paste the video file link instead"
+msgstr "یہ فولڈر کا لنک ہے: اس کے بجائے ویڈیو فائل کا لنک لگائیں"
+
+msgid "https://.../lesson.mp4"
+msgstr "https://.../lesson.mp4"
+
+msgid "Save offline video links"
+msgstr "آف لائن ویڈیو لنکس محفوظ کریں"
+
+msgid "Assignments need Tutor LMS Pro's Assignments addon on the website."
+msgstr "اسائنمنٹس کے لیے ویب سائٹ پر Tutor LMS Pro کا Assignments ایڈ آن ضروری ہے۔"
+
+msgid "Assignment not found."
+msgstr "اسائنمنٹ نہیں ملی۔"
+
+msgid "You are not enrolled in this course."
+msgstr "آپ اس کورس میں داخل نہیں ہیں۔"
+
+msgid "The answer is empty."
+msgstr "جواب خالی ہے۔"
+
+msgid "No submissions left for this assignment."
+msgstr "اس اسائنمنٹ کی مزید جمع کرانے کی گنجائش نہیں۔"
+
+msgid "This assignment was already submitted."
+msgstr "یہ اسائنمنٹ پہلے ہی جمع ہو چکی ہے۔"
+
+msgid "This assignment does not take files."
+msgstr "اس اسائنمنٹ میں فائل نہیں لگ سکتی۔"
+
+msgid "At most %d file(s)."
+msgstr "زیادہ سے زیادہ %d فائلیں۔"
+
+msgid "Each file can be at most %d MB."
+msgstr "ہر فائل زیادہ سے زیادہ %d MB ہو سکتی ہے۔"
+
+msgid "Could not start the assignment."
+msgstr "اسائنمنٹ شروع نہیں ہو سکی۔"
+
+msgid "The time for this assignment is over."
+msgstr "اس اسائنمنٹ کا وقت ختم ہو چکا ہے۔"
+
+msgid "EduQode Backup"
+msgstr "EduQode بیک اپ"
+
+msgid "Choose at least one course."
+msgstr "کم از کم ایک کورس منتخب کریں۔"
+
+msgid "Upload failed. Check the file size limit of the server."
+msgstr "اپ لوڈ ناکام ہوا۔ سرور کی فائل سائز کی حد چیک کریں۔"
+
+msgid "%d course(s) found on this site."
+msgstr "اس سائٹ پر %d کورس ملے۔"
+
+msgid "H5P exercises: %d imported, %d already there, %d failed."
+msgstr "H5P مشقیں: %d درآمد ہوئیں، %d پہلے سے موجود، %d ناکام۔"
+
+msgid "%d lesson(s) and %d H5P quiz question(s) now use the restored exercises."
+msgstr "%d اسباق اور %d H5P کوئز سوالات اب بحال شدہ مشقیں استعمال کر رہے ہیں۔"
+
+msgid "%d offline video link(s), %d app setting(s) restored."
+msgstr "%d آف لائن ویڈیو لنکس اور %d ایپ ترتیبات بحال ہوئیں۔"
+
+msgid "Students' results of this backup were restored before, so they were not added again."
+msgstr "اس بیک اپ کے طلبہ کے نتائج پہلے بحال ہو چکے تھے، اس لیے دوبارہ شامل نہیں کیے گئے۔"
+
+msgid "Students: %d student(s), %d result row(s) restored."
+msgstr "طلبہ: %d طلبہ، %d نتائج بحال ہوئے۔"
+
+msgid "Not found on this site (import them with Tutor LMS → Tools → Import first): "
+msgstr "اس سائٹ پر نہیں ملے (پہلے Tutor LMS → Tools → Import سے درآمد کریں): "
+
+msgid "%d result(s) skipped: the student (same email) does not exist on this site."
+msgstr "%d نتائج چھوڑ دیے گئے: یہ طالب علم (اسی ای میل کے ساتھ) اس سائٹ پر موجود نہیں۔"
+
+msgid "%d H5P quiz result(s) skipped: the quiz attempt was not imported by Tutor LMS (choose \"Keep user data\" when exporting)."
+msgstr "%d H5P کوئز نتائج چھوڑ دیے گئے: Tutor LMS نے کوئز کی کوشش درآمد نہیں کی (ایکسپورٹ کرتے وقت \"Keep user data\" منتخب کریں)۔"
+
+msgid "Restore finished."
+msgstr "بحالی مکمل ہو گئی۔"
+
+msgid "Moving courses to another Tutor LMS site takes two files:"
+msgstr "کورس کسی دوسری Tutor LMS سائٹ پر منتقل کرنے کے لیے دو فائلیں درکار ہیں:"
+
+msgid "Tutor LMS → Tools → Export"
+msgstr "Tutor LMS → Tools → Export"
+
+msgid "(Tutor LMS Pro): courses, lessons, quizzes, settings, media. Turn on"
+msgstr "(Tutor LMS Pro): کورس، اسباق، کوئز، ترتیبات، میڈیا۔ طلبہ کے داخلے اور پیش رفت منتقل کرنے کے لیے"
+
+msgid "Keep user data"
+msgstr "Keep user data"
+
+msgid "to move students' enrollments and progress."
+msgstr "آن کریں۔"
+
+msgid "This page"
+msgstr "یہ صفحہ"
+
+msgid ": what Tutor does not export — H5P exercises, students' H5P results, offline video links and the app settings."
+msgstr ": وہ چیزیں جو Tutor ایکسپورٹ نہیں کرتا — H5P مشقیں، طلبہ کے H5P نتائج، آف لائن ویڈیو لنکس اور ایپ کی ترتیبات۔"
+
+msgid "On the new site: first"
+msgstr "نئی سائٹ پر: پہلے"
+
+msgid "Tutor LMS → Tools → Import"
+msgstr "Tutor LMS → Tools → Import"
+
+msgid ", then restore this backup below. Students are matched by email."
+msgstr "، پھر نیچے یہ بیک اپ بحال کریں۔ طلبہ کو ای میل سے پہچانا جاتا ہے۔"
+
+msgid "Create a backup"
+msgstr "بیک اپ بنائیں"
+
+msgid "All courses"
+msgstr "تمام کورس"
+
+msgid "Include students' results (H5P scores, \"exercises finished\", video positions)"
+msgstr "طلبہ کے نتائج شامل کریں (H5P اسکور، \"مشقیں مکمل\"، ویڈیو کی جگہ)"
+
+msgid "Include app settings"
+msgstr "ایپ کی ترتیبات شامل کریں"
+
+msgid "Download backup"
+msgstr "بیک اپ ڈاؤن لوڈ کریں"
+
+msgid "Restore a backup"
+msgstr "بیک اپ بحال کریں"
+
+msgid "Restore app settings too"
+msgstr "ایپ کی ترتیبات بھی بحال کریں"
+
+msgid "Safe to run again: exercises are not imported twice and students' results are added only once."
+msgstr "دوبارہ چلانا محفوظ ہے: مشقیں دو بار درآمد نہیں ہوتیں اور طلبہ کے نتائج صرف ایک بار شامل ہوتے ہیں۔"
+
+msgid "Restore backup"
+msgstr "بیک اپ بحال کریں"
+
+msgid "New quiz: %s"
+msgstr "نیا کوئز: %s"
+
+msgid "New assignment: %s"
+msgstr "نئی اسائنمنٹ: %s"
+
+msgid "New lesson: %s"
+msgstr "نیا سبق: %s"
+
+msgid "Assignment graded: %s"
+msgstr "اسائنمنٹ جانچ لی گئی: %s"
+
+msgid "You got %s out of %s."
+msgstr "آپ کے %2$s میں سے %1$s نمبر آئے۔"
+
+msgid "Your teacher checked your work."
+msgstr "آپ کے استاد نے آپ کا کام چیک کر لیا۔"
+
+msgid "Quiz checked: %s"
+msgstr "کوئز چیک ہو گیا: %s"
+
+msgid "Your result: %s out of %s."
+msgstr "آپ کا نتیجہ: %2$s میں سے %1$s۔"
+
+msgid "Due soon: %s"
+msgstr "جلد جمع کرانی ہے: %s"
+
+msgid "Submit within %d hour(s)."
+msgstr "%d گھنٹوں کے اندر جمع کرائیں۔"
+
+msgid "Tutor LMS is not active."
+msgstr "Tutor LMS فعال نہیں ہے۔"
+
+msgid "This Tutor LMS version cannot record offline quiz attempts."
+msgstr "Tutor LMS کا یہ ورژن آف لائن کوئز ریکارڈ نہیں کر سکتا۔"
+
+msgid "No questions."
+msgstr "کوئی سوال نہیں۔"
+
+msgid "Mixes H5P and other question types (needs the website)."
+msgstr "اس میں H5P اور دوسری قسم کے سوال ملے ہوئے ہیں (ویب سائٹ ضروری ہے)۔"
+
+msgid "H5P quizzes need the H5P plugin and Tutor LMS Pro's H5P addon."
+msgstr "H5P کوئز کے لیے H5P پلگ ان اور Tutor LMS Pro کا H5P ایڈ آن ضروری ہے۔"
+
+msgid "An H5P question could not be prepared for offline use."
+msgstr "ایک H5P سوال آف لائن استعمال کے لیے تیار نہیں ہو سکا۔"
+
+msgid "Has question types that need the website (%s)."
+msgstr "اس میں ایسے سوال ہیں جن کے لیے ویب سائٹ ضروری ہے (%s)۔"
+

@@ -13,8 +13,8 @@
         android:paddingStart="16dp" android:paddingEnd="8dp" android:paddingTop="6dp" android:paddingBottom="6dp">
         <TextView android:id="@+id/status" android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:textColor="@color/text_secondary" android:textSize="14sp"
-            android:text="Answer the exercise, then tap Check." />
+            android:text="@string/ui_answer_the_exercise_then_tap_check" />
         <com.google.android.material.button.MaterialButton android:id="@+id/btn_done"
-            android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Done" />
+            android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ui_done" />
     </LinearLayout>
 </LinearLayout>

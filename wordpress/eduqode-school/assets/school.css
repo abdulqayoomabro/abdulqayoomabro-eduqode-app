@@ -5,10 +5,10 @@
 .eqs-btn.eqs-small{padding:.3em .7em;font-size:13px}
 .eqs-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:.5em 0}
 .eqs-table{border-collapse:collapse;width:100%;min-width:520px}
-.eqs-table th,.eqs-table td{border-bottom:1px solid var(--eqs-line);padding:.5em .6em;text-align:left;vertical-align:middle;white-space:nowrap}
+.eqs-table th,.eqs-table td{border-bottom:1px solid var(--eqs-line);padding:.5em .6em;text-align:start;vertical-align:middle;white-space:nowrap}
 .eqs-table thead th{background:#f6f8fa;font-weight:600}
 .eqs-table tfoot td{background:#f6f8fa}
-.eqs-att td{text-align:center}.eqs-att td:nth-child(2){text-align:left}
+.eqs-att td{text-align:center}.eqs-att td:nth-child(2){text-align:start}
 .eqs-bar{display:inline-block;width:70px;height:7px;background:#e8eaed;border-radius:4px;vertical-align:middle;overflow:hidden}
 .eqs-bar span{display:block;height:100%;background:#2e7d32}
 .eqs-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
@@ -37,3 +37,6 @@
   .eqs-noprint{display:none}
   .eqs-table{min-width:0}
 }
+
+.eqs[dir=rtl]{font-family:"Noto Nastaliq Urdu",serif;line-height:2.1}
+.eqs[dir=rtl] .eqs-table td,.eqs[dir=rtl] .eqs-table th{line-height:2}

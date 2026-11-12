@@ -1,5 +1,7 @@
 package com.eduqode.app.ui
 
+import com.eduqode.app.tr
+
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -31,7 +33,7 @@ class CertificatesActivity : AppCompatActivity() {
         Ui.applyInsets(findViewById(R.id.root))
         repo = OfflineRepository(this)
         findViewById<MaterialToolbar>(R.id.toolbar).apply {
-            title = "My certificates"
+            title = tr("My certificates")
             setNavigationIcon(R.drawable.ic_back)
             setNavigationOnClickListener { finish() }
         }
@@ -67,23 +69,23 @@ class CertificatesActivity : AppCompatActivity() {
                                 setOnClickListener { open(file, "image/jpeg", Intent.ACTION_VIEW) }
                             })
                             addView(LinearLayout(context).apply {
-                                addView(MaterialButton(context).apply { text = "Open"; setOnClickListener { open(file, "image/jpeg", Intent.ACTION_VIEW) } })
+                                addView(MaterialButton(context).apply { text = tr("Open"); setOnClickListener { open(file, "image/jpeg", Intent.ACTION_VIEW) } })
                                 addView(MaterialButton(context).apply {
-                                    text = "Share"; layoutParams = LinearLayout.LayoutParams(-2, -2).apply { marginStart = dp(8) }
+                                    text = tr("Share"); layoutParams = LinearLayout.LayoutParams(-2, -2).apply { marginStart = dp(8) }
                                     setOnClickListener { open(file, "image/jpeg", Intent.ACTION_SEND) }
                                 })
                             })
                         } else {
                             addView(TextView(context).apply {
-                                text = "Open it once while online to save a copy on this phone."
+                                text = tr("Open it once while online to save a copy on this phone.")
                                 setPadding(0, dp(6), 0, dp(6))
                             })
                             addView(MaterialButton(context).apply {
-                                text = "Open certificate"
+                                text = tr("Open certificate")
                                 isEnabled = cert.viewUrl.isNotBlank()
                                 setOnClickListener {
                                     if (repo.isOnline()) Ui.openWebsite(this@CertificatesActivity, cert.viewUrl)
-                                    else Toast.makeText(this@CertificatesActivity, "Connect to the internet to open it the first time.", Toast.LENGTH_LONG).show()
+                                    else Toast.makeText(this@CertificatesActivity, tr("Connect to the internet to open it the first time."), Toast.LENGTH_LONG).show()
                                 }
                             })
                         }
@@ -97,7 +99,7 @@ class CertificatesActivity : AppCompatActivity() {
         val uri = FileProvider.getUriForFile(this, "$packageName.files", file)
         val intent = Intent(action).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         if (action == Intent.ACTION_SEND) intent.setType(mime).putExtra(Intent.EXTRA_STREAM, uri) else intent.setDataAndType(uri, mime)
-        runCatching { startActivity(if (action == Intent.ACTION_SEND) Intent.createChooser(intent, "Share certificate") else intent) }
-            .onFailure { Toast.makeText(this, "No app on this phone can open pictures.", Toast.LENGTH_LONG).show() }
+        runCatching { startActivity(if (action == Intent.ACTION_SEND) Intent.createChooser(intent, tr("Share certificate")) else intent) }
+            .onFailure { Toast.makeText(this, tr("No app on this phone can open pictures."), Toast.LENGTH_LONG).show() }
     }
 }

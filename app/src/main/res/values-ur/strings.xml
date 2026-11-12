@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Built by tools/i18n/build_app.py from tools/i18n/app_ur.py. -->
+<resources>
+    <string name="blocked_page">یہ صفحہ ایپ میں دستیاب نہیں۔</string>
+    <string name="no_app_for_link">یہ لنک کھولنے والی کوئی ایپ نہیں ملی۔</string>
+    <string name="google_login_title">Google لاگ اِن</string>
+    <string name="download_started">%1$s ڈاؤن لوڈ ہو رہا ہے</string>
+    <string name="nav_home">ہوم</string>
+    <string name="nav_offline">آف لائن کورس</string>
+    <string name="sync_now">ابھی سنک کریں</string>
+    <string name="download_offline_pack">آف لائن پیک ڈاؤن لوڈ کریں</string>
+    <string name="offline_library_title">میرے آف لائن کورس</string>
+    <string name="ui_answer_the_exercise_then_tap_check">مشق حل کریں، پھر Check دبائیں۔</string>
+    <string name="ui_attach_a_file">فائل لگائیں</string>
+    <string name="ui_cancel_download">ڈاؤن لوڈ منسوخ کریں</string>
+    <string name="ui_course_details">کورس کی تفصیل</string>
+    <string name="ui_done">مکمل</string>
+    <string name="ui_download_complete_course">پورا کورس ڈاؤن لوڈ کریں</string>
+    <string name="ui_download_over_wi_fi_only">صرف Wi-Fi پر ڈاؤن لوڈ کریں</string>
+    <string name="ui_download_selected_lessons">منتخب اسباق ڈاؤن لوڈ کریں</string>
+    <string name="ui_downloaded">ڈاؤن لوڈ شدہ</string>
+    <string name="ui_files">فائلیں</string>
+    <string name="ui_interactive_exercises">انٹرایکٹو مشقیں</string>
+    <string name="ui_lessons">اسباق</string>
+    <string name="ui_log_in">لاگ اِن</string>
+    <string name="ui_mark_as_complete">مکمل نشان زد کریں</string>
+    <string name="ui_my_certificates">میرے سرٹیفکیٹ</string>
+    <string name="ui_next">اگلا ›</string>
+    <string name="ui_no_certificates_yet_when_you_complete_a">ابھی کوئی سرٹیفکیٹ نہیں۔ کورس مکمل کرنے پر اس کا سرٹیفکیٹ یہاں محفوظ ہو جائے گا تاکہ آپ انٹرنیٹ کے بغیر کھول اور شیئر کر سکیں۔</string>
+    <string name="ui_no_courses_downloaded_yet_choose_a_cours">ابھی کوئی کورس ڈاؤن لوڈ نہیں ہوا۔ نیچے سے کورس چنیں اور “آف لائن پیک ڈاؤن لوڈ کریں” دبائیں۔</string>
+    <string name="ui_online_only_internet_required">صرف آن لائن — انٹرنیٹ ضروری</string>
+    <string name="ui_open_offline_course">آف لائن کورس کھولیں</string>
+    <string name="ui_pause">روکیں</string>
+    <string name="ui_previous">‹ پچھلا</string>
+    <string name="ui_remove_download">ڈاؤن لوڈ ہٹائیں</string>
+    <string name="ui_resume">دوبارہ شروع کریں</string>
+    <string name="ui_retry_failed">ناکام فائلیں دوبارہ</string>
+    <string name="ui_storage">اسٹوریج</string>
+    <string name="ui_submit">جمع کریں</string>
+    <string name="ui_watch_online">آن لائن دیکھیں</string>
+    <string name="ui_your_answer">آپ کا جواب</string>
+    <string name="ui_your_courses">آپ کے کورس</string>
+    <string name="ui_language">Language / زبان</string>
+</resources>
