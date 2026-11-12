@@ -140,4 +140,37 @@ $body
         val m = Regex("""bytes\s+(\d+)-\d+/(\d+|\*)""").find(header) ?: return -1
         return m.groupValues[1].toLongOrNull() ?: -1
     }
+
+    // ---------- H5P ----------
+
+    /** A path from the server that stays inside its folder (no "..", no absolute paths). */
+    fun safeRelativePath(path: String): Boolean =
+        path.isNotBlank() && !path.startsWith("/") && !path.contains('\\') && !path.contains('\u0000') &&
+            path.split('/').none { it == ".." || it == "." || it.isEmpty() }
+
+    fun h5pItemsJson(items: List<H5PItem>): String = org.json.JSONArray().apply {
+        items.forEach { put(org.json.JSONObject().put("id", it.id).put("title", it.title).put("library", it.library).put("offline", it.offline)) }
+    }.toString()
+
+    fun parseH5PItems(json: String): List<H5PItem> = if (json.isBlank()) emptyList() else runCatching {
+        val a = org.json.JSONArray(json)
+        (0 until a.length()).map { i ->
+            val o = a.getJSONObject(i)
+            H5PItem(o.getLong("id"), o.optString("title"), o.optString("library"), o.optBoolean("offline", true))
+        }
+    }.getOrDefault(emptyList())
+
+    /**
+     * Score of a statement that finishes an exercise: a top-level "answered" or "completed" with a
+     * score (what the H5P plugin and Tutor LMS Pro count as done). Null for any other statement.
+     */
+    fun h5pFinalScore(statement: org.json.JSONObject): Pair<Double, Double>? {
+        val verb = statement.optJSONObject("verb")?.optString("id").orEmpty().lowercase(Locale.ROOT)
+        if (!verb.endsWith("/answered") && !verb.endsWith("/completed")) return null
+        val parent = statement.optJSONObject("context")?.optJSONObject("contextActivities")?.opt("parent")
+        if (parent != null && parent != org.json.JSONObject.NULL && !(parent is org.json.JSONArray && parent.length() == 0)) return null
+        val score = statement.optJSONObject("result")?.optJSONObject("score") ?: return null
+        if (!score.has("max")) return null
+        return score.optDouble("raw", 0.0) to score.optDouble("max", 0.0)
+    }
 }

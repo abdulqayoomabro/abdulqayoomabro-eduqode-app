@@ -30,6 +30,7 @@ object FileKind {
     const val ATTACHMENT = "attachment"
     const val IMAGE = "image"
     const val THUMBNAIL = "thumbnail"
+    const val H5P = "h5p"                  // H5P library and exercise files
 }
 
 object EventType {
@@ -37,7 +38,12 @@ object EventType {
     const val VIDEO_POSITION = "video_position"
     const val LESSON_ACCESS = "lesson_access"
     const val QUIZ_ATTEMPT = "quiz_attempt"
+    const val H5P_STATEMENT = "h5p_statement"            // one xAPI statement from an H5P exercise in a lesson
+    const val H5P_LESSON_FINISHED = "h5p_lesson_finished" // every H5P exercise of a lesson answered
 }
+
+/** An H5P exercise of a lesson or quiz question (files are in <course>/h5p/). */
+data class H5PItem(val id: Long, val title: String, val library: String, val offline: Boolean = true)
 
 data class Course(
     val id: Long,
@@ -59,7 +65,9 @@ data class Course(
     val syncError: String,
     val accessExpired: Boolean,
     val lastLessonId: Long,
-    val error: String
+    val error: String,
+    /** Tutor setting: a lesson with H5P can be completed only after its exercises are done. */
+    val h5pGate: Boolean = false
 )
 
 data class Attachment(val url: String, val name: String, val mime: String, val sizeBytes: Long)
@@ -89,8 +97,12 @@ data class Lesson(
     val quizJson: String = "",
     val quizAttemptsUsed: Int = 0,
     val quizLastJson: String = "",
-    val onlineReason: String = ""
+    val onlineReason: String = "",
+    val h5pJson: String = "",
+    val h5pFinished: Boolean = false
 ) {
+    /** H5P exercises in this lesson. */
+    val h5p: List<H5PItem> by lazy { OfflineLogic.parseH5PItems(h5pJson) }
     val isLesson get() = type == "lesson"
     val isOfflineQuiz get() = type == "quiz" && quizJson.isNotEmpty()
     val isAssignment get() = type == "assignment"
@@ -151,7 +163,9 @@ data class CoursePackage(
     val course: PackageCourse,
     val lessons: List<PackageLesson>,
     val lastLessonId: Long,
-    val lastLessonAt: Long
+    val lastLessonAt: Long,
+    val h5pLibraries: Map<String, List<H5PFile>> = emptyMap(),
+    val h5pGate: Boolean = false
 )
 
 data class PackageCourse(
@@ -187,8 +201,26 @@ data class PackageLesson(
     val durationMs: Long,
     val positionAt: Long,
     val quizJson: String = "",
-    val onlineReason: String = ""
+    val onlineReason: String = "",
+    val h5p: List<H5PContent> = emptyList(),
+    val h5pOnline: List<Long> = emptyList(),
+    val h5pFinished: Boolean = false
+) {
+    val quiz: Quiz? by lazy { if (quizJson.isEmpty()) null else runCatching { QuizEngine.parse(org.json.JSONObject(quizJson)) }.getOrNull() }
+}
+
+/** One H5P exercise as sent by the server: h5p.json, content.json and its own files. */
+data class H5PContent(
+    val id: Long,
+    val title: String,
+    val library: String,
+    val libraries: List<String>,
+    val h5pJson: String,
+    val contentJson: String,
+    val files: List<H5PFile>
 )
+
+data class H5PFile(val path: String, val url: String, val size: Long)
 
 /** A downloadable video, as described by the server (see the plugin's video()). */
 data class OfflineVideoSource(val provider: String, val url: String, val sizeBytes: Long, val mime: String)

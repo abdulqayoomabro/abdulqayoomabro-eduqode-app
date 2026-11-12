@@ -232,7 +232,8 @@ class EduQode_App_Courses {
 
     /** Lesson text as HTML, with images listed so the app can store them. */
     private static function lesson_html( $post ) {
-        $html = (string) $post->post_content;
+        // H5P exercises are played by the app's own H5P player, shown below the text.
+        $html = EduQode_App_H5P::strip_shortcodes( (string) $post->post_content );
         if ( function_exists( 'do_blocks' ) ) {
             $html = do_blocks( $html );
         }
@@ -287,7 +288,8 @@ class EduQode_App_Courses {
         }
         $description = wpautop( do_shortcode( $description ) );
 
-        $topics = array();
+        $topics        = array();
+        $h5p_libraries = array();
         foreach ( self::structure( $course_id ) as $topic ) {
             $items = array();
             foreach ( $topic['items'] as $order => $item ) {
@@ -320,6 +322,20 @@ class EduQode_App_Courses {
                     $entry['attachments']  = self::attachments( $item->ID );
                     $entry['video']        = self::video( $item->ID, $user_id );
                     $entry['position']     = $sync->position( $item->ID );
+                    $h5p_ids               = EduQode_App_H5P::ids_in_text( $item->post_content );
+                    if ( $h5p_ids ) {
+                        $entry['h5p']        = array();
+                        $entry['h5p_online'] = array();
+                        foreach ( $h5p_ids as $hid ) {
+                            $content = EduQode_App_H5P::content( $hid, $h5p_libraries );
+                            if ( $content ) {
+                                $entry['h5p'][] = $content;
+                            } else {
+                                $entry['h5p_online'][] = $hid;
+                            }
+                        }
+                        $entry['h5p_finished'] = (bool) get_user_meta( $user_id, '_tutor_h5p_lesson_completed_' . $item->ID, true );
+                    }
                 } elseif ( $is_assignment ) {
                     // Tutor LMS Pro assignment: instructions and files (e.g. datasets) can be read offline;
                     // the work is submitted on the website.
@@ -342,7 +358,7 @@ class EduQode_App_Courses {
                 } elseif ( 'tutor_quiz' === $item->post_type ) {
                     $reason = '';
                     $images = array();
-                    $quiz   = EduQode_App_Quiz::package( $item->ID, $user_id, $reason, $images );
+                    $quiz   = EduQode_App_Quiz::package( $item->ID, $user_id, $reason, $images, $h5p_libraries );
                     if ( $quiz ) {
                         $entry['online_only'] = false;
                         $entry['quiz']        = $quiz;
@@ -371,6 +387,10 @@ class EduQode_App_Courses {
             'course'          => $summary,
             'topics'          => $topics,
             'last_lesson'     => $sync->last_lesson( $course_id ),
+            // H5P library files shared by all exercises of the course (folder => files).
+            'h5p_libraries'   => (object) $h5p_libraries,
+            // Tutor setting: lessons with H5P can be completed only after their exercises are done.
+            'h5p_lesson_gate' => (bool) tutor_utils()->get_option( 'disable_complete_lesson_button' ),
         );
     }
 }

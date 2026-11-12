@@ -28,8 +28,10 @@ check "me returns the student" "$(api "$B/?rest_route=/eduqode/v1/me" | python3 
 check "no-store cache header" "$(api -D - -o /dev/null "$B/?rest_route=/eduqode/v1/me" | grep -i '^cache-control' | grep -c no-store)" "1"
 
 courses=$(api "$B/?rest_route=/eduqode/v1/courses")
-check "courses lists only enrolled course" "$(echo "$courses" | python3 -c "import json,sys;print([c['id'] for c in json.load(sys.stdin)['courses']])")" "[$C]"
-check "course lesson_count" "$(echo "$courses" | python3 -c "import json,sys;print(json.load(sys.stdin)['courses'][0]['lesson_count'])")" "3"
+HCID=$( [ -f ids_h5p.json ] && python3 -c "import json;print(json.load(open('ids_h5p.json'))['h5p_course'])" || echo 0 )
+check "courses lists only enrolled courses" "$(echo "$courses" | python3 -c "import json,sys;print(sorted(c['id'] for c in json.load(sys.stdin)['courses'] if c['id'] != $HCID))")" "[$C]"
+check "not-enrolled course not listed" "$(echo "$courses" | python3 -c "import json,sys;print($OTHER in [c['id'] for c in json.load(sys.stdin)['courses']])")" "False"
+check "course lesson_count" "$(echo "$courses" | python3 -c "import json,sys;print([c for c in json.load(sys.stdin)['courses'] if c['id']==$C][0]['lesson_count'])")" "3"
 
 code=$(api -o /dev/null -w "%{http_code}" "$B/?rest_route=/eduqode/v1/courses/$OTHER/package")
 check "package of a non-enrolled course is 403" "$code" "403"
@@ -189,6 +191,62 @@ check "website: Tutor marks lesson completed" "$($WPC eval 'echo tutor_utils()->
 check "website: Tutor best watched time updated (s)" "$($WPC eval 'echo (int) tutor_utils()->get_lesson_reading_info('$L2', 2, "video_best_watched_time");' 2>/dev/null)" "90"
 check "website: enrollment intact" "$($WPC eval 'echo tutor_utils()->is_enrolled('$C', 2) ? "yes" : "no";' 2>/dev/null)" "yes"
 check "website: Tutor redirect hook restored after sync" "$($WPC eval 'global $wp_filter; $n=0; foreach (($wp_filter["tutor_lesson_completed_after"]->callbacks ?? []) as $cbs) foreach ($cbs as $cb) if (is_array($cb["function"]) && $cb["function"][1]==="tutor_lesson_completed_after") $n++; echo $n;' 2>/dev/null)" "1"
+
+# ---------------- H5P (offline exercises in lessons and H5P quizzes) ----------------
+if [ -f ids_h5p.json ]; then
+hid() { python3 -c "import json;print(json.load(open('ids_h5p.json'))['$1'])"; }
+HC=$(hid h5p_course); HL=$(hid h5p_lesson); HQ=$(hid h5p_quiz); HQQ=$(hid h5p_question); HID=$(hid h5p_content)
+$WPR eval '$o = get_option("tutor_option", []); $o["disable_complete_lesson_button"] = 1; update_option("tutor_option", $o);' >/dev/null
+api "$B/?rest_route=/eduqode/v1/courses/$HC/package" > h5p_package.json
+python3 - "$HL" "$HQ" "$HID" > h5p_checks.txt <<'PY'
+import json,sys,urllib.request
+hl,hq,hid=map(int,sys.argv[1:])
+p=json.load(open('h5p_package.json'))
+items={i['id']:i for t in p['topics'] for i in t['items']}
+L=items[hl]; c=(L.get('h5p') or [{}])[0]
+libs=p.get('h5p_libraries',{})
+out=[]
+out.append(("h5p: lesson lists its exercise", (c.get('id'), c.get('library')), (hid, 'H5P.TrueFalse')))
+out.append(("h5p: lesson text kept, shortcode removed", ('H5P-LESSON-TEXT' in L['content_html'], '[h5p' in L['content_html']), (True, False)))
+out.append(("h5p: h5p.json main library + dependencies", (c['h5p_json']['mainLibrary'], 'H5P.Question' in [d['machineName'] for d in c['h5p_json']['preloadedDependencies']]), ('H5P.TrueFalse', True)))
+out.append(("h5p: content.json from H5P plugin", json.loads(c['content_json']).get('correct'), 'false'))
+out.append(("h5p: every library folder sent once", sorted(libs.keys()) == sorted(set(c['libraries'])), True))
+files=[f for v in libs.values() for f in v]
+out.append(("h5p: library.json of main library included", any(f['path']=='H5P.TrueFalse-1.6/library.json' for f in files), True))
+out.append(("h5p: no editor/translation/server files", [f['path'] for f in files if '/language/' in f['path'] or f['path'].endswith(('.php','semantics.json'))], []))
+f=[f for f in files if f['path']=='H5P.TrueFalse-1.6/library.json'][0]
+data=urllib.request.urlopen(f['url']).read()
+out.append(("h5p: library file downloadable with the listed size", len(data), f['size']))
+out.append(("h5p: completion rule sent to app", p.get('h5p_lesson_gate'), True))
+Q=items[hq]
+out.append(("h5p quiz: offline with H5P question", (Q['online_only'], [q['type'] for q in Q['quiz']['questions']], Q['quiz']['questions'][0]['h5p']['id']), (False, ['h5p'], hid)))
+for name,got,exp in out:
+    print(("PASS  " if got==exp else "FAIL  ")+name+("" if got==exp else f"  (expected: {exp}, got: {got})"))
+PY
+cat h5p_checks.txt; pass=$((pass+$(grep -c ^PASS h5p_checks.txt))); fail=$((fail+$(grep -c ^FAIL h5p_checks.txt)))
+
+now=$(($(date +%s)*1000))
+ST='{"actor":{"name":"Ali","objectType":"Agent"},"verb":{"id":"http://adlnet.gov/expapi/verbs/answered","display":{"en-US":"answered"}},"object":{"id":"https://app/h5p/'$HID'","objectType":"Activity","definition":{"extensions":{"http://h5p.org/x-api/h5p-local-content-id":'$HID'},"name":{"en-US":"Is the sky blue?"},"interactionType":"true-false","correctResponsesPattern":["false"]}},"result":{"score":{"min":0,"max":1,"raw":1,"scaled":1},"completion":true,"success":true,"duration":"PT3S","response":"false"}}'
+STJ=$(python3 -c "import json,sys;print(json.dumps(sys.argv[1]))" "$ST")
+hsync() { api -X POST -H "Content-Type: application/json" -d "$1" "$B/?rest_route=/eduqode/v1/sync"; }
+hst() { python3 -c "import json,sys;r=json.load(sys.stdin);x=[e for e in r['results'] if e['id']=='$1'][0];print(x['status']+('/'+x['reason'] if x.get('reason') else ''))"; }
+r=$(hsync '{"events":[{"id":"hc0","type":"lesson_complete","course_id":'$HC',"lesson_id":'$HL',"client_time":'$((now-9000))'}]}')
+check "h5p: lesson cannot be completed before its exercise (Tutor Pro rule)" "$(echo "$r" | hst hc0)" "rejected/validation"
+r=$(hsync '{"events":[{"id":"hs1","type":"h5p_statement","course_id":'$HC',"lesson_id":'$HL',"content_id":'$HID',"client_time":'$((now-8000))',"opened_at":'$((now-60000))',"statement":'"$STJ"'},{"id":"hs2","type":"h5p_statement","course_id":'$HC',"lesson_id":'$HL',"content_id":999,"client_time":'$((now-7900))',"statement":'"$STJ"'},{"id":"hf1","type":"h5p_lesson_finished","course_id":'$HC',"lesson_id":'$HL',"client_time":'$((now-7000))'},{"id":"hc1","type":"lesson_complete","course_id":'$HC',"lesson_id":'$HL',"client_time":'$((now-6000))'}]}')
+check "h5p: offline answer stored" "$(echo "$r" | hst hs1)" "applied"
+check "h5p: exercise not in the lesson refused" "$(echo "$r" | hst hs2)" "rejected/not_in_lesson"
+check "h5p: lesson finished recorded" "$(echo "$r" | hst hf1)" "applied"
+check "h5p: lesson completes after its exercise" "$(echo "$r" | hst hc1)" "applied"
+check "h5p: Tutor marks the H5P lesson completed" "$($WPC eval 'echo tutor_utils()->is_completed_lesson('$HL', '$(id student)') ? "yes" : "no";' 2>/dev/null)" "yes"
+check "h5p: Tutor Pro statement tables filled" "$($WPC eval 'global $wpdb; $p=$wpdb->prefix; echo $wpdb->get_var("select count(*) from {$p}tutor_h5p_statement"), ",", $wpdb->get_var("select count(*) from {$p}tutor_h5p_lesson_statement where lesson_id='$HL' and verb=\"answered\" and result_raw_score=1");' 2>/dev/null)" "1,1"
+check "h5p: H5P plugin result saved (score/max)" "$($WPC eval 'global $wpdb; $r=$wpdb->get_row("select score,max_score,time from {$wpdb->prefix}h5p_results where content_id='$HID'"); echo $r->score,"/",$r->max_score,"/",$r->time;' 2>/dev/null)" "1/1/52"
+r=$(hsync '{"events":[{"id":"hs1","type":"h5p_statement","course_id":'$HC',"lesson_id":'$HL',"content_id":'$HID',"client_time":'$((now-8000))',"statement":'"$STJ"'}]}')
+check "h5p: same answer sent twice is stored once" "$(echo "$r" | hst hs1)" "duplicate"
+r=$(hsync '{"events":[{"id":"hq1","type":"quiz_attempt","course_id":'$HC',"lesson_id":'$HQ',"quiz_id":'$HQ',"client_time":'$((now-1000))',"started_at":'$((now-90000))',"question_ids":['$HQQ'],"answers":{"'$HQQ'":{"h5p":{"content_id":'$HID',"opened_at":'$((now-80000))',"statements":['"$STJ"']}}}}]}')
+check "h5p quiz: attempt graded by Tutor (total, earned, result)" "$(echo "$r" | python3 -c "import json,sys;a=json.load(sys.stdin)['results'][0]['attempt'];print(float(a['total']),float(a['earned']),a['result'])")" "2.0 1.0 pass"
+check "h5p quiz: H5P result linked to the attempt" "$($WPC eval 'global $wpdb; echo $wpdb->get_var("select count(*) from {$wpdb->prefix}tutor_h5p_quiz_result r join {$wpdb->prefix}tutor_quiz_attempts a on a.attempt_id=r.attempt_id where r.question_id='$HQQ' and r.raw_score=1");' 2>/dev/null)" "1"
+$WPR eval '$o = get_option("tutor_option", []); $o["disable_complete_lesson_button"] = 0; update_option("tutor_option", $o);' >/dev/null
+fi
 
 # Speed optimizers (SiteGround) must leave Tutor's scripts alone
 check "optimizer: Tutor scripts excluded from SiteGround minify/combine" "$($WPC eval 'do_action("wp_enqueue_scripts"); $h = apply_filters("sgo_js_minify_exclude", array("x")); $c = apply_filters("sgo_javascript_combine_exclude", array()); $t = array_filter($h, function($x){ return 0 === strpos($x, "tutor"); }); echo (in_array("x", $h) && count($t) > 0 && count(array_intersect($t, $c)) === count($t)) ? "yes" : "no";' 2>/dev/null)" "yes"

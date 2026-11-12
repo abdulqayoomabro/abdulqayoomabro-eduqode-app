@@ -152,7 +152,51 @@ class LessonActivity : AppCompatActivity() {
 
         setupVideo(l)
         setupAttachments(l)
+        setupH5P(l)
         setupNavigation(l)
+    }
+
+    // ---------- H5P exercises ----------
+
+    private fun setupH5P(l: Lesson) {
+        val box = findViewById<View>(R.id.h5p_box)
+        val group = findViewById<ChipGroup>(R.id.h5p_items)
+        group.removeAllViews()
+        box.visibility = if (l.h5p.isEmpty()) View.GONE else View.VISIBLE
+        if (l.h5p.isEmpty()) return
+        val done = repo.h5pDone(l.id)
+        val files = repo.db.files(repo.userId, courseId)
+        findViewById<TextView>(R.id.h5p_label).text =
+            "Interactive exercises · ${l.h5p.count { it.id in done }}/${l.h5p.count { it.offline }} done" +
+                if (repo.h5pBlocksCompletion(l)) " · finish them to complete the lesson" else ""
+        l.h5p.forEachIndexed { i, item ->
+            val name = item.title.ifBlank { "Exercise ${i + 1}" }
+            val score = done[item.id]
+            group.addView(Chip(this).apply {
+                text = when {
+                    !item.offline -> "$name (website)"
+                    score != null -> "✓ $name · ${n(score.first)}/${n(score.second)}"
+                    else -> "▶ $name"
+                }
+                setOnClickListener { openH5P(l, item.id, name, item.offline, files) }
+            })
+        }
+    }
+
+    private fun n(d: Double) = if (d % 1.0 == 0.0) d.toLong().toString() else String.format(java.util.Locale.US, "%.1f", d)
+
+    private fun openH5P(l: Lesson, contentId: Long, title: String, offline: Boolean, files: List<com.eduqode.app.offline.StoredFile>) {
+        if (!offline || !repo.h5pReady(courseId, contentId, files)) {
+            when {
+                repo.isOnline() -> Ui.openWebsite(this, l.permalink)
+                offline -> Toast.makeText(this, "This exercise is still downloading. Connect to the internet to finish the download.", Toast.LENGTH_LONG).show()
+                else -> Toast.makeText(this, "This exercise needs the website. Connect to the internet to open it.", Toast.LENGTH_LONG).show()
+            }
+            return
+        }
+        startActivity(Intent(this, H5PActivity::class.java)
+            .putExtra(H5PActivity.EXTRA_COURSE, courseId).putExtra(H5PActivity.EXTRA_LESSON, l.id)
+            .putExtra(H5PActivity.EXTRA_CONTENT, contentId).putExtra(H5PActivity.EXTRA_TITLE, title))
     }
 
     private fun setupVideo(l: Lesson) {
@@ -229,7 +273,7 @@ class LessonActivity : AppCompatActivity() {
 
     private fun setFullscreen(on: Boolean) {
         fullscreen = on
-        val hide = listOf(R.id.toolbar, R.id.attachments_box, R.id.content, R.id.bottom_bar)
+        val hide = listOf(R.id.toolbar, R.id.attachments_box, R.id.h5p_box, R.id.content, R.id.bottom_bar)
         hide.forEach { id ->
             val v = findViewById<View>(id)
             if (on) { v.tag = v.visibility; v.visibility = View.GONE } else v.visibility = (v.tag as? Int) ?: View.VISIBLE
@@ -320,9 +364,14 @@ class LessonActivity : AppCompatActivity() {
             return
         }
         val done = (lesson?.completedAt ?: 0) > 0
+        val blocked = !done && lesson?.let { repo.h5pBlocksCompletion(it) } == true
         findViewById<MaterialButton>(R.id.btn_complete).apply {
-            text = if (done) "Completed ✓" else "Mark as complete"
-            isEnabled = !done
+            text = when {
+                done -> "Completed ✓"
+                blocked -> "Finish exercises first"
+                else -> "Mark as complete"
+            }
+            isEnabled = !done && !blocked
             setOnClickListener { markComplete() }
         }
     }
@@ -330,6 +379,10 @@ class LessonActivity : AppCompatActivity() {
     private fun markComplete() {
         val l = lesson ?: return
         if (l.completedAt > 0) return
+        if (repo.h5pBlocksCompletion(l)) {
+            Snackbar.make(findViewById(R.id.root), "Finish the interactive exercises of this lesson first.", Snackbar.LENGTH_LONG).show()
+            return
+        }
         repo.markLessonComplete(courseId, l.id)
         lesson = repo.db.lesson(repo.userId, l.id)
         updateCompleteButton()
@@ -338,6 +391,17 @@ class LessonActivity : AppCompatActivity() {
     }
 
     // ---------- lifecycle ----------
+
+    override fun onResume() {
+        super.onResume()
+        // Back from an exercise: refresh scores and the complete button.
+        lesson?.let { old ->
+            repo.db.lesson(repo.userId, old.id)?.let { fresh ->
+                lesson = fresh
+                if (fresh.h5p.isNotEmpty()) { setupH5P(fresh); updateCompleteButton() }
+            }
+        }
+    }
 
     override fun onPause() {
         super.onPause()

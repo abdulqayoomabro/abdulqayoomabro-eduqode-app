@@ -22,7 +22,9 @@ data class QuizQuestion(
     val mark: Double,
     val order: Int,
     val randomize: Boolean,
-    val answers: List<QuizAnswer>
+    val answers: List<QuizAnswer>,
+    /** Tutor LMS Pro H5P question: the exercise to play (null for other types). */
+    val h5pContent: H5PContent? = null
 )
 
 data class QuizAttemptSummary(val attemptId: Long, val status: String, val total: Double, val earned: Double, val result: String)
@@ -47,6 +49,8 @@ sealed class QuizResponse {
     data class Text(val value: String) : QuizResponse()                    // open ended, short answer
     data class Sequence(val answerIds: List<Long>) : QuizResponse()        // ordering, matching, image matching (per slot)
     data class ImageTexts(val values: Map<Long, String>) : QuizResponse()  // image answering
+    /** H5P exercise: its score and the xAPI statements to store for Tutor LMS Pro. */
+    data class H5P(val contentId: Long, val raw: Double, val max: Double, val openedAt: Long, val statements: List<String>) : QuizResponse()
 }
 
 data class QuestionResult(val questionId: Long, val earned: Double, val max: Double, val correct: Boolean, val needsReview: Boolean)
@@ -85,7 +89,8 @@ object QuizEngine {
                     val a = ans.getJSONObject(j)
                     QuizAnswer(a.getLong("id"), a.optString("title"), a.optBoolean("is_correct"), a.optString("image"),
                         a.optString("match"), a.optInt("order"))
-                }
+                },
+                h5pContent = q.optJSONObject("h5p")?.let { runCatching { JsonParsers.h5pContent(it) }.getOrNull() }
             )
         }
         val last = json.optJSONObject("last_attempt")?.let { attemptSummary(it) }
@@ -135,6 +140,11 @@ object QuizEngine {
     fun cleanText(s: String) = s.replace(Regex("<[^>]*>"), "").replace(Regex("[\\r\\n\\t ]+"), " ").trim()
 
     fun grade(q: QuizQuestion, r: QuizResponse?): QuestionResult {
+        if (q.type == "h5p") {
+            // Tutor LMS Pro: question mark + the exercise's max score; earned = the exercise's score.
+            val h = r as? QuizResponse.H5P ?: return QuestionResult(q.id, 0.0, q.mark, correct = false, needsReview = false)
+            return QuestionResult(q.id, h.raw, q.mark + h.max, correct = h.raw == h.max, needsReview = false)
+        }
         val correct: Boolean = when (q.type) {
             "true_false", "single_choice" -> {
                 val id = (r as? QuizResponse.Choice)?.answerId
@@ -168,8 +178,10 @@ object QuizEngine {
 
     fun result(quiz: Quiz, questions: List<QuizQuestion>, responses: Map<Long, QuizResponse>): QuizResult {
         val graded = questions.map { grade(it, responses[it.id]) }
-        val total = graded.sumOf { it.max }
-        val earned = graded.sumOf { it.earned }.coerceAtLeast(0.0)
+        // Tutor LMS Pro gives an H5P quiz 0 marks when any H5P question was left unanswered.
+        val h5pIncomplete = questions.any { it.type == "h5p" } && questions.any { responses[it.id] !is QuizResponse.H5P }
+        val total = if (h5pIncomplete) 0.0 else graded.sumOf { it.max }
+        val earned = if (h5pIncomplete) 0.0 else graded.sumOf { it.earned }.coerceAtLeast(0.0)
         val percent = if (total > 0) earned * 100 / total else 0.0
         val result = when {
             graded.any { it.needsReview } -> "pending"
@@ -188,6 +200,8 @@ object QuizEngine {
         is QuizResponse.Text -> r.value
         is QuizResponse.Sequence -> JSONObject().put("answers", JSONArray(r.answerIds))
         is QuizResponse.ImageTexts -> JSONObject().put("answer_id", JSONObject().apply { r.values.forEach { (k, v) -> put(k.toString(), v) } })
+        is QuizResponse.H5P -> JSONObject().put("h5p", JSONObject().put("content_id", r.contentId).put("opened_at", r.openedAt)
+            .put("statements", JSONArray(r.statements)))
     }
 
     fun attemptPayload(quizId: Long, startedAt: Long, questions: List<QuizQuestion>, responses: Map<Long, QuizResponse>): JSONObject {
@@ -211,6 +225,8 @@ object QuizEngine {
                 is QuizResponse.Text -> JSONObject().put("k", "t").put("v", r.value)
                 is QuizResponse.Sequence -> JSONObject().put("k", "s").put("v", JSONArray(r.answerIds))
                 is QuizResponse.ImageTexts -> JSONObject().put("k", "i").put("v", JSONObject().apply { r.values.forEach { (k, v) -> put(k.toString(), v) } })
+                is QuizResponse.H5P -> JSONObject().put("k", "h").put("v", JSONObject().put("content_id", r.contentId).put("raw", r.raw)
+                    .put("max", r.max).put("opened_at", r.openedAt).put("statements", JSONArray(r.statements)))
             })
         }
     }
@@ -226,6 +242,11 @@ object QuizEngine {
                 "b" -> o.getJSONArray("v").let { a -> QuizResponse.Blanks((0 until a.length()).map { a.getString(it) }) }
                 "t" -> QuizResponse.Text(o.getString("v"))
                 "s" -> o.getJSONArray("v").let { a -> QuizResponse.Sequence((0 until a.length()).map { a.getLong(it) }) }
+                "h" -> o.getJSONObject("v").let { v ->
+                    val st = v.optJSONArray("statements") ?: JSONArray()
+                    QuizResponse.H5P(v.getLong("content_id"), v.optDouble("raw", 0.0), v.optDouble("max", 0.0), v.optLong("opened_at"),
+                        (0 until st.length()).map { st.getString(it) })
+                }
                 else -> o.getJSONObject("v").let { m -> QuizResponse.ImageTexts(m.keys().asSequence().associate { it.toLong() to m.getString(it) }) }
             }
         }

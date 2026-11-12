@@ -209,7 +209,7 @@ class EduQode_App_Sync {
         // A phone clock far in the future must not lock in a value forever.
         $client_time = min( $client_time, ( time() + DAY_IN_SECONDS ) * 1000 );
 
-        if ( ! in_array( $type, array( 'lesson_complete', 'video_position', 'lesson_access' ), true ) ) {
+        if ( ! in_array( $type, array( 'lesson_complete', 'video_position', 'lesson_access', 'h5p_statement', 'h5p_lesson_finished' ), true ) ) {
             return array( 'rejected', 'unknown_type' );
         }
         if ( ! EduQode_App_Courses::can_access( $course_id, $this->user_id ) ) {
@@ -219,6 +219,13 @@ class EduQode_App_Sync {
             return array( 'rejected', 'not_in_course' );
         }
         $is_lesson = get_post_type( $lesson_id ) === tutor()->lesson_post_type;
+
+        if ( 'h5p_statement' === $type ) {
+            return $is_lesson ? EduQode_App_H5P::record_lesson_statement( $event, $this->user_id ) : array( 'rejected', 'not_a_lesson' );
+        }
+        if ( 'h5p_lesson_finished' === $type ) {
+            return $is_lesson ? EduQode_App_H5P::record_lesson_finished( $event, $this->user_id ) : array( 'rejected', 'not_a_lesson' );
+        }
 
         if ( 'lesson_complete' === $type ) {
             if ( ! $is_lesson ) {

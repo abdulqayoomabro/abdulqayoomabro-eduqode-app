@@ -86,13 +86,33 @@ object JsonParsers {
                     durationMs = pos?.optLong("duration_ms") ?: 0,
                     positionAt = pos?.optLong("updated_at") ?: 0,
                     quizJson = item.optJSONObject("quiz")?.toString() ?: "",
-                    onlineReason = item.str("online_reason")
+                    onlineReason = item.str("online_reason"),
+                    h5p = item.optJSONArray("h5p")?.let { arr -> (0 until arr.length()).map { h5pContent(arr.getJSONObject(it)) } } ?: emptyList(),
+                    h5pOnline = item.optJSONArray("h5p_online")?.let { arr -> (0 until arr.length()).map { arr.getLong(it) } } ?: emptyList(),
+                    h5pFinished = item.optBoolean("h5p_finished", false)
                 )
             }
         }
         val last = json.optJSONObject("last_lesson")
-        return CoursePackage(course, lessons, last?.optLong("lesson_id") ?: 0, last?.optLong("updated_at") ?: 0)
+        val libs = LinkedHashMap<String, List<H5PFile>>()
+        json.optJSONObject("h5p_libraries")?.let { o -> o.keys().forEach { k -> libs[k] = h5pFiles(o.optJSONArray(k)) } }
+        return CoursePackage(course, lessons, last?.optLong("lesson_id") ?: 0, last?.optLong("updated_at") ?: 0,
+            libs, json.optBoolean("h5p_lesson_gate", false))
     }
+
+    fun h5pFiles(arr: JSONArray?): List<H5PFile> = if (arr == null) emptyList() else (0 until arr.length()).map { i ->
+        val f = arr.getJSONObject(i); H5PFile(f.str("path"), f.str("url"), f.optLong("size"))
+    }.filter { it.path.isNotBlank() && it.url.isNotBlank() && OfflineLogic.safeRelativePath(it.path) }
+
+    fun h5pContent(o: JSONObject) = H5PContent(
+        id = o.getLong("id"),
+        title = o.str("title"),
+        library = o.str("library"),
+        libraries = o.optJSONArray("libraries").strings(),
+        h5pJson = o.optJSONObject("h5p_json")?.toString() ?: "{}",
+        contentJson = o.str("content_json").ifBlank { "{}" },
+        files = h5pFiles(o.optJSONArray("files"))
+    )
 
     fun progress(p: JSONObject): ServerProgress {
         val completed = HashMap<Long, Long>()

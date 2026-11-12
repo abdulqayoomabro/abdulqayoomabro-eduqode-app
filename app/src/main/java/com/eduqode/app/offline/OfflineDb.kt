@@ -13,7 +13,7 @@ import org.json.JSONObject
  * Every row belongs to one WordPress user, so two students on one phone never see each other's data.
  */
 class OfflineDb private constructor(context: Context) :
-    SQLiteOpenHelper(context.applicationContext, "offline.db", null, 3) {
+    SQLiteOpenHelper(context.applicationContext, "offline.db", null, 4) {
 
     companion object {
         @Volatile private var instance: OfflineDb? = null
@@ -75,6 +75,20 @@ class OfflineDb private constructor(context: Context) :
         db.execSQL("CREATE INDEX events_user ON events(user_id)")
         upgradeTo2(db)
         upgradeTo3(db)
+        upgradeTo4(db)
+    }
+
+    /** Version 4: H5P exercises (which ones a lesson has, and which ones the student finished). */
+    private fun upgradeTo4(db: SQLiteDatabase) {
+        db.execSQL("ALTER TABLE lessons ADD COLUMN h5p_json TEXT NOT NULL DEFAULT ''")
+        db.execSQL("ALTER TABLE lessons ADD COLUMN h5p_finished INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE courses ADD COLUMN h5p_gate INTEGER NOT NULL DEFAULT 0")
+        db.execSQL(
+            """CREATE TABLE h5p_done (
+                user_id INTEGER NOT NULL, course_id INTEGER NOT NULL, lesson_id INTEGER NOT NULL, content_id INTEGER NOT NULL,
+                raw REAL NOT NULL DEFAULT 0, max REAL NOT NULL DEFAULT 0, done_at INTEGER NOT NULL,
+                PRIMARY KEY (user_id, lesson_id, content_id))"""
+        )
     }
 
     /** Version 3: why a quiz is online only. */
@@ -86,6 +100,7 @@ class OfflineDb private constructor(context: Context) :
         // Only add to the schema; never drop student data.
         if (oldVersion < 2) upgradeTo2(db)
         if (oldVersion < 3) upgradeTo3(db)
+        if (oldVersion < 4) upgradeTo4(db)
     }
 
     /** Version 2: offline quizzes. */
@@ -130,7 +145,7 @@ class OfflineDb private constructor(context: Context) :
         state = c.str("state"), totalBytes = c.long("total_bytes"), doneBytes = c.long("done_bytes"),
         downloadedAt = c.long("downloaded_at"), lastSyncAt = c.long("last_sync_at"), syncState = c.str("sync_state"),
         syncError = c.str("sync_error"), accessExpired = c.int("access_expired") == 1, lastLessonId = c.long("last_lesson_id"),
-        error = c.str("error")
+        error = c.str("error"), h5pGate = c.int("h5p_gate") == 1
     )
 
     private fun lessonFrom(c: Cursor) = Lesson(
@@ -149,7 +164,7 @@ class OfflineDb private constructor(context: Context) :
         selected = c.int("selected") == 1, completedAt = c.long("completed_at"),
         positionMs = c.long("position_ms"), durationMs = c.long("duration_ms"), positionAt = c.long("position_at"),
         quizJson = c.str("quiz_json"), quizAttemptsUsed = c.int("quiz_attempts_used"), quizLastJson = c.str("quiz_last"),
-        onlineReason = c.str("online_reason")
+        onlineReason = c.str("online_reason"), h5pJson = c.str("h5p_json"), h5pFinished = c.int("h5p_finished") == 1
     )
 
     private fun fileFrom(c: Cursor) = StoredFile(
@@ -235,7 +250,7 @@ class OfflineDb private constructor(context: Context) :
                 put("thumbnail_url", c.thumbnailUrl); put("permalink", c.permalink)
                 put("categories", JSONArray(c.categories).toString()); put("lesson_count", c.lessonCount)
                 put("progress", c.progress); put("package_at", System.currentTimeMillis())
-                put("enrolled", 1); put("access_expired", 0)
+                put("enrolled", 1); put("access_expired", 0); put("h5p_gate", if (pkg.h5pGate) 1 else 0)
             }
             if (db.update("courses", cv, "user_id=? AND id=?", arrayOf("$userId", "${c.id}")) == 0) {
                 cv.put("user_id", userId); cv.put("id", c.id); db.insert("courses", null, cv)
@@ -276,6 +291,11 @@ class OfflineDb private constructor(context: Context) :
                     put("position_at", if (serverNewer) l.positionAt else old?.positionAt ?: 0)
                     put("quiz_json", l.quizJson)
                     put("online_reason", l.onlineReason)
+                    put("h5p_json", OfflineLogic.h5pItemsJson(
+                        l.h5p.map { H5PItem(it.id, it.title, it.library, true) } + l.h5pOnline.map { H5PItem(it, "", "", false) }
+                    ))
+                    // "All exercises finished" never goes back (like completion).
+                    put("h5p_finished", if (l.h5pFinished || old?.h5pFinished == true) 1 else 0)
                     val q = l.quizJson.takeIf { it.isNotEmpty() }?.let { runCatching { QuizEngine.parse(JSONObject(it)) }.getOrNull() }
                     put("quiz_attempts_used", q?.attemptsUsed ?: old?.quizAttemptsUsed ?: 0)
                     put("quiz_last", q?.lastAttempt?.let { a ->
@@ -350,6 +370,26 @@ class OfflineDb private constructor(context: Context) :
         } finally {
             db.endTransaction()
         }
+    }
+
+    // ---------- H5P ----------
+
+    fun markH5PDone(userId: Long, courseId: Long, lessonId: Long, contentId: Long, raw: Double, max: Double, at: Long) {
+        writableDatabase.insertWithOnConflict("h5p_done", null, ContentValues().apply {
+            put("user_id", userId); put("course_id", courseId); put("lesson_id", lessonId); put("content_id", contentId)
+            put("raw", raw); put("max", max); put("done_at", at)
+        }, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+
+    /** Exercise id -> (score, max) for one lesson. */
+    fun h5pDone(userId: Long, lessonId: Long): Map<Long, Pair<Double, Double>> =
+        query("SELECT content_id, raw, max FROM h5p_done WHERE user_id=? AND lesson_id=?", arrayOf("$userId", "$lessonId")) {
+            it.long("content_id") to (it.getDouble(1) to it.getDouble(2))
+        }.toMap()
+
+    fun setH5PFinished(userId: Long, lessonId: Long) {
+        writableDatabase.update("lessons", ContentValues().apply { put("h5p_finished", 1) },
+            "user_id=? AND id=?", arrayOf("$userId", "$lessonId"))
     }
 
     fun markCompleted(userId: Long, lessonId: Long, at: Long) {

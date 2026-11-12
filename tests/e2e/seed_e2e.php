@@ -76,6 +76,22 @@ $l4 = wp_insert_post(['post_type' => 'lesson', 'post_status' => 'draft', 'post_t
 
 $student = wp_insert_user(['user_login' => 'e2estudent', 'user_pass' => 'e2estudent', 'user_email' => 'e2e@b.co', 'role' => 'subscriber', 'display_name' => 'E2E Student']);
 tutor_utils()->do_enroll($course, 0, $student);
-$ids = compact('course', 'l1', 'l2', 'l3', 'l4', 'q', 'quiz', 'asg', 'student');
+// H5P course: a lesson with a real True/False exercise and a Tutor LMS Pro style H5P quiz.
+// Lessons with H5P can be completed only after their exercises (Tutor setting).
+$h5p_id = (int) $wpdb->get_var("SELECT id FROM {$wpdb->prefix}h5p_contents ORDER BY id LIMIT 1");
+$hcourse = wp_insert_post(['post_type' => 'courses', 'post_status' => 'publish', 'post_title' => 'E2E H5P Course', 'post_author' => 1]);
+update_post_meta($hcourse, '_tutor_course_price_type', 'free');
+$ht = wp_insert_post(['post_type' => 'topics', 'post_status' => 'publish', 'post_title' => 'Practice', 'post_parent' => $hcourse]);
+$hl = wp_insert_post(['post_type' => 'lesson', 'post_status' => 'publish', 'post_title' => 'Interactive lesson', 'post_parent' => $ht, 'menu_order' => 0,
+    'post_content' => '<p>H5P-LESSON-MARKER</p>[h5p id="' . $h5p_id . '"]']);
+$hq = wp_insert_post(['post_type' => 'tutor_quiz', 'post_status' => 'publish', 'post_title' => 'H5P quiz', 'post_parent' => $ht, 'menu_order' => 1]);
+update_post_meta($hq, 'tutor_quiz_option', ['quiz_type' => 'tutor_h5p_quiz', 'limit_attempts_allowed' => '1', 'attempts_allowed' => 0, 'passing_grade' => 50, 'questions_order' => 'sorting']);
+$wpdb->insert($wpdb->prefix . 'tutor_quiz_questions', ['quiz_id' => $hq, 'question_title' => 'Exercise question', 'question_description' => (string) $h5p_id,
+    'question_type' => 'h5p', 'question_mark' => 1, 'question_settings' => maybe_serialize(['answer_required' => 1]), 'question_order' => 1]);
+$hqq = (int) $wpdb->insert_id;
+tutor_utils()->do_enroll($hcourse, 0, $student);
+$opt = get_option('tutor_option', []); $opt['disable_complete_lesson_button'] = 1; update_option('tutor_option', $opt);
+
+$ids = compact('course', 'l1', 'l2', 'l3', 'l4', 'q', 'quiz', 'asg', 'student', 'hcourse', 'hl', 'hq', 'hqq', 'h5p_id');
 file_put_contents(ABSPATH . 'e2e-ids.json', json_encode($ids));
 echo json_encode($ids), "\n";

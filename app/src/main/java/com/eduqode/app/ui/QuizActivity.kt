@@ -67,6 +67,22 @@ class QuizActivity : AppCompatActivity() {
     private var inProgress = false
     private var timer: CountDownTimer? = null
     private var collect: (() -> QuizResponse?)? = null
+    private var h5pQuestionId = 0L
+
+    /** Result of an H5P question played in H5PActivity. */
+    private val h5pLauncher = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { res ->
+        val data = res.data
+        if (res.resultCode != RESULT_OK || data == null || !inProgress) return@registerForActivityResult
+        val list = runCatching {
+            val a = org.json.JSONArray(data.getStringExtra(H5PActivity.RESULT_STATEMENTS) ?: "[]")
+            (0 until a.length()).map { a.getString(it) }
+        }.getOrDefault(emptyList())
+        responses[h5pQuestionId] = QuizResponse.H5P(
+            data.getLongExtra(H5PActivity.RESULT_CONTENT, 0), data.getDoubleExtra(H5PActivity.RESULT_RAW, 0.0),
+            data.getDoubleExtra(H5PActivity.RESULT_MAX, 0.0), data.getLongExtra(H5PActivity.RESULT_OPENED, 0), list
+        )
+        if (questions.getOrNull(index)?.id == h5pQuestionId) showQuestion()
+    }
 
     private val content get() = findViewById<LinearLayout>(R.id.content)
     private val left get() = findViewById<MaterialButton>(R.id.btn_left)
@@ -386,6 +402,29 @@ class QuizActivity : AppCompatActivity() {
                     if (values.values.all { it.isBlank() }) null else QuizResponse.ImageTexts(values)
                 }
             }
+            "h5p" -> {
+                val content = q.h5pContent
+                val done = current as? QuizResponse.H5P
+                if (content == null || !repo.h5pReady(courseId, content.id)) {
+                    box.addView(text("This exercise is not downloaded yet. Connect to the internet and open the course to finish the download.", 0, R.color.error_red))
+                    return { done }
+                }
+                box.addView(text(
+                    if (done != null) "Your score: ${fmt(done.raw)}/${fmt(done.max)}. You can try it again before finishing the quiz."
+                    else "Interactive exercise: ${content.title.ifBlank { "open it to answer" }}",
+                    0, if (done != null) R.color.ok_green else R.color.text_secondary))
+                box.addView(MaterialButton(this).apply {
+                    text = if (done != null) "Try the exercise again" else "Start the exercise"
+                    setOnClickListener {
+                        h5pQuestionId = q.id
+                        h5pLauncher.launch(android.content.Intent(this@QuizActivity, H5PActivity::class.java)
+                            .putExtra(H5PActivity.EXTRA_COURSE, courseId).putExtra(H5PActivity.EXTRA_LESSON, lesson.id)
+                            .putExtra(H5PActivity.EXTRA_CONTENT, content.id).putExtra(H5PActivity.EXTRA_TITLE, q.title)
+                            .putExtra(H5PActivity.EXTRA_QUIZ_MODE, true))
+                    }
+                })
+                return { responses[q.id] as? QuizResponse.H5P }
+            }
             else -> {
                 box.addView(text("This question needs the website.", 0, R.color.error_red))
                 return { null }
@@ -460,7 +499,7 @@ class QuizActivity : AppCompatActivity() {
                     else -> "Wrong · 0/${fmt(r.max)}" to R.color.error_red
                 }
                 addView(text(msg, 0, c, 4))
-                if (!r.correct && q.type !in QuizEngine.REVIEW_TYPES) {
+                if (!r.correct && q.type !in QuizEngine.REVIEW_TYPES && q.type != "h5p") {
                     addView(text("Correct answer: " + correctAnswerText(q), 0, R.color.text_secondary, 4).apply { setTypeface(typeface, Typeface.ITALIC) })
                 }
                 if (q.explanation.isNotBlank()) addView(text(q.explanation, 0, R.color.text_secondary, 4))

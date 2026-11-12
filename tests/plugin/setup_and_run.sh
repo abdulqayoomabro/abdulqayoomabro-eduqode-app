@@ -65,6 +65,24 @@ $WP plugin is-active eduqode-app-connector
 echo "Tutor LMS $($WP eval 'echo TUTOR_VERSION;')  WordPress $($WP core version)"
 $WP eval-file "$HERE/seed.php" | tail -1 > "$WORK/ids.json"
 
+# H5P: the free H5P plugin (H5P_PLUGIN_DIR = a local copy, otherwise from wordpress.org), a real
+# True/False exercise, and Tutor LMS Pro's H5P addon tables/filters (stand-in, see the file).
+rm -rf site/wp-content/plugins/h5p
+if [ -n "${H5P_PLUGIN_DIR:-}" ]; then
+  cp -r "$H5P_PLUGIN_DIR" site/wp-content/plugins/h5p
+else
+  [ -f h5p.zip ] || curl -sSL -o h5p.zip https://downloads.wordpress.org/plugin/h5p.1.17.10.zip
+  unzip -q h5p.zip -d site/wp-content/plugins/
+fi
+$WP plugin activate h5p >/dev/null
+if [ ! -d site/wp-content/plugins/tutor-pro ]; then
+  cp "$HERE/tutor_pro_h5p_standin.php" site/wp-content/mu-plugins/
+fi
+H5P_ID=$($WP eval-file "$HERE/h5p_import.php" "$HERE/fixtures/true-false.h5p" "Is the sky blue?" | tail -1)
+STUDENT=$(python3 -c "import json;print(json.load(open('$WORK/ids.json'))['student'])")
+$WP eval-file "$HERE/seed_h5p.php" "$H5P_ID" "$STUDENT" | tail -1 > "$WORK/ids_h5p.json"
+echo "H5P $($WP plugin get h5p --field=version) content $H5P_ID"
+
 (cd site && php -S 127.0.0.1:8099 > "$WORK/server.log" 2>&1 &)
 sleep 2
 cp "$HERE/run_tests.sh" "$HERE/reset.php" "$WORK/"

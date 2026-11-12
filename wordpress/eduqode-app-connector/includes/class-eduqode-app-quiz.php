@@ -67,7 +67,7 @@ class EduQode_App_Quiz {
     }
 
     /** Null when the quiz cannot be taken offline (with the reason in $reason). */
-    public static function package( $quiz_id, $user_id, &$reason, &$images ) {
+    public static function package( $quiz_id, $user_id, &$reason, &$images, &$h5p_libraries = array() ) {
         if ( ! self::tutor_supports_offline() ) {
             $reason = 'This Tutor LMS version cannot record offline quiz attempts.';
             return null;
@@ -77,9 +77,41 @@ class EduQode_App_Quiz {
             $reason = 'No questions.';
             return null;
         }
-        $out = array();
+        $out   = array();
+        $types = array_unique( array_map( fn( $q ) => (string) ( (object) $q )->question_type, $questions ) );
+        if ( in_array( 'h5p', $types, true ) ) {
+            // Tutor LMS Pro grades H5P quizzes only when every question is H5P.
+            if ( count( $types ) > 1 ) {
+                $reason = 'Mixes H5P and other question types (needs the website).';
+                return null;
+            }
+            if ( ! EduQode_App_H5P::available() || ! EduQode_App_H5P::tutor_addon_active() ) {
+                $reason = 'H5P quizzes need the H5P plugin and Tutor LMS Pro\'s H5P addon.';
+                return null;
+            }
+        }
         foreach ( $questions as $q ) {
             $q = (object) $q;
+            if ( 'h5p' === $q->question_type ) {
+                $content = EduQode_App_H5P::content( EduQode_App_H5P::question_content_id( $q ), $h5p_libraries );
+                if ( ! $content ) {
+                    $reason = 'An H5P question could not be prepared for offline use.';
+                    return null;
+                }
+                $out[] = array(
+                    'id'          => (int) $q->question_id,
+                    'type'        => 'h5p',
+                    'title'       => wp_strip_all_tags( stripslashes( (string) $q->question_title ) ),
+                    'description' => '',
+                    'explanation' => wp_strip_all_tags( (string) ( $q->answer_explanation ?? '' ) ),
+                    'mark'        => (float) $q->question_mark,
+                    'order'       => (int) $q->question_order,
+                    'randomize'   => false,
+                    'answers'     => array(),
+                    'h5p'         => $content,
+                );
+                continue;
+            }
             if ( ! in_array( $q->question_type, self::OFFLINE_TYPES, true ) ) {
                 $reason = 'Has question types that need the website (' . $q->question_type . ').';
                 return null;
@@ -165,10 +197,24 @@ class EduQode_App_Quiz {
         $valid_ids    = array_map( 'intval', wp_list_pluck( array_map( fn( $q ) => (object) $q, self::questions( $quiz_id ) ), 'question_id' ) );
         $question_ids = array_values( array_intersect( array_map( 'intval', (array) ( $event['question_ids'] ?? array() ) ), $valid_ids ) );
         $answers      = array();
+        $h5p          = array();
+        $types        = array();
+        foreach ( self::questions( $quiz_id ) as $q ) {
+            $types[ (int) ( (object) $q )->question_id ] = (string) ( (object) $q )->question_type;
+        }
         foreach ( (array) ( $event['answers'] ?? array() ) as $qid => $value ) {
-            if ( in_array( (int) $qid, $question_ids, true ) ) {
-                $answers[ (int) $qid ] = $value;
+            if ( ! in_array( (int) $qid, $question_ids, true ) ) {
+                continue;
             }
+            if ( 'h5p' === ( $types[ (int) $qid ] ?? '' ) ) {
+                // Results are stored for Tutor LMS Pro; the form field itself is empty, like on the website.
+                if ( is_array( $value ) && isset( $value['h5p'] ) && is_array( $value['h5p'] ) ) {
+                    $h5p[ (int) $qid ] = $value['h5p'];
+                }
+                $answers[ (int) $qid ] = '';
+                continue;
+            }
+            $answers[ (int) $qid ] = $value;
         }
         if ( function_exists( 'tutor_sanitize_data' ) ) {
             $answers = tutor_sanitize_data( $answers );
@@ -177,6 +223,9 @@ class EduQode_App_Quiz {
         $attempt_id = \TUTOR\Quiz::quiz_attempt( $course_id, $quiz_id, $user_id );
         if ( ! $attempt_id ) {
             return array( 'rejected', 'could_not_start', null );
+        }
+        if ( $h5p ) {
+            EduQode_App_H5P::record_quiz_answers( $h5p, $quiz_id, $attempt_id, $course_id, $user_id, $event );
         }
         $attempt = tutor_utils()->get_attempt( $attempt_id );
         \TUTOR\Quiz::manage_attempt_answers(

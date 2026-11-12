@@ -415,4 +415,106 @@ class OfflineE2ETest {
         assertTrue("progress kept on the website", p.completed.containsKey(l3))
         step("PASS remove: local files deleted, enrollment and progress kept")
     }
+
+    // ---------------- H5P ----------------
+
+    /** Clicks "False" (the right answer) and "Check" inside the exercise; true once clicked. */
+    private fun answerTrueFalse(web: android.webkit.WebView): Boolean {
+        val result = java.util.concurrent.LinkedBlockingQueue<String>()
+        web.post {
+            web.evaluateJavascript("""(function(){var f=document.querySelector('iframe');if(!f||!f.contentDocument)return 'wait';
+                var d=f.contentDocument;var a=d.querySelectorAll('.h5p-true-false-answer');var c=d.querySelector('.h5p-question-check-answer');
+                if(a.length<2||!c)return 'wait';a[1].click();c.click();return 'clicked';})()""") { result.put(it ?: "") }
+        }
+        return result.poll(10, java.util.concurrent.TimeUnit.SECONDS)?.contains("clicked") == true
+    }
+
+    private fun <A : android.app.Activity> playExercise(sc: ActivityScenario<A>) {
+        var web: android.webkit.WebView? = null
+        sc.onActivity { web = it.findViewById(R.id.player) }
+        waitUntil("exercise loaded and answered", 60_000) { answerTrueFalse(web!!) }
+    }
+
+    @Test fun t14_h5pLessonOffline(): Unit = runBlocking {
+        val uid = repo.userId
+        val hcourse = ids.getLong("hcourse"); val hl = ids.getLong("hl"); val h5pId = ids.getLong("h5p_id")
+        assertTrue(repo.refreshEnrolled().any { it.id == hcourse })
+        repo.preparePackage(hcourse)
+        repo.startDownload(hcourse, null)
+        waitUntil("H5P course downloaded", 180_000) { repo.db.course(uid, hcourse)!!.state == CourseState.DOWNLOADED }
+        val files = repo.db.files(uid, hcourse)
+        assertTrue("library files downloaded (${files.size})", files.count { it.kind == FileKind.H5P } > 20 && files.all { it.state == FileState.DONE })
+        assertTrue("exercise ready to play", repo.h5pReady(hcourse, h5pId))
+        val lesson = repo.db.lesson(uid, hl)!!
+        assertEquals(listOf(h5pId), lesson.h5p.map { it.id })
+        assertTrue(repo.lessonFile(hcourse, hl).readText().contains("H5P-LESSON-MARKER"))
+        assertTrue("lesson cannot be completed before the exercise", repo.h5pBlocksCompletion(lesson))
+        step("PASS H5P download: libraries and exercise on the phone (${files.size} files)")
+
+        network(false)
+        val intent = Intent(context, com.eduqode.app.ui.H5PActivity::class.java)
+            .putExtra(com.eduqode.app.ui.H5PActivity.EXTRA_COURSE, hcourse).putExtra(com.eduqode.app.ui.H5PActivity.EXTRA_LESSON, hl)
+            .putExtra(com.eduqode.app.ui.H5PActivity.EXTRA_CONTENT, h5pId).putExtra(com.eduqode.app.ui.H5PActivity.EXTRA_TITLE, "Exercise")
+        ActivityScenario.launch<com.eduqode.app.ui.H5PActivity>(intent).use { sc ->
+            playExercise(sc)
+            waitUntil("exercise result saved", 30_000) { repo.h5pDone(hl)[h5pId] != null }
+            var status = ""
+            waitUntil("result shown", 10_000) { sc.onActivity { status = it.findViewById<android.widget.TextView>(R.id.status).text.toString() }; status.startsWith("Done") }
+            assertTrue(status, status.contains("score 1/1"))
+        }
+        assertEquals(1.0 to 1.0, repo.h5pDone(hl)[h5pId])
+        val after = repo.db.lesson(uid, hl)!!
+        assertTrue("all exercises of the lesson done", after.h5pFinished)
+        assertFalse(repo.h5pBlocksCompletion(after))
+        repo.markLessonComplete(hcourse, hl)
+        val types = repo.db.pendingEvents(uid).filter { it.courseId == hcourse }.map { it.type }
+        assertTrue("answer, finished and completion queued: $types",
+            types.contains("h5p_statement") && types.contains("h5p_lesson_finished") && types.contains("lesson_complete"))
+        step("PASS H5P lesson offline: exercise played with no internet, score 1/1, lesson completed on the phone")
+    }
+
+    @Test fun t15_h5pQuizOfflineAndSync(): Unit = runBlocking {
+        val uid = repo.userId
+        val hcourse = ids.getLong("hcourse"); val hl = ids.getLong("hl"); val hq = ids.getLong("hq"); val h5pId = ids.getLong("h5p_id")
+        val quizLesson = repo.db.lesson(uid, hq)!!
+        assertTrue("H5P quiz available offline", quizLesson.isOfflineQuiz)
+        val quiz = quizLesson.quiz!!
+        val intent = Intent(context, com.eduqode.app.ui.H5PActivity::class.java)
+            .putExtra(com.eduqode.app.ui.H5PActivity.EXTRA_COURSE, hcourse).putExtra(com.eduqode.app.ui.H5PActivity.EXTRA_LESSON, hq)
+            .putExtra(com.eduqode.app.ui.H5PActivity.EXTRA_CONTENT, h5pId).putExtra(com.eduqode.app.ui.H5PActivity.EXTRA_QUIZ_MODE, true)
+        val data = ActivityScenario.launchActivityForResult<com.eduqode.app.ui.H5PActivity>(intent).use { sc ->
+            playExercise(sc)
+            var status = ""
+            waitUntil("score shown", 30_000) { sc.onActivity { status = it.findViewById<android.widget.TextView>(R.id.status).text.toString() }; status.startsWith("Score") }
+            sc.onActivity { it.findViewById<View>(R.id.btn_done).performClick() }
+            sc.result
+        }
+        assertEquals(android.app.Activity.RESULT_OK, data.resultCode)
+        val d = data.resultData
+        val st = org.json.JSONArray(d.getStringExtra(com.eduqode.app.ui.H5PActivity.RESULT_STATEMENTS))
+        val response = com.eduqode.app.offline.QuizResponse.H5P(h5pId, d.getDoubleExtra(com.eduqode.app.ui.H5PActivity.RESULT_RAW, -1.0),
+            d.getDoubleExtra(com.eduqode.app.ui.H5PActivity.RESULT_MAX, -1.0), d.getLongExtra(com.eduqode.app.ui.H5PActivity.RESULT_OPENED, 0),
+            (0 until st.length()).map { st.getString(it) })
+        assertEquals(1.0, response.raw, 0.0)
+        val questions = com.eduqode.app.offline.QuizEngine.pickQuestions(quiz)
+        val responses = mapOf(questions.single().id to response)
+        val result = com.eduqode.app.offline.QuizEngine.result(quiz, questions, responses)
+        assertEquals(2.0, result.total, 0.0); assertEquals(1.0, result.earned, 0.0); assertEquals("pass", result.result)
+        val attemptId = repo.saveQuizAttempt(hcourse, hq, System.currentTimeMillis() - 30_000, questions, responses, result)
+        step("PASS H5P quiz offline: exercise played inside the quiz, result 1/2 (pass) on the phone")
+
+        network(true)
+        waitUntil("automatic sync", 180_000) { repo.db.pendingEvents(uid).none { it.courseId == hcourse } }
+        val attempt = repo.db.quizAttempt(uid, attemptId)!!
+        assertEquals("synced", attempt.state)
+        assertEquals("Tutor gave the same marks as the phone", 1.0, attempt.serverEarned!!, 0.0)
+        assertEquals(2.0, attempt.serverTotal!!, 0.0)
+        assertEquals("pass", attempt.serverResult)
+        val pkg = repo.api.coursePackage(hcourse)
+        val l = pkg.lessons.single { it.id == hl }
+        assertTrue("website: H5P lesson finished", l.h5pFinished)
+        assertTrue("website: lesson completed (Tutor LMS Pro rule passed)", l.completedAt > 0)
+        assertEquals("not undone by the sync", true, repo.db.lesson(uid, hl)!!.completedAt > 0)
+        step("PASS H5P sync: website has the exercise result, lesson completion and the H5P quiz attempt (1/2 pass, same as the phone)")
+    }
 }

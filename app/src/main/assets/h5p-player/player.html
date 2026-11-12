@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercise</title>
+<style>
+  html, body { margin: 0; background: #ffffff; font-family: sans-serif; }
+  #h5p { padding: 8px; }
+  #msg { padding: 24px 16px; color: #555; display: none; }
+</style>
+<script src="main.bundle.js"></script>
+</head>
+<body>
+<div id="h5p"></div>
+<div id="msg">This exercise could not be opened on this phone.</div>
+<script>
+// Offline H5P player (h5p-standalone, MIT). The app passes where the exercise is stored and
+// receives every xAPI statement through window.EduQodeH5P (answers, scores).
+(function () {
+  var q = new URLSearchParams(location.search);
+  var base = q.get('base');
+  var id = q.get('id');
+  var bridge = window.EduQodeH5P || { onStatement: function () {}, onReady: function () {}, onError: function () {} };
+  var options = {
+    id: id,
+    h5pJsonPath: base + '/content/' + id,
+    contentJsonPath: base + '/content/' + id + '/content',
+    librariesPath: base + '/libraries',
+    frameJs: '/assets/h5p-player/frame.bundle.js',
+    frameCss: '/assets/h5p-player/styles/h5p.css',
+    frame: false, copyright: false, export: false, icon: false, fullScreen: false, embed: false,
+    xAPIObjectIRI: q.get('iri') || undefined
+  };
+  function fail(err) {
+    document.getElementById('msg').style.display = 'block';
+    bridge.onError(String((err && err.message) || err));
+  }
+  try {
+    new H5PStandalone.H5P(document.getElementById('h5p'), options).then(function () {
+      H5P.externalDispatcher.on('xAPI', function (event) {
+        try { bridge.onStatement(JSON.stringify(event.data.statement)); } catch (e) {}
+      });
+      bridge.onReady();
+    }).catch(fail);
+  } catch (e) { fail(e); }
+})();
+</script>
+</body>
+</html>

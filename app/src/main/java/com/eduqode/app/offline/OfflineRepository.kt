@@ -44,6 +44,9 @@ class OfflineRepository(context: Context) {
     fun mediaDir(courseId: Long, userId: Long = this.userId) = File(courseDir(courseId, userId), "media")
     fun lessonFile(courseId: Long, lessonId: Long) = File(courseDir(courseId), "lesson_$lessonId.html")
     fun courseInfoFile(courseId: Long) = File(courseDir(courseId), "course.html")
+    /** H5P files of a course: libraries/<Name-1.2>/... (shared) and content/<id>/{h5p.json,content/...}. */
+    fun h5pDir(courseId: Long, userId: Long = this.userId) = File(courseDir(courseId, userId), "h5p")
+    fun h5pContentDir(courseId: Long, contentId: Long) = File(h5pDir(courseId), "content/$contentId")
 
     fun isOnline(): Boolean {
         val cm = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -104,8 +107,28 @@ class OfflineRepository(context: Context) {
         addFile(0, FileKind.THUMBNAIL, pkg.course.thumbnailUrl, "Course image", "image/*", 0, "jpg")
         File(dir, "course.html").writeText(OfflineLogic.wrapHtml(pkg.course.title, pkg.course.descriptionHtml))
 
+        // H5P: library files are shared by every exercise of the course (lesson 0); each exercise's
+        // own files belong to its lesson or quiz. h5p.json and content.json come inside the pack.
+        val h5pRoot = h5pDir(courseId)
+        fun addH5PFile(lessonId: Long, url: String, target: File, size: Long) {
+            wanted += url
+            db.ensureFile(uid, courseId, lessonId, FileKind.H5P, url, target.name, "", target.path, size)
+        }
+        pkg.h5pLibraries.forEach { (_, files) ->
+            files.forEach { f -> addH5PFile(0, f.url, File(h5pRoot, "libraries/${f.path}"), f.size) }
+        }
+        fun addH5PContent(ownerId: Long, c: H5PContent) {
+            val dir = File(h5pRoot, "content/${c.id}").apply { mkdirs() }
+            File(dir, "h5p.json").writeText(c.h5pJson)
+            File(dir, "content").mkdirs()
+            File(dir, "content/content.json").writeText(c.contentJson)
+            c.files.forEach { f -> addH5PFile(ownerId, f.url, File(dir, "content/${f.path}"), f.size) }
+        }
+
         val htmlPresent = HashSet<Long>()
         pkg.lessons.forEach { l ->
+            l.h5p.forEach { addH5PContent(l.id, it) }
+            l.quiz?.questions?.forEach { q -> q.h5pContent?.let { addH5PContent(l.id, it) } }
             if (l.type == "lesson" || l.type == "assignment") {
                 // Images are small and may be shared by lessons, so they belong to the course (lesson 0).
                 val names = l.images.associateWith { OfflineLogic.fileNameFor(it, "img") }
@@ -328,6 +351,64 @@ class OfflineRepository(context: Context) {
         return "$word ${n(earned)}/${n(total)}"
     }
 
+    // ---------- H5P exercises ----------
+
+    /** True when every file an H5P exercise needs is on the phone. */
+    fun h5pReady(courseId: Long, contentId: Long, files: List<StoredFile> = db.files(userId, courseId)): Boolean {
+        val h5pJson = File(h5pContentDir(courseId, contentId), "h5p.json")
+        if (!h5pJson.exists()) return false
+        val folders = runCatching {
+            val deps = org.json.JSONObject(h5pJson.readText()).getJSONArray("preloadedDependencies")
+            (0 until deps.length()).map { i -> deps.getJSONObject(i).let { "${it.getString("machineName")}-${it.getString("majorVersion")}.${it.getString("minorVersion")}" } }
+        }.getOrDefault(emptyList())
+        val libsRoot = File(h5pDir(courseId), "libraries").path + "/"
+        val contentRoot = h5pContentDir(courseId, contentId).path + "/"
+        val needed = files.filter { f ->
+            f.kind == FileKind.H5P && (f.localPath.startsWith(contentRoot) ||
+                folders.any { f.localPath.startsWith("$libsRoot$it/") })
+        }
+        return folders.isNotEmpty() && needed.all { it.state == FileState.DONE && File(it.localPath).exists() }
+    }
+
+    /**
+     * Stores one xAPI statement of an H5P exercise in a lesson and queues it for Tutor LMS Pro.
+     * When it finishes the exercise and every exercise of the lesson is done, the lesson's
+     * "H5P finished" is recorded too (Tutor LMS Pro needs it before the lesson can be completed).
+     * Returns true when that happened just now.
+     */
+    fun saveH5PStatement(courseId: Long, lessonId: Long, contentId: Long, statement: org.json.JSONObject, openedAt: Long): Boolean {
+        val now = System.currentTimeMillis()
+        val payload = org.json.JSONObject().put("content_id", contentId).put("statement", statement.toString()).put("opened_at", openedAt)
+        db.addEvent(userId, PendingEvent(UUID.randomUUID().toString(), courseId, lessonId, EventType.H5P_STATEMENT, now, 0, 0, payload.toString()))
+        db.setSyncState(userId, courseId, SyncState.PENDING)
+        var finishedNow = false
+        OfflineLogic.h5pFinalScore(statement)?.let { (raw, max) ->
+            db.markH5PDone(userId, courseId, lessonId, contentId, raw, max, now)
+            val lesson = db.lesson(userId, lessonId)
+            if (lesson != null && !lesson.h5pFinished) {
+                val done = db.h5pDone(userId, lessonId).keys
+                if (lesson.h5p.isNotEmpty() && lesson.h5p.all { it.id in done }) {
+                    db.setH5PFinished(userId, lessonId)
+                    // A moment later than the statement so the website applies them in this order.
+                    db.addEvent(userId, PendingEvent(UUID.randomUUID().toString(), courseId, lessonId, EventType.H5P_LESSON_FINISHED, now + 1, 0, 0))
+                    finishedNow = true
+                }
+            }
+        }
+        SyncWorker.enqueueNow(app)
+        return finishedNow
+    }
+
+    /** Exercises of a lesson the student has finished: id -> (score, max). */
+    fun h5pDone(lessonId: Long): Map<Long, Pair<Double, Double>> = db.h5pDone(userId, lessonId)
+
+    /** Lesson cannot be marked complete yet because of Tutor's "finish H5P first" setting. */
+    fun h5pBlocksCompletion(lesson: Lesson): Boolean {
+        if (lesson.h5p.isEmpty() || lesson.h5pFinished) return false
+        val course = db.course(userId, lesson.courseId) ?: return false
+        return course.h5pGate
+    }
+
     /** Lesson, quiz or assignment is done (for the ✓ in the course list and progress). */
     fun isDone(lesson: Lesson): Boolean = lesson.completedAt > 0 || (lesson.type == "quiz" && quizTaken(lesson))
 
@@ -400,8 +481,16 @@ class OfflineRepository(context: Context) {
         if (!lesson.isLesson) return "Online only"
         val mine = files.filter { it.lessonId == lesson.id }
         if (!lesson.selected) return "Not downloaded"
-        if (mine.any { it.state == FileState.FAILED }) return "Download failed"
-        if (mine.any { it.state != FileState.DONE }) return "Downloading"
+        val h5pLibs = if (lesson.h5p.isEmpty()) emptyList() else files.filter { it.lessonId == 0L && it.kind == FileKind.H5P }
+        if (mine.any { it.state == FileState.FAILED } || h5pLibs.any { it.state == FileState.FAILED }) return "Download failed"
+        if (mine.any { it.state != FileState.DONE } || h5pLibs.any { it.state != FileState.DONE }) return "Downloading"
+        if (lesson.h5p.isNotEmpty()) {
+            val offline = lesson.h5p.filter { it.offline }
+            val done = h5pDone(lesson.id).keys
+            val count = offline.count { it.id in done }
+            val online = lesson.h5p.size - offline.size
+            return "Available offline · exercises $count/${offline.size} done" + if (online > 0) " · $online need the website" else ""
+        }
         return when {
             lesson.videoOfflineCapable -> "Available offline"
             lesson.hasVideo && VideoProviders.isOnlineOnly(lesson.videoOnlineProvider) -> "Text offline · video online only"
