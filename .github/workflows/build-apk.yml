@@ -22,12 +22,16 @@ jobs:
         run: for f in $(find wordpress/eduqode-app-connector -name '*.php'); do php -l "$f"; done
       - name: Run end-to-end plugin tests
         run: tests/plugin/setup_and_run.sh "$RUNNER_TEMP/wp"
+      - name: Backup and restore between two sites
+        run: tests/backup/run_backup_test.sh "$RUNNER_TEMP/wp" | tee "$RUNNER_TEMP/wp/backup-results.txt"
       - name: Upload plugin test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: plugin-test-results
-          path: ${{ runner.temp }}/wp/results.txt
+          path: |
+            ${{ runner.temp }}/wp/results.txt
+            ${{ runner.temp }}/wp/backup-results.txt
 
   e2e:
     name: End-to-end test on an Android emulator (real WordPress + Tutor LMS)
