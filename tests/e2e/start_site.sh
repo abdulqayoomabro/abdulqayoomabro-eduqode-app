@@ -41,6 +41,10 @@ add_action('init', function () {
     wp_send_json(['ok' => true]);
 });
 PHP
+# EduQode School plugin (the app shows a "School" tab when it is active).
+rm -rf "$WORK/site/wp-content/plugins/eduqode-school"
+cp -r "$HERE/../../wordpress/eduqode-school" "$WORK/site/wp-content/plugins/"
+$WP plugin activate eduqode-school >/dev/null
 $WP option update home http://10.0.2.2:8099 >/dev/null
 $WP option update siteurl http://10.0.2.2:8099 >/dev/null
 $WP eval-file "$HERE/seed_e2e.php"

@@ -121,6 +121,8 @@ class OfflineE2ETest {
     }
 
     @Test fun t01_logInAndGetAppToken() {
+        // The app asks for notifications once after login; answered here so the dialog does not cover the screens.
+        shell("pm grant ${context.packageName} android.permission.POST_NOTIFICATIONS")
         ids = JSONObject(httpText("${ApiClient.SITE}/e2e-ids.json"))
         val cookie = websiteLogin("e2estudent", "e2estudent")
         assertEquals("e2estudent", Session.cookieLogin(cookie))
@@ -575,5 +577,18 @@ class OfflineE2ETest {
         }
         assertTrue("not shown twice", com.eduqode.app.offline.NotifyWorker.check(context).none { it.title == "E2E announcement" })
         step("PASS notifications: a new announcement on the website shows on the phone once")
+    }
+
+    @Test fun t18_schoolTabWhenSchoolPluginIsActive() {
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java)).use { sc ->
+            var found = false
+            waitUntil("School tab from the website's app settings", 30_000) {
+                sc.onActivity {
+                    found = it.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav).menu.findItem(0x5c01) != null
+                }
+                found
+            }
+        }
+        step("PASS School tab: shown because the EduQode School plugin is active on the website")
     }
 }

@@ -27,7 +27,8 @@ class RemoteConfig(private val context: Context) {
         val googleLoginMessage: String,
         val blockedPathParts: List<String>,
         val blockedQueryParts: List<String>,
-        val css: String
+        val css: String,
+        val schoolUrl: String = ""             // EduQode School page ("" = no School tab)
     )
 
     @Volatile
@@ -60,7 +61,8 @@ class RemoteConfig(private val context: Context) {
             ),
             blockedPathParts = list("blockedPathParts", listOf("/cart", "/checkout")),
             blockedQueryParts = list("blockedQueryParts", listOf("add-to-cart")),
-            css = css
+            css = css,
+            schoolUrl = json.optString("schoolUrl", "").takeIf { it.startsWith("http") } ?: ""
         )
     }
 

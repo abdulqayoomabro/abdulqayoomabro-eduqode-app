@@ -22,6 +22,10 @@ jobs:
         run: for f in $(find wordpress/eduqode-app-connector -name '*.php'); do php -l "$f"; done
       - name: Run end-to-end plugin tests
         run: tests/plugin/setup_and_run.sh "$RUNNER_TEMP/wp"
+      - name: EduQode School plugin (teacher, parent, student, attendance, report cards)
+        run: |
+          for f in $(find wordpress/eduqode-school -name '*.php'); do php -l "$f"; done
+          tests/school/run_school_tests.sh "$RUNNER_TEMP/wp" | tee "$RUNNER_TEMP/wp/school-results.txt"
       - name: Backup and restore between two sites
         run: tests/backup/run_backup_test.sh "$RUNNER_TEMP/wp" | tee "$RUNNER_TEMP/wp/backup-results.txt"
       - name: Upload plugin test results
@@ -32,6 +36,7 @@ jobs:
           path: |
             ${{ runner.temp }}/wp/results.txt
             ${{ runner.temp }}/wp/backup-results.txt
+            ${{ runner.temp }}/wp/school-results.txt
 
   e2e:
     name: End-to-end test on an Android emulator (real WordPress + Tutor LMS)
@@ -158,6 +163,7 @@ jobs:
           cp app/build/outputs/apk/debug/app-debug.apk EduQode-test.apk
           cp app/build/outputs/bundle/release/app-release.aab EduQode-release.aab
           (cd wordpress && zip -qr ../eduqode-app-connector.zip eduqode-app-connector)
+          (cd wordpress && zip -qr ../eduqode-school.zip eduqode-school)
 
       - name: Upload build outputs
         uses: actions/upload-artifact@v4
@@ -167,6 +173,7 @@ jobs:
             EduQode-test.apk
             EduQode-release.aab
             eduqode-app-connector.zip
+            eduqode-school.zip
 
       # Publishes the files on the Releases page so they can be downloaded on a phone with one tap.
       - name: Publish test release
@@ -178,6 +185,7 @@ jobs:
             Latest test build from the main branch.
             - EduQode-test.apk: install on your phone for testing
             - eduqode-app-connector.zip: WordPress plugin (Plugins > Add New > Upload Plugin)
+            - eduqode-school.zip: EduQode School plugin (classes, teacher/parent dashboards, attendance, report cards)
             - EduQode-release.aab: Play Store bundle (signed only when the upload key secrets are set)
           prerelease: true
           make_latest: false
@@ -185,3 +193,4 @@ jobs:
             EduQode-test.apk
             EduQode-release.aab
             eduqode-app-connector.zip
+            eduqode-school.zip

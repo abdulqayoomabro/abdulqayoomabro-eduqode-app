@@ -133,6 +133,7 @@ class MainActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_offline -> { openOfflineLibrary(); false }
+                NAV_SCHOOL -> { remote.settings.schoolUrl.takeIf { it.isNotEmpty() }?.let { webView.loadUrl(it) }; true }
                 R.id.nav_home -> { if (webView.url?.startsWith(HOME_URL) != true || webView.canGoBack()) webView.loadUrl(HOME_URL); true }
                 else -> false
             }
@@ -148,9 +149,11 @@ class MainActivity : AppCompatActivity() {
         remote = RemoteConfig(this)
         setupWebView()
         installPageStyle()
+        updateSchoolTab()
         remote.refresh {
             installPageStyle()
             injectPageStyle()
+            updateSchoolTab()
         }
 
         swipe.setOnRefreshListener { webView.reload() }
@@ -323,6 +326,26 @@ class MainActivity : AppCompatActivity() {
         if (OWN_HOSTS.contains(host)) webView.evaluateJavascript(styleJs(), null)
     }
 
+    private val NAV_SCHOOL = 0x5c01
+
+    /** "School" tab when the website has the EduQode School plugin (teachers, parents, students). */
+    private fun updateSchoolTab() {
+        val url = remote.settings.schoolUrl
+        val item = bottomNav.menu.findItem(NAV_SCHOOL)
+        if (url.isNotEmpty() && item == null) {
+            bottomNav.menu.add(android.view.Menu.NONE, NAV_SCHOOL, 1, "School").setIcon(R.drawable.ic_school)
+        } else if (url.isEmpty() && item != null) {
+            bottomNav.menu.removeItem(NAV_SCHOOL)
+        }
+    }
+
+    /** window.print() on a website page (report cards): Android's print screen, which can save a PDF. */
+    private fun printPage() {
+        val title = (webView.title ?: "Report card").take(60)
+        val pm = getSystemService(PRINT_SERVICE) as android.print.PrintManager
+        runCatching { pm.print(title, webView.createPrintDocumentAdapter(title), android.print.PrintAttributes.Builder().build()) }
+    }
+
     /** True when the finger is on a scrolled inner panel or an open menu/popup of the page. */
     @Volatile private var pageBlocksRefresh = false
     private val jsErrors = ArrayDeque<String>()
@@ -338,9 +361,13 @@ class MainActivity : AppCompatActivity() {
         WebViewCompat.addWebMessageListener(webView, "eduqodeTouch", OWN_ORIGINS) { _, message, _, _, _ ->
             pageBlocksRefresh = message.data == "1"
         }
+        WebViewCompat.addWebMessageListener(webView, "eduqodePrint", OWN_ORIGINS) { _, _, _, isMainFrame, _ ->
+            if (isMainFrame) printPage()
+        }
         WebViewCompat.addDocumentStartJavaScript(webView, """
             (function () {
               if (window.__eduqodeTouch) return; window.__eduqodeTouch = true;
+              window.print = function () { try { eduqodePrint.postMessage('print'); } catch (x) {} };
               document.addEventListener('touchstart', function (e) {
                 var block = false, el = e.target;
                 while (el && el.nodeType === 1 && el !== document.body && el !== document.documentElement) {

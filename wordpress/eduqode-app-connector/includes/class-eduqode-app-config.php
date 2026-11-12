@@ -44,6 +44,9 @@ class EduQode_App_Config {
                 'googleLoginMessage' => 'Google login is not available in the app yet. Please log in with your email and password. If you signed up with Google, tap \'Forgot password\' once to set a password.',
                 'blockedPathParts'   => self::lines( get_option( 'eduqode_app_blocked_paths', self::DEFAULT_BLOCKED_PATHS ) ),
                 'blockedQueryParts'  => self::lines( get_option( 'eduqode_app_blocked_query', self::DEFAULT_BLOCKED_QUERY ) ),
+                // EduQode School plugin: the app shows a "School" tab that opens this page.
+                'schoolUrl'          => ( class_exists( 'EQS_Model' ) && 'publish' === get_post_status( (int) get_option( 'eqs_page_id' ) ) )
+                    ? (string) get_permalink( (int) get_option( 'eqs_page_id' ) ) : '',
             ),
             'css'    => (string) get_option( 'eduqode_app_css', self::DEFAULT_CSS ),
         );
