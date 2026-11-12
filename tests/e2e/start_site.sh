@@ -22,6 +22,13 @@ cat > "$WORK/site/wp-content/mu-plugins/e2e-actions.php" <<'PHP'
 // Tutor LMS Pro's Assignments addon adds its post type to course contents like this.
 add_filter('tutor_course_contents_post_types', function ($types) { $types[] = 'tutor_assignments'; return $types; });
 add_action('init', function () {
+    if (($_GET['e2e_action'] ?? '') !== 'announce') return;
+    $ids = json_decode(file_get_contents(ABSPATH . 'e2e-ids.json'), true);
+    $id = wp_insert_post(['post_type' => 'tutor_announcements', 'post_status' => 'publish', 'post_title' => 'E2E announcement',
+        'post_content' => 'Class moved to Monday.', 'post_parent' => $ids['course']]);
+    wp_send_json(['ok' => $id > 0]);
+});
+add_action('init', function () {
     if (($_GET['e2e_action'] ?? '') !== 'update_course') return;
     global $wpdb;
     $ids = json_decode(file_get_contents(ABSPATH . 'e2e-ids.json'), true);

@@ -67,7 +67,54 @@ class OfflineRepository(context: Context) {
     suspend fun refreshEnrolled(): List<EnrolledCourse> = withContext(Dispatchers.IO) {
         val list = api.courses()
         db.saveEnrolled(userId, list)
+        runCatching { saveCertificates(list.mapNotNull { it.certificate }) }
         list
+    }
+
+    // ---------- certificates (kept on the phone, also when a course download is removed) ----------
+
+    fun certificatesDir(userId: Long = this.userId) = File(userDir(userId), "certificates")
+
+    /** Certificates known on this phone, with the saved picture when there is one. */
+    fun certificates(): List<Pair<CertificateInfo, File?>> {
+        val index = File(certificatesDir(), "index.json")
+        if (!index.exists()) return emptyList()
+        return runCatching {
+            val a = org.json.JSONArray(index.readText())
+            (0 until a.length()).map { i ->
+                val o = a.getJSONObject(i)
+                val c = CertificateInfo(o.getLong("course_id"), o.optString("title"), o.optString("hash"), o.optString("view_url"), o.optString("image_url"))
+                c to File(certificatesDir(), "c${c.courseId}-${c.hash.take(16).filter { it.isLetterOrDigit() }}.jpg").takeIf { it.exists() && it.length() > 0 }
+            }
+        }.getOrDefault(emptyList())
+    }
+
+    /** Stores the list and downloads pictures that are not on the phone yet (small JPEG files). */
+    fun saveCertificates(list: List<CertificateInfo>) {
+        if (list.isEmpty() && !File(certificatesDir(), "index.json").exists()) return
+        val dir = certificatesDir().apply { mkdirs() }
+        val known = certificates().associateBy { it.first.courseId }
+        val merged = (known.mapValues { it.value.first } + list.associateBy { it.courseId }).values
+        File(dir, "index.json").writeText(org.json.JSONArray().apply {
+            merged.forEach { c -> put(org.json.JSONObject().put("course_id", c.courseId).put("title", c.courseTitle).put("hash", c.hash)
+                .put("view_url", c.viewUrl).put("image_url", c.imageUrl)) }
+        }.toString())
+        list.filter { it.imageUrl.isNotBlank() }.forEach { c ->
+            val target = File(dir, "c${c.courseId}-${c.hash.take(16).filter { it.isLetterOrDigit() }}.jpg")
+            if (target.exists() && target.length() > 0) return@forEach
+            val part = File(target.path + ".part")
+            val conn = (URL(c.imageUrl).openConnection() as HttpURLConnection).apply {
+                connectTimeout = 15_000; readTimeout = 30_000; setRequestProperty("User-Agent", ApiClient.USER_AGENT)
+            }
+            try {
+                if (conn.responseCode == 200 && conn.contentType?.startsWith("image/") == true) {
+                    conn.inputStream.use { input -> part.outputStream().use { input.copyTo(it) } }
+                    if (part.length() > 0) part.renameTo(target)
+                }
+            } finally {
+                conn.disconnect(); part.delete()
+            }
+        }
     }
 
     // ---------- preparing a download ----------

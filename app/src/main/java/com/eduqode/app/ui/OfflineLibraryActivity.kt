@@ -51,9 +51,13 @@ class OfflineLibraryActivity : AppCompatActivity() {
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationIcon(R.drawable.ic_back)
         toolbar.setNavigationOnClickListener { finish() }
-        toolbar.inflateMenu(R.menu.sync_menu)
+        toolbar.inflateMenu(R.menu.library_menu)
         toolbar.setOnMenuItemClickListener {
-            if (it.itemId == R.id.action_sync) { syncNow(); true } else false
+            when (it.itemId) {
+                R.id.action_sync -> { syncNow(); true }
+                R.id.action_certificates -> { startActivity(android.content.Intent(this, CertificatesActivity::class.java)); true }
+                else -> false
+            }
         }
 
         findViewById<RecyclerView>(R.id.downloaded_list).apply { layoutManager = LinearLayoutManager(context); adapter = downloaded }

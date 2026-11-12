@@ -106,6 +106,7 @@ class ApiClient(context: Context) {
     fun courses(): List<EnrolledCourse> = JsonParsers.enrolledCourses(call("/courses"))
     fun coursePackage(courseId: Long): CoursePackage = JsonParsers.coursePackage(call("/courses/$courseId/package"))
     fun sync(body: JSONObject): JsonParsers.SyncResponse = JsonParsers.syncResponse(call("/sync", "POST", body))
+    fun notifications(sinceMs: Long): Pair<Long, List<AppNotice>> = JsonParsers.notices(call("/notifications&since=$sinceMs"))
 
     /**
      * Sends an assignment written on the phone (answer + files) to Tutor LMS Pro.

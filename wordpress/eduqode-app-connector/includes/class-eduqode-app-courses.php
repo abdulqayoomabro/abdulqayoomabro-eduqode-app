@@ -74,6 +74,34 @@ class EduQode_App_Courses {
             'progress'      => (int) tutor_utils()->get_course_completed_percent( $course_id, $user_id ),
             'lesson_count'  => self::count_lessons( $course_id ),
             'offline'       => self::offline_enabled(),
+            'certificate'   => self::certificate( $course_id, $user_id ),
+        );
+    }
+
+    /**
+     * Tutor LMS Pro certificate of a completed course: the page that shows it and, once Tutor has
+     * stored the picture (it does that the first time the certificate is opened), the image the app
+     * keeps on the phone. Null when the course is not completed or certificates are off.
+     */
+    public static function certificate( $course_id, $user_id ) {
+        if ( ! function_exists( 'TUTOR_CERT' ) || ( function_exists( 'tutor_utils' ) && ! tutor_utils()->is_addon_enabled( 'tutor-certificate' ) ) ) {
+            return null;
+        }
+        $done = tutor_utils()->is_completed_course( $course_id, $user_id, false );
+        if ( ! $done || empty( $done->completed_hash ) ) {
+            return null;
+        }
+        $hash    = (string) $done->completed_hash;
+        $page_id = (int) tutor_utils()->get_option( 'tutor_certificate_page' );
+        $page    = $page_id > 0 ? get_post( $page_id ) : null;
+        $view    = $page ? add_query_arg( 'cert_hash', $hash, home_url( '/' . $page->post_name ) ) : '';
+        $rand    = (string) get_comment_meta( (int) $done->comment_ID, 'tutor_certificate_has_image', true );
+        $up      = wp_upload_dir();
+        $file    = $up['basedir'] . '/tutor-certificates/' . $rand . '-' . $hash . '.jpg';
+        return array(
+            'hash'      => $hash,
+            'view_url'  => $view,
+            'image_url' => ( '' !== $rand && file_exists( $file ) ) ? $up['baseurl'] . '/tutor-certificates/' . rawurlencode( $rand . '-' . $hash . '.jpg' ) : '',
         );
     }
 

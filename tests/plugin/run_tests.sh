@@ -208,6 +208,27 @@ code=$(sub --form-string 'answer=<p>OFFLINE-ANSWER sales grew</p>' -F client_id=
 check "assignment: same submission sent again is not doubled" "$code $(python3 -c "import json;print(json.load(open('sub.json'))['status'])") $($WPC eval 'global $wpdb; echo $wpdb->get_var("select count(*) from {$wpdb->comments} where comment_type=\"tutor_assignment\" and comment_post_ID='$ASG'");' 2>/dev/null)" "200 duplicate 1"
 check "assignment: package shows it submitted" "$(api "$B/?rest_route=/eduqode/v1/courses/$C/package" | python3 -c "import json,sys;p=json.load(sys.stdin);print([i for t in p['topics'] for i in t['items'] if i['id']==$ASG][0]['assignment']['submitted'])")" "True"
 
+# ---------------- Phone notifications ----------------
+SINCE=$(( $(date +%s)*1000 - 5000 ))
+check "notifications: nothing new yet" "$(api "$B/?rest_route=/eduqode/v1/notifications&since=$((SINCE+4000))" | python3 -c "import json,sys;print(len(json.load(sys.stdin)['notifications']))")" "0"
+NOTE_IDS=$($WPC eval '
+  $c='$C'; $t=(int) get_posts(["post_type"=>"topics","post_parent"=>$c,"fields"=>"ids","numberposts"=>1])[0];
+  $l=wp_insert_post(["post_type"=>"lesson","post_status"=>"publish","post_title"=>"Brand new lesson","post_parent"=>$t,"menu_order"=>99]);
+  $a=wp_insert_post(["post_type"=>"tutor_announcements","post_status"=>"publish","post_title"=>"Exam on Monday","post_content"=>"Bring a pencil.","post_parent"=>$c]);
+  global $wpdb; $s=(int)$wpdb->get_var("select comment_ID from {$wpdb->comments} where comment_type=\"tutor_assignment\" and comment_post_ID='$ASG' order by comment_ID desc");
+  update_comment_meta($s,"assignment_mark",8); update_comment_meta($s,"evaluate_time",gmdate("Y-m-d H:i:s"));
+  $hc=(int) json_decode(file_get_contents("ids_h5p.json"),true)["h5p_course"]; $ht=(int) get_posts(["post_type"=>"topics","post_parent"=>$hc,"fields"=>"ids","numberposts"=>1])[0];
+  $d=wp_insert_post(["post_type"=>"tutor_assignments","post_status"=>"publish","post_title"=>"Quick task","post_parent"=>$ht,"menu_order"=>9]);
+  update_post_meta($d,"assignment_option",["total_mark"=>10,"pass_mark"=>5,"time_duration"=>["value"=>5,"time"=>"hours"]]);
+  echo "$l $a $d";' 2>/dev/null)
+api "$B/?rest_route=/eduqode/v1/notifications&since=$SINCE" > notes.json
+check "notifications: new lesson, announcement, graded assignment, deadline" "$(python3 -c "
+import json;n=json.load(open('notes.json'))['notifications'];t={x['type']:x for x in n}
+new=sorted(x['title'] for x in n if x['type']=='new_content')
+print(sorted(t), new, t['announcement']['title'], t['assignment_graded']['body'], t['deadline']['title'].startswith('Due soon: Quick task'))")" "['announcement', 'assignment_graded', 'deadline', 'new_content'] ['New assignment: Quick task', 'New lesson: Brand new lesson'] Exam on Monday You got 8 out of 10. True"
+check "notifications: only enrolled courses" "$(python3 -c "import json;n=json.load(open('notes.json'))['notifications'];print(all(x['course_id'] in ($C,$(python3 -c "import json;print(json.load(open('ids_h5p.json'))['h5p_course'])")) for x in n))")" "True"
+$WPC eval 'foreach (explode(" ", "'"$NOTE_IDS"'") as $id) wp_delete_post((int) $id, true);' >/dev/null 2>&1
+
 # ---------------- H5P (offline exercises in lessons and H5P quizzes) ----------------
 if [ -f ids_h5p.json ]; then
 hid() { python3 -c "import json;print(json.load(open('ids_h5p.json'))['$1'])"; }

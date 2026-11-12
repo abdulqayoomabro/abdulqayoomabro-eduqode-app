@@ -141,6 +141,9 @@ class MainActivity : AppCompatActivity() {
         // Offline progress sync: every few hours, and right away if something is waiting.
         SyncWorker.schedulePeriodic(this)
         if (offlineRepo.auth.isLoggedIn) SyncWorker.enqueueNow(this)
+        // Course news on the phone (new lessons, results, deadlines): checked about once an hour.
+        com.eduqode.app.offline.NotifyWorker.schedule(this)
+        if (offlineRepo.auth.isLoggedIn) com.eduqode.app.offline.NotifyWorker.runNow(this)
 
         remote = RemoteConfig(this)
         setupWebView()
@@ -211,8 +214,25 @@ class MainActivity : AppCompatActivity() {
             if (state is Session.State.LoggedIn && !enrolledRefreshed && offlineRepo.isOnline()) {
                 enrolledRefreshed = runCatching { offlineRepo.refreshEnrolled() }.isSuccess
             }
+            if (state is Session.State.LoggedIn) askNotificationsOnce()
             updateDownloadButton(url)
         }
+    }
+
+    private val notificationPermission =
+        registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) com.eduqode.app.offline.NotifyWorker.runNow(this)
+        }
+
+    /** Android 13+: asks once (after login) so downloads, sync and course news can be shown. */
+    private fun askNotificationsOnce() {
+        if (android.os.Build.VERSION.SDK_INT < 33) return
+        if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) ==
+            android.content.pm.PackageManager.PERMISSION_GRANTED) return
+        val prefs = getSharedPreferences("eduqode_main", MODE_PRIVATE)
+        if (prefs.getBoolean("asked_notifications", false)) return
+        prefs.edit().putBoolean("asked_notifications", true).apply()
+        notificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
     }
 
     private suspend fun updateDownloadButton(url: String) {

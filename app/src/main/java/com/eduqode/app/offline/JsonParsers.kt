@@ -26,7 +26,11 @@ object JsonParsers {
                 categories = c.optJSONArray("categories").strings(),
                 progress = c.optInt("progress"),
                 lessonCount = c.optInt("lesson_count"),
-                offlineAllowed = c.optBoolean("offline", true)
+                offlineAllowed = c.optBoolean("offline", true),
+                certificate = c.optJSONObject("certificate")?.let { cert ->
+                    CertificateInfo(c.optLong("id"), c.str("title"), cert.optString("hash"), cert.optString("view_url"), cert.optString("image_url"))
+                        .takeIf { it.hash.isNotBlank() }
+                }
             )
         }
     }
@@ -99,6 +103,14 @@ object JsonParsers {
         json.optJSONObject("h5p_libraries")?.let { o -> o.keys().forEach { k -> libs[k] = h5pFiles(o.optJSONArray(k)) } }
         return CoursePackage(course, lessons, last?.optLong("lesson_id") ?: 0, last?.optLong("updated_at") ?: 0,
             libs, json.optBoolean("h5p_lesson_gate", false))
+    }
+
+    fun notices(json: JSONObject): Pair<Long, List<AppNotice>> {
+        val arr = json.optJSONArray("notifications") ?: JSONArray()
+        return json.optLong("server_time") to (0 until arr.length()).map { i ->
+            val o = arr.getJSONObject(i)
+            AppNotice(o.str("id"), o.str("type"), o.str("title"), o.str("body"), o.optLong("course_id"), o.str("url"), o.optLong("time"))
+        }.filter { it.id.isNotBlank() && it.title.isNotBlank() }
     }
 
     fun h5pFiles(arr: JSONArray?): List<H5PFile> = if (arr == null) emptyList() else (0 until arr.length()).map { i ->

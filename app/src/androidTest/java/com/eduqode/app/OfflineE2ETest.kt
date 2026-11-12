@@ -294,8 +294,8 @@ class OfflineE2ETest {
             s.onActivity {
                 assertEquals("dataset listed", View.VISIBLE, it.findViewById<View>(R.id.attachments_box).visibility)
                 val b = it.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_complete)
-                assertEquals("Submit on the website", b.text.toString())
-                assertFalse("submit needs internet", b.isEnabled)
+                assertEquals("answer can be written offline", "Write your answer", b.text.toString())
+                assertTrue(b.isEnabled)
             }
         }
         assertTrue(repo.lessonFile(course, ids.getLong("asg")).readText().contains("ASSIGNMENT-MARKER"))
@@ -555,5 +555,25 @@ class OfflineE2ETest {
         val l = repo.api.coursePackage(course).lessons.single { it.id == asg }
         assertTrue("website: Tutor LMS has the submission", com.eduqode.app.offline.OfflineLogic.parseAssignment(l.assignmentJson)!!.submitted)
         step("PASS assignment sync: sent automatically when online, Tutor LMS shows it submitted")
+    }
+
+    // ---------------- Course news notifications ----------------
+
+    @Test fun t17_courseNewsNotification(): Unit = runBlocking {
+        shell("pm grant ${context.packageName} android.permission.POST_NOTIFICATIONS")
+        val wm = androidx.work.WorkManager.getInstance(context)
+        wm.cancelUniqueWork("eduqode-notify"); wm.cancelUniqueWork("eduqode-notify-now")
+        context.getSharedPreferences("eduqode_notify", Context.MODE_PRIVATE).edit().clear().commit()
+        assertTrue("first check only remembers the time", com.eduqode.app.offline.NotifyWorker.check(context).isEmpty())
+        Thread.sleep(2000)
+        httpText("${ApiClient.SITE}/?e2e_action=announce")
+        val shown = com.eduqode.app.offline.NotifyWorker.check(context)
+        assertTrue("announcement found: $shown", shown.any { it.type == "announcement" && it.title == "E2E announcement" })
+        val nm = context.getSystemService(android.app.NotificationManager::class.java)
+        waitUntil("notification on the phone", 10_000) {
+            nm.activeNotifications.any { it.notification.extras.getCharSequence("android.title")?.toString() == "E2E announcement" }
+        }
+        assertTrue("not shown twice", com.eduqode.app.offline.NotifyWorker.check(context).none { it.title == "E2E announcement" })
+        step("PASS notifications: a new announcement on the website shows on the phone once")
     }
 }

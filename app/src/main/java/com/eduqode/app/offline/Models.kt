@@ -42,6 +42,17 @@ object EventType {
     const val H5P_LESSON_FINISHED = "h5p_lesson_finished" // every H5P exercise of a lesson answered
 }
 
+/** Something new for the student (GET /notifications). */
+data class AppNotice(
+    val id: String,
+    val type: String,       // new_content, announcement, assignment_graded, quiz_reviewed, deadline
+    val title: String,
+    val body: String,
+    val courseId: Long,
+    val url: String,
+    val time: Long
+)
+
 /** Tutor LMS Pro assignment limits (from the course pack). */
 data class AssignmentInfo(
     val totalMark: Double,
@@ -284,5 +295,9 @@ data class EnrolledCourse(
     val categories: List<String>,
     val progress: Int,
     val lessonCount: Int,
-    val offlineAllowed: Boolean
+    val offlineAllowed: Boolean,
+    val certificate: CertificateInfo? = null
 )
+
+/** Tutor LMS Pro certificate of a completed course. */
+data class CertificateInfo(val courseId: Long, val courseTitle: String, val hash: String, val viewUrl: String, val imageUrl: String)

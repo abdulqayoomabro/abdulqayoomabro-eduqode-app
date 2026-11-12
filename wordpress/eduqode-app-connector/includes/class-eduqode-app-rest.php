@@ -8,6 +8,7 @@
  *  GET  /courses/{id}/progress    current progress on the server
  *  POST /sync                     offline progress events
  *  POST /assignments/{id}/submit  assignment written offline (multipart, Tutor LMS Pro)
+ *  GET  /notifications?since=ms   what is new for phone notifications
  *  POST /auth/revoke              log this app token out
  *
  * Every route needs the app token (X-EduQode-Token header).
@@ -93,6 +94,15 @@ class EduQode_App_Rest {
                 'callback'            => array( 'EduQode_App_Assignments', 'submit' ),
                 'permission_callback' => $auth,
                 'args'                => array( 'id' => array( 'sanitize_callback' => 'absint' ) ),
+            )
+        );
+        register_rest_route(
+            self::NS,
+            '/notifications',
+            array(
+                'methods'             => 'GET',
+                'callback'            => array( 'EduQode_App_Notifications', 'rest' ),
+                'permission_callback' => $auth,
             )
         );
         register_rest_route(

@@ -89,6 +89,40 @@ and with **Sync now**.
 next sync and cannot be opened; files stay until the student removes them, and it unlocks again if
 access is renewed. Removing a download never touches enrollment or progress on the website.
 
+## 3b. H5P exercises
+
+Lessons with `[h5p id="…"]` and Tutor LMS Pro H5P quizzes work offline. The plugin sends each
+exercise's `h5p.json`, `content.json` and the library/content files (libraries once per course);
+the app plays them with the open-source **h5p-standalone** player (MIT, in `app/src/main/assets/h5p-player`).
+Answers (xAPI statements) are saved on the phone and, when online, stored exactly like the website
+does: Tutor LMS Pro's H5P tables, the H5P plugin's Results, and the "H5P finished" mark that Tutor
+needs when *"complete lesson only after H5P"* is on. H5P quizzes are graded like Tutor LMS Pro
+(question mark + exercise max). Quizzes that mix H5P and other question types stay online (Tutor
+itself cannot grade those).
+
+## 3c. Assignments written on the phone
+
+With Tutor LMS Pro's Assignments addon, students write the answer and attach files (Tutor's file
+limits) in the app, also offline. The sync uploads them through Tutor LMS Pro's own submit code
+(teacher e-mails, grading as usual). A retry never submits twice.
+
+## 3d. Notifications and certificates
+
+* About once an hour the app asks `GET /notifications` and shows: new lessons/quizzes/assignments,
+  announcements, graded assignments, reviewed quizzes, assignment deadlines within 24 hours.
+  No Firebase needed. (Instant push would need a Firebase project.)
+* Certificates (Tutor LMS Pro): saved on the phone under *Offline courses → ⋮ → My certificates*
+  once Tutor has stored the certificate picture (Tutor does that the first time the certificate
+  is opened on the website or in the app).
+
+## 3e. Backup & restore (Tools → EduQode Backup)
+
+Tutor LMS Pro's *Tools → Export/Import* moves courses, settings, media and students' progress.
+This add-on adds what Tutor does not: H5P exercises (real .h5p files), students' H5P results,
+offline video links and app settings. On the new site: first Tutor's Import, then Restore here.
+Course items are found by course slug, topic, title and order; students by email. WP-CLI:
+`wp eduqode backup export --students --file=b.zip`, `wp eduqode backup import b.zip`.
+
 ## 4. REST API
 
 All routes need the `X-EduQode-Token` header.
@@ -100,11 +134,13 @@ All routes need the `X-EduQode-Token` header.
 | GET | `/eduqode/v1/courses/{id}/package` | offline pack |
 | GET | `/eduqode/v1/courses/{id}/progress` | server progress |
 | POST | `/eduqode/v1/sync` | `{events:[…], course_ids:[…]}` |
+| POST | `/eduqode/v1/assignments/{id}/submit` | assignment answer + files (multipart) |
+| GET | `/eduqode/v1/notifications?since=ms` | news for phone notifications |
 | POST | `/eduqode/v1/auth/revoke` | log this token out |
 
 ## 5. Play Store notes
 
-* New permission: `POST_NOTIFICATIONS` (asked only when the first download starts).
+* Permission `POST_NOTIFICATIONS` is asked once after login (downloads, sync, course news).
   WorkManager adds its usual background-work permissions. No storage permission is used.
 * Data safety form: the app sends learning progress (lesson completion, video position) to your
   own website; nothing goes to third parties.

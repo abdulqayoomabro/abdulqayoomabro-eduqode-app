@@ -18,12 +18,14 @@ import com.eduqode.app.ui.OfflineLibraryActivity
 object Notifier {
     private const val CH_DOWNLOADS = "downloads"
     private const val CH_SYNC = "sync"
+    private const val CH_NEWS = "news"
 
     private fun ensureChannels(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val nm = context.getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(NotificationChannel(CH_DOWNLOADS, "Course downloads", NotificationManager.IMPORTANCE_LOW))
         nm.createNotificationChannel(NotificationChannel(CH_SYNC, "Progress sync", NotificationManager.IMPORTANCE_LOW))
+        nm.createNotificationChannel(NotificationChannel(CH_NEWS, "Course news (new lessons, results, deadlines)", NotificationManager.IMPORTANCE_DEFAULT))
     }
 
     private fun allowed(context: Context): Boolean {
@@ -73,6 +75,33 @@ object Notifier {
         show(context, CH_DOWNLOADS, downloadId(courseId), "Download problem: $title", reason)
 
     fun cancel(context: Context, courseId: Long) = NotificationManagerCompat.from(context).cancel(downloadId(courseId))
+
+    /** New lesson, announcement, result or deadline: tapping it opens that page in the app. */
+    fun news(context: Context, n: AppNotice) {
+        if (!allowed(context)) return
+        ensureChannels(context)
+        val id = 5000 + (n.id.hashCode() and 0x7ffffff)
+        val open = PendingIntent.getActivity(
+            context, id,
+            Intent(context, com.eduqode.app.MainActivity::class.java)
+                .putExtra(com.eduqode.app.MainActivity.EXTRA_OPEN_URL, n.url)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val b = NotificationCompat.Builder(context, CH_NEWS)
+            .setSmallIcon(R.drawable.ic_stat_bell)
+            .setContentTitle(n.title)
+            .setContentText(n.body)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(n.body))
+            .setContentIntent(open)
+            .setAutoCancel(true)
+            .setWhen(if (n.time > 0) n.time else System.currentTimeMillis())
+            .setShowWhen(true)
+        try {
+            NotificationManagerCompat.from(context).notify(id, b.build())
+        } catch (_: SecurityException) {
+        }
+    }
 
     fun syncDone(context: Context, count: Int) =
         show(context, CH_SYNC, 900, "Progress synced", "$count offline update(s) saved to your account.")
