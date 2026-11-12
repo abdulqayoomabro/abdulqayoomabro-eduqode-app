@@ -62,7 +62,7 @@ playback, seeking, completion and sync before moving real videos off YouTube.
 ## 3. How it works
 
 **Login.** The student logs in on the website inside the app as before. The app then asks the
-plugin for its own token (POST `/?eduqode_app=issue_token` with the web view's login cookies).
+plugin for its own token (POST `/?eduqode_app=issue_token` with the web view's login cookies and the header `X-EduQode-App: 1`; tokens stop working after a password change or 180 days unused).
 The token is stored encrypted with an Android Keystore key. Logging out on the website logs the
 app out; offline courses are then locked until the same student logs in again.
 

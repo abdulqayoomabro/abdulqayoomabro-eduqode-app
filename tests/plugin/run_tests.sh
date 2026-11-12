@@ -14,9 +14,11 @@ curl -s -c $J -b "wordpress_test_cookie=WP%20Cookie%20check" -A "$UA" -o /dev/nu
   -d "log=student&pwd=student&wp-submit=Log+In&testcookie=1" $B/wp-login.php
 code=$(curl -s -o /dev/null -w "%{http_code}" -A "$UA" "$B/?eduqode_app=issue_token")
 check "token: GET is refused" "$code" "405"
-code=$(curl -s -o /dev/null -w "%{http_code}" -A "$UA" -X POST "$B/?eduqode_app=issue_token")
+code=$(curl -s -o /dev/null -w "%{http_code}" -H "X-EduQode-App: 1" -A "$UA" -X POST "$B/?eduqode_app=issue_token")
 check "token: not logged in is refused" "$code" "401"
-resp=$(curl -s -b $J -A "$UA" -X POST -d "device_id=dev-1&device_name=Pixel" "$B/?eduqode_app=issue_token")
+code=$(curl -s -o /dev/null -w "%{http_code}" -b $J -A "$UA" -X POST -d "device_id=dev-x" "$B/?eduqode_app=issue_token")
+check "token: refused without the app's header (another website cannot ask for one)" "$code" "403"
+resp=$(curl -s -b $J -A "$UA" -H "X-EduQode-App: 1" -X POST -d "device_id=dev-1&device_name=Pixel" "$B/?eduqode_app=issue_token")
 TOKEN=$(echo "$resp" | python3 -c "import json,sys;print(json.load(sys.stdin)['token'])")
 check "token: issued for logged-in student" "$(echo "$resp" | python3 -c "import json,sys;print(json.load(sys.stdin)['user']['name'])")" "Ali Student"
 
@@ -298,10 +300,31 @@ check "optimizer: Tutor scripts excluded from SiteGround minify/combine" "$($WPC
 
 # Same device logging in again replaces its old token
 OLD=$TOKEN
-resp=$(curl -s -b $J -A "$UA" -X POST -d "device_id=dev-1&device_name=Pixel" "$B/?eduqode_app=issue_token")
+resp=$(curl -s -b $J -A "$UA" -H "X-EduQode-App: 1" -X POST -d "device_id=dev-1&device_name=Pixel" "$B/?eduqode_app=issue_token")
 TOKEN=$(echo "$resp" | python3 -c "import json,sys;print(json.load(sys.stdin)['token'])")
 check "re-login on same device: old token stops working" "$(curl -s -o /dev/null -w "%{http_code}" -H "X-EduQode-Token: $OLD" "$B/?rest_route=/eduqode/v1/me")" "401"
 check "re-login on same device: new token works" "$(api -o /dev/null -w "%{http_code}" "$B/?rest_route=/eduqode/v1/me")" "200"
+
+# Login safety
+SID=$($WPC user get student --field=ID)
+check "token: unused for 180 days stops working" "$($WPC eval '$u='$SID'; $t=get_user_meta($u,"_eduqode_app_tokens",true); $k=array_key_first($t); $saved=$t; $t[$k]["last_used"]=time()-181*DAY_IN_SECONDS; update_user_meta($u,"_eduqode_app_tokens",$t); $r=EduQode_App_Auth::user_from_token("'$TOKEN'"); update_user_meta($u,"_eduqode_app_tokens",$saved); echo $r;')" "0"
+check "google hand-off: off unless the admin turns it on" "$(curl -s -o /dev/null -w "%{http_code}" "$B/?eduqode_app_handoff=1")" "200"
+$WPC option update eduqode_app_google_login handoff >/dev/null
+check "google hand-off: refused without the app's challenge" "$(curl -s -o /dev/null -w "%{http_code}" "$B/?eduqode_app_handoff=1")" "400"
+VER=AbCdEfGhIjKlMnOpQrStUvWxYz0123456789_-abcdef
+CH=$(python3 -c "import hashlib,base64,sys;print(base64.urlsafe_b64encode(hashlib.sha256(sys.argv[1].encode()).digest()).decode().rstrip('='))" "$VER")
+link=$(curl -s -b $J "$B/?eduqode_app_handoff=1&challenge=$CH" | grep -o 'eduqode://auth?token=[A-Za-z0-9]*' | head -1)
+check "google hand-off: logged-in user is sent back to the app" "$(echo "$link" | grep -c token=)" "1"
+OT=${link#*token=}
+check "google hand-off: token without the app's secret is useless" "$(curl -s -o /dev/null -w "%{redirect_url}" "$B/?eduqode_app_token=$OT&eduqode_app_verifier=wrong" | grep -c dashboard)" "0"
+link=$(curl -s -b $J "$B/?eduqode_app_handoff=1&challenge=$CH" | grep -o 'eduqode://auth?token=[A-Za-z0-9]*' | head -1); OT=${link#*token=}
+check "google hand-off: works with the app's secret" "$(curl -s -o /dev/null -w "%{redirect_url}" "$B/?eduqode_app_token=$OT&eduqode_app_verifier=$VER" | grep -c dashboard)" "1"
+check "google hand-off: token works only once" "$(curl -s -o /dev/null -w "%{redirect_url}" "$B/?eduqode_app_token=$OT&eduqode_app_verifier=$VER" | grep -c dashboard)" "0"
+$WPC option update eduqode_app_google_login off >/dev/null
+$WPC user update student --user_pass=student >/dev/null
+check "new password: app tokens on all phones stop working" "$(api -o /dev/null -w "%{http_code}" "$B/?rest_route=/eduqode/v1/me")" "401"
+curl -s -c $J -b "wordpress_test_cookie=WP%20Cookie%20check" -A "$UA" -o /dev/null -d "log=student&pwd=student&wp-submit=Log+In&testcookie=1" $B/wp-login.php
+TOKEN=$(curl -s -b $J -A "$UA" -H "X-EduQode-App: 1" -X POST -d "device_id=dev-1" "$B/?eduqode_app=issue_token" | python3 -c "import json,sys;print(json.load(sys.stdin)['token'])")
 
 # Revoke
 api -X POST -o /dev/null "$B/?rest_route=/eduqode/v1/auth/revoke"

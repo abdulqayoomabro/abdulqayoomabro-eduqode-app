@@ -19,9 +19,33 @@ class EduQode_App_Auth {
     const META        = '_eduqode_app_tokens';
     const MAX_DEVICES = 5;
     const HEADER      = 'HTTP_X_EDUQODE_TOKEN';
+    /** A token not used for this long stops working (the student logs in again). */
+    const MAX_IDLE    = 180 * DAY_IN_SECONDS;
 
     public static function init() {
         add_action( 'init', array( __CLASS__, 'maybe_issue_token' ), 2 );
+        // New password (changed, reset, or set by an admin): every app on every phone has to log in again.
+        add_action( 'wp_set_password', array( __CLASS__, 'revoke_all_for_password' ), 10, 2 );
+        add_action( 'after_password_reset', array( __CLASS__, 'revoke_all' ) );
+        add_action( 'profile_update', array( __CLASS__, 'revoke_if_password_changed' ), 10, 2 );
+    }
+
+    public static function revoke_all( $user ) {
+        $user_id = is_object( $user ) ? (int) $user->ID : (int) $user;
+        if ( $user_id ) {
+            delete_user_meta( $user_id, self::META );
+        }
+    }
+
+    public static function revoke_all_for_password( $password, $user_id ) {
+        self::revoke_all( $user_id );
+    }
+
+    public static function revoke_if_password_changed( $user_id, $old_user ) {
+        $new = get_userdata( $user_id );
+        if ( $new && $old_user && $new->user_pass !== $old_user->user_pass ) {
+            self::revoke_all( $user_id );
+        }
     }
 
     private static function hash( $secret ) {
@@ -36,6 +60,11 @@ class EduQode_App_Auth {
         nocache_headers();
         if ( 'POST' !== ( isset( $_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : '' ) ) {
             wp_send_json( array( 'error' => 'method_not_allowed' ), 405 );
+        }
+        // Only the app sends this header. A browser cannot send it from another website, so a
+        // foreign page cannot make a logged-in visitor's browser create app tokens.
+        if ( '1' !== ( isset( $_SERVER['HTTP_X_EDUQODE_APP'] ) ? $_SERVER['HTTP_X_EDUQODE_APP'] : '' ) ) {
+            wp_send_json( array( 'error' => 'app_only' ), 403 );
         }
         if ( ! is_user_logged_in() ) {
             wp_send_json( array( 'error' => 'not_logged_in' ), 401 );
@@ -110,6 +139,11 @@ class EduQode_App_Auth {
         $hash   = self::hash( $m[2] );
         foreach ( $tokens as $stored => $info ) {
             if ( hash_equals( (string) $stored, $hash ) ) {
+                if ( time() - (int) $info['last_used'] > self::MAX_IDLE ) {
+                    unset( $tokens[ $stored ] );
+                    update_user_meta( $user_id, self::META, $tokens );
+                    return 0;
+                }
                 // Update "last used" at most once an hour to avoid a database write per request.
                 if ( time() - (int) $info['last_used'] > HOUR_IN_SECONDS ) {
                     $tokens[ $stored ]['last_used'] = time();

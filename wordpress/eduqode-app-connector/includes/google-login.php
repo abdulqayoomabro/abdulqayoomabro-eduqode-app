@@ -16,16 +16,30 @@ if ( ! defined( 'ABSPATH' ) ) {
  * 3. This code creates a one-time token (valid 2 minutes) and sends the user back
  *    to the app with  eduqode://auth?token=...
  * 4. The app opens  ?eduqode_app_token=...  and this code logs the app in.
+ *
+ * Safety (like OAuth PKCE): the app makes a secret, keeps it, and sends only its SHA-256
+ * ("challenge") in step 1. Step 4 works only with the secret, so a token caught by another
+ * app or sent in a link to someone else is useless. Only active when the admin turned on
+ * "Google login: hand-off" in the app settings.
  * ------------------------------------------------------------------ */
+
+function eduqode_app_handoff_enabled() {
+    return 'handoff' === get_option( 'eduqode_app_google_login', 'off' );
+}
+
+function eduqode_app_clean_challenge( $value ) {
+    $c = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $value );
+    return 43 === strlen( $c ) ? $c : '';   // base64url of a SHA-256 hash
+}
 
 // The page where students log in. Change it if your login page moves.
 function eduqode_app_login_page_url() {
     return home_url( '/tutor-login-3/' );
 }
 
-function eduqode_app_send_back( $user_id ) {
+function eduqode_app_send_back( $user_id, $challenge ) {
     $token = wp_generate_password( 40, false, false );
-    set_transient( 'eduqode_app_tok_' . $token, (int) $user_id, 2 * MINUTE_IN_SECONDS );
+    set_transient( 'eduqode_app_tok_' . $token, array( 'user' => (int) $user_id, 'challenge' => $challenge ), 2 * MINUTE_IN_SECONDS );
 
     // The hand-off is finished, so the reminder cookie is no longer needed.
     setcookie( 'eduqode_app_handoff', '', time() - 3600, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, is_ssl(), true );
@@ -64,17 +78,23 @@ function eduqode_app_send_back( $user_id ) {
 }
 
 add_action( 'init', function () {
+    if ( ! eduqode_app_handoff_enabled() ) {
+        return;
+    }
     $is_page_request = 'GET' === ( isset( $_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : '' )
         && ! wp_doing_ajax()
         && false === strpos( isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '', '/wp-json/' );
 
     // Step 4: the app arrives with a one-time token and gets logged in.
     if ( isset( $_GET['eduqode_app_token'] ) ) {
-        $token   = preg_replace( '/[^A-Za-z0-9]/', '', (string) wp_unslash( $_GET['eduqode_app_token'] ) );
-        $user_id = $token ? (int) get_transient( 'eduqode_app_tok_' . $token ) : 0;
+        $token    = preg_replace( '/[^A-Za-z0-9]/', '', (string) wp_unslash( $_GET['eduqode_app_token'] ) );
+        $verifier = (string) wp_unslash( $_GET['eduqode_app_verifier'] ?? '' );
+        $data     = $token ? get_transient( 'eduqode_app_tok_' . $token ) : false;
         if ( $token ) {
             delete_transient( 'eduqode_app_tok_' . $token ); // usable only once
         }
+        $proof   = rtrim( strtr( base64_encode( hash( 'sha256', $verifier, true ) ), '+/', '-_' ), '=' );
+        $user_id = ( is_array( $data ) && '' !== $verifier && hash_equals( (string) $data['challenge'], $proof ) ) ? (int) $data['user'] : 0;
         if ( $user_id > 0 && get_userdata( $user_id ) ) {
             wp_clear_auth_cookie();
             wp_set_current_user( $user_id );
@@ -88,18 +108,23 @@ add_action( 'init', function () {
 
     // Step 1 to 3: hand-off page opened by the app in the Chrome tab.
     if ( isset( $_GET['eduqode_app_handoff'] ) && $is_page_request ) {
+        $challenge = eduqode_app_clean_challenge( wp_unslash( $_GET['challenge'] ?? '' ) );
+        if ( ! $challenge ) {
+            wp_die( esc_html__( 'Please update the EduQode app and try again.' ), '', array( 'response' => 400 ) );
+        }
         if ( is_user_logged_in() ) {
-            eduqode_app_send_back( get_current_user_id() );
+            eduqode_app_send_back( get_current_user_id(), $challenge );
         }
         // Not logged in yet: remember the hand-off, then show the normal login page.
-        setcookie( 'eduqode_app_handoff', '1', time() + 15 * MINUTE_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, is_ssl(), true );
-        wp_safe_redirect( add_query_arg( 'redirect_to', rawurlencode( home_url( '/?eduqode_app_handoff=1' ) ), eduqode_app_login_page_url() ) );
+        setcookie( 'eduqode_app_handoff', $challenge, time() + 15 * MINUTE_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, is_ssl(), true );
+        wp_safe_redirect( add_query_arg( 'redirect_to', rawurlencode( home_url( '/?eduqode_app_handoff=1&challenge=' . $challenge ) ), eduqode_app_login_page_url() ) );
         exit;
     }
 
     // Some login plugins ignore redirect_to. If the user is now logged in in the Chrome tab
     // and a hand-off is pending, send them back to the app from whatever page they landed on.
-    if ( $is_page_request && is_user_logged_in() && ! empty( $_COOKIE['eduqode_app_handoff'] ) && ! eduqode_is_app() ) {
-        eduqode_app_send_back( get_current_user_id() );
+    $pending = eduqode_app_clean_challenge( wp_unslash( $_COOKIE['eduqode_app_handoff'] ?? '' ) );
+    if ( $is_page_request && is_user_logged_in() && $pending && ! eduqode_is_app() ) {
+        eduqode_app_send_back( get_current_user_id(), $pending );
     }
 }, 1 );

@@ -267,8 +267,13 @@ class MainActivity : AppCompatActivity() {
         if (data.scheme != "eduqode" || data.host != "auth") return null
         val token = data.getQueryParameter("token")?.takeIf { it.matches(Regex("^[A-Za-z0-9]{20,64}$")) }
             ?: return null
-        return TOKEN_LOGIN_URL + token
+        // Only the app that started this login knows the secret; a token caught by another app is useless.
+        val verifier = handoffPrefs().getString("verifier", null) ?: return null
+        handoffPrefs().edit().remove("verifier").apply()
+        return TOKEN_LOGIN_URL + token + "&eduqode_app_verifier=" + verifier
     }
+
+    private fun handoffPrefs() = getSharedPreferences("eduqode_handoff", MODE_PRIVATE)
 
     private fun isGoogleLogin(uri: Uri): Boolean {
         val host = uri.host ?: return false
@@ -417,7 +422,14 @@ class MainActivity : AppCompatActivity() {
 
     /** Opens the website's login hand-off page in a Chrome tab, where Google login is allowed. */
     private fun openLoginInBrowser() {
-        val uri = Uri.parse(LOGIN_HANDOFF_URL)
+        // Like OAuth PKCE: a secret stays on the phone, the website only sees its SHA-256.
+        val bytes = ByteArray(32).also { java.security.SecureRandom().nextBytes(it) }
+        val verifier = android.util.Base64.encodeToString(bytes, android.util.Base64.URL_SAFE or android.util.Base64.NO_PADDING or android.util.Base64.NO_WRAP)
+        handoffPrefs().edit().putString("verifier", verifier).apply()
+        val challenge = android.util.Base64.encodeToString(
+            java.security.MessageDigest.getInstance("SHA-256").digest(verifier.toByteArray()),
+            android.util.Base64.URL_SAFE or android.util.Base64.NO_PADDING or android.util.Base64.NO_WRAP)
+        val uri = Uri.parse("$LOGIN_HANDOFF_URL&challenge=$challenge")
         try {
             CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(this, uri)
         } catch (e: ActivityNotFoundException) {

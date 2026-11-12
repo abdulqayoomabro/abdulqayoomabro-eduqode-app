@@ -84,6 +84,8 @@ class ApiClient(context: Context) {
         try {
             conn.doOutput = true
             conn.setRequestProperty("Cookie", cookieHeader)
+            // Browsers cannot send this header from another website, so a page cannot ask for a token.
+            conn.setRequestProperty("X-EduQode-App", "1")
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
             val form = "device_id=" + URLEncoder.encode(auth.deviceId, "UTF-8") +
                 "&device_name=" + URLEncoder.encode("${Build.MANUFACTURER} ${Build.MODEL}", "UTF-8")
