@@ -23,10 +23,12 @@ jobs:
       - name: Run end-to-end plugin tests
         run: tests/plugin/setup_and_run.sh "$RUNNER_TEMP/wp"
       - name: EduQode School plugin (teacher, parent, student, attendance, report cards)
+        shell: bash
         run: |
           for f in $(find wordpress/eduqode-school -name '*.php'); do php -l "$f"; done
           tests/school/run_school_tests.sh "$RUNNER_TEMP/wp" | tee "$RUNNER_TEMP/wp/school-results.txt"
       - name: Backup and restore between two sites
+        shell: bash
         run: tests/backup/run_backup_test.sh "$RUNNER_TEMP/wp" | tee "$RUNNER_TEMP/wp/backup-results.txt"
       - name: Upload plugin test results
         if: always()
