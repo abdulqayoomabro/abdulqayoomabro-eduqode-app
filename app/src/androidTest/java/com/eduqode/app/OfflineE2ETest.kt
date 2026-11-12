@@ -606,6 +606,7 @@ class OfflineE2ETest {
             var shown = emptyList<String>()
             var rtl = false
             waitUntil("library screen in Urdu, right to left", 20_000) {
+                step("Urdu check: rtl=$rtl texts=${shown.take(12)}")
                 sc.onActivity {
                     shown = texts(it.window.decorView)
                     rtl = it.window.decorView.layoutDirection == View.LAYOUT_DIRECTION_RTL

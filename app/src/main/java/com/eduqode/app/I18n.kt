@@ -36,7 +36,7 @@ object I18n {
         language = resolve(chosen)
         if (language == "ur" && urdu.isEmpty()) urdu = load(app)
         // "" keeps what Android has (the phone's language, or the app language set in Android's settings).
-        if (chosen.isNotEmpty()) applyToActivities(chosen)
+        if (chosen.isNotEmpty()) applyToActivities(app, chosen)
     }
 
     /** "", "en" or "ur" as the user chose it. */
@@ -52,7 +52,7 @@ object I18n {
         context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
             .putString(KEY, v).putBoolean(PUSH, fromApp).apply()
         val before = language
-        if (v.isEmpty()) applyToActivities(v)
+        if (v.isEmpty()) applyToActivities(context.applicationContext, v)
         init(context)
         return before != language
     }
@@ -73,8 +73,15 @@ object I18n {
         }
     }
 
-    private fun applyToActivities(chosen: String) {
+    private fun applyToActivities(context: Context, chosen: String) {
         // Layout direction (right to left) and res/values-ur follow this.
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            // Android 13+: Android keeps the app's language itself (also works when no screen is open).
+            val lm = context.getSystemService(android.app.LocaleManager::class.java)
+            val wantList = if (chosen.isEmpty()) android.os.LocaleList.getEmptyLocaleList() else android.os.LocaleList.forLanguageTags(chosen)
+            if (lm != null && lm.applicationLocales.toLanguageTags() != wantList.toLanguageTags()) lm.applicationLocales = wantList
+            return
+        }
         val want = if (chosen.isEmpty()) LocaleListCompat.getEmptyLocaleList() else LocaleListCompat.forLanguageTags(chosen)
         if (AppCompatDelegate.getApplicationLocales().toLanguageTags() != want.toLanguageTags()) {
             AppCompatDelegate.setApplicationLocales(want)
