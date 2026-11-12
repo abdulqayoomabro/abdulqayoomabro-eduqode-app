@@ -156,7 +156,7 @@ TEAMJSON=$($WP eval '
   $att = function($uid, $ago, $secs_per_q, $pct, $status = "attempt_ended", $right = [true,true]) use ($wpdb, $course, $quiz, $q1, $q2) {
     $start = $ago; $end = $ago + 2 * $secs_per_q;
     $wpdb->insert($wpdb->prefix."tutor_quiz_attempts", ["course_id"=>$course,"quiz_id"=>$quiz,"user_id"=>$uid,"total_questions"=>2,"total_answered_questions"=>2,
-      "total_marks"=>10,"earned_marks"=>$pct/10,"attempt_status"=>$status,"result"=>$status==="attempt_ended" ? ($pct>=70?"pass":"fail") : null,
+      "total_marks"=>10,"earned_marks"=>$pct/10,"attempt_info"=>serialize(["passing_grade"=>70,"total_marks"=>10]),"attempt_status"=>$status,"result"=>$status==="attempt_ended" ? ($pct>=70?"pass":"fail") : null,
       "attempt_started_at"=>gmdate("Y-m-d H:i:s",$start),"attempt_ended_at"=>$status==="attempt_ended" ? gmdate("Y-m-d H:i:s",$end) : null]);
     $id = $wpdb->insert_id;
     if ($status === "attempt_ended") foreach ([$q1=>$right[0], $q2=>$right[1]] as $q=>$ok)
