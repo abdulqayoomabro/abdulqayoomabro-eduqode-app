@@ -197,6 +197,11 @@ get w_hard "$(url "view=student&id=$WHARD")" > w_self.html
 has "insights: worker sees own progress" "Learning insights" w_self.html
 hasnt "notes: the worker does not see supervisor notes" "NOTE-MARKER" w_self.html
 
+$WP user create manager1 m1@mill.co --role=eqs_manager --user_pass=manager1 >/dev/null 2>&1
+login manager1 manager1
+get manager1 "$(url "view=insights&group=$TEAM")" > m_ins.html
+has "training manager: sees every team without being an admin" "Dyeing A shift" m_ins.html
+
 # ---- admin pages render ----
 check "admin pages render without PHP notices" "$($WP eval 'wp_set_current_user(1); ob_start(); $_GET=[]; EQS_Admin::page_groups(); $_GET["group"]='$SEC'; EQS_Admin::page_groups(); EQS_Admin::page_parents(); EQS_Admin::page_terms(); $h=ob_get_clean(); echo (strpos($h,"Computer Science")!==false && strpos($h,"Ali Father")!==false && strpos($h,"Term 1")!==false) ? "ok" : "missing";' 2>&1 | tail -1)" "ok"
 

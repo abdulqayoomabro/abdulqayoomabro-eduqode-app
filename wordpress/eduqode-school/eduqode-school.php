@@ -2,7 +2,7 @@
 /**
  * Plugin Name: EduQode School
  * Description: Classes, sections and batches on top of Tutor LMS: teacher dashboard (subject-wise and class-wise results), parent dashboard, attendance and term report cards. Works on the website and inside the EduQode app.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Requires PHP: 7.4
  * Author: EduQode
  * License: GPLv2 or later
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'EQS_VERSION', '1.2.0' );
+define( 'EQS_VERSION', '1.2.1' );
 define( 'EQS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EQS_URL', plugin_dir_url( __FILE__ ) );
 

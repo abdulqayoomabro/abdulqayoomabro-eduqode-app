@@ -326,6 +326,12 @@ check "new password: app tokens on all phones stop working" "$(api -o /dev/null 
 curl -s -c $J -b "wordpress_test_cookie=WP%20Cookie%20check" -A "$UA" -o /dev/null -d "log=student&pwd=student&wp-submit=Log+In&testcookie=1" $B/wp-login.php
 TOKEN=$(curl -s -b $J -A "$UA" -H "X-EduQode-App: 1" -X POST -d "device_id=dev-1" "$B/?eduqode_app=issue_token" | python3 -c "import json,sys;print(json.load(sys.stdin)['token'])")
 
+# Homepage = Tutor login page: a logged-in user goes to the dashboard
+LP=$($WPC eval '$id=wp_insert_post(["post_type"=>"page","post_status"=>"publish","post_title"=>"Login","post_name"=>"tutor-login","post_content"=>"[tutor_login]"]); update_option("show_on_front","page"); update_option("page_on_front",$id); echo $id;')
+check "login page: logged-in user goes to the dashboard" "$(curl -s -o /dev/null -w "%{redirect_url}" -b $J "$B/")" "$($WPC eval 'echo tutor_utils()->tutor_dashboard_url();')"
+check "login page: visitors still see the login page" "$(curl -s -o /dev/null -w "%{http_code}" "$B/")" "200"
+$WPC eval 'update_option("show_on_front","posts"); delete_option("page_on_front"); wp_delete_post('$LP', true);' >/dev/null
+
 # Revoke
 api -X POST -o /dev/null "$B/?rest_route=/eduqode/v1/auth/revoke"
 code=$(api -o /dev/null -w "%{http_code}" "$B/?rest_route=/eduqode/v1/me")

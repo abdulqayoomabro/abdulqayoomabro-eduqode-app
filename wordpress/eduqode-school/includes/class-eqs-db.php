@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class EQS_DB {
 
-    const DB_VERSION = 2;
+    const DB_VERSION = 3;
 
     public static function t( $name ) {
         global $wpdb;
@@ -28,6 +28,10 @@ class EQS_DB {
     public static function activate() {
         self::create_tables();
         add_role( 'eqs_parent', 'Parent', array( 'read' => true ) );
+        // Sees every class, team and learner on the School page (not the WordPress admin).
+        if ( ! get_role( 'eqs_manager' ) ) {
+            add_role( 'eqs_manager', 'Training manager', array( 'read' => true, 'eqs_principal' => true ) );
+        }
         if ( ! get_option( 'eqs_page_id' ) || 'publish' !== get_post_status( (int) get_option( 'eqs_page_id' ) ) ) {
             $id = wp_insert_post( array(
                 'post_type'    => 'page',

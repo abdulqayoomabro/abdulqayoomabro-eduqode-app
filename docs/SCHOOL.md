@@ -60,3 +60,13 @@ Patterns (signs to look at, not judgements):
 Also: the questions the group gets wrong most (fix the lesson, not the people), results by years of experience (0–1, 1–3, 3–5, 5+), and on each person's page the questions they get wrong plus **supervisor notes** (the "why"; only supervisors and the principal see them).
 
 Years of experience: Users → Profile → *Years of experience*, or a third value when adding people to a group (`aslam, EMP-1042, 6`). It counts up by itself.
+
+## Who logs in as what
+
+| Person | Account | Sees |
+|---|---|---|
+| Worker / student | normal account | own progress on the School page and in the app |
+| Supervisor / class teacher | normal account, chosen as *Class teacher* of a team or class | only their teams: insights, attendance, notes |
+| Training manager | role **Training manager** (Users → Edit → Role) | every team and learner on the School page, no WordPress admin |
+| Trainer who makes courses | Tutor LMS **Instructor** | course builder; can also be a supervisor with the same account |
+| Admin | administrator | everything |
