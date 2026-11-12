@@ -4,6 +4,15 @@ msgstr ""
 "Language: ur\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "School / training"
+msgstr "اسکول / تربیت"
+
+msgid "Years of experience"
+msgstr "تجربہ (سال)"
+
+msgid "Counts up by itself every year."
+msgstr "ہر سال خود بڑھتا ہے۔"
+
 msgid "School"
 msgstr "اسکول"
 
@@ -181,6 +190,9 @@ msgstr "ای میل یا یوزر نیم، رول نمبر"
 msgid "ali@example.com, 1&#10;sara, 2"
 msgstr "ali@example.com, 1&#10;sara, 2"
 
+msgid "For workers: the roll no can be the employee ID, and a third value adds years of experience, for example: aslam, EMP-1042, 6"
+msgstr "ورکرز کے لیے: رول نمبر کی جگہ ایمپلائی آئی ڈی لکھیں، اور تیسری قیمت تجربے کے سال، مثلاً: aslam, EMP-1042, 6"
+
 msgid "Add students"
 msgstr "طلبہ شامل کریں"
 
@@ -295,6 +307,9 @@ msgstr "آپ اس گروپ کی حاضری نہیں لگا سکتے۔"
 msgid "You cannot write remarks for this group."
 msgstr "آپ اس گروپ کے ریمارکس نہیں لکھ سکتے۔"
 
+msgid "You cannot write notes for this person."
+msgstr "آپ اس شخص کے لیے نوٹ نہیں لکھ سکتے۔"
+
 msgid "← School home"
 msgstr "→ اسکول ہوم"
 
@@ -336,6 +351,9 @@ msgstr "تمام کلاسیں اور بیچ"
 
 msgid "Present today"
 msgstr "آج حاضر"
+
+msgid "Learning insights"
+msgstr "سیکھنے کا جائزہ"
 
 msgid "All subjects"
 msgstr "تمام مضامین"
@@ -406,6 +424,108 @@ msgstr "رپورٹ کارڈ:"
 msgid "Recent attendance"
 msgstr "حالیہ حاضری"
 
+msgid "today"
+msgstr "آج"
+
+msgid "%d day(s) ago"
+msgstr "%d دن پہلے"
+
+msgid "No courses linked to this group yet."
+msgstr "اس گروپ سے ابھی کوئی کورس منسلک نہیں۔"
+
+msgid "Patterns are signs to look at, not judgements. Talk to the person and write what you learn as a note on their page."
+msgstr "یہ اشارے ہیں، فیصلے نہیں۔ اس شخص سے بات کریں اور جو پتا چلے اس کے صفحے پر نوٹ لکھیں۔"
+
+msgid "ID"
+msgstr "آئی ڈی"
+
+msgid "Experience"
+msgstr "تجربہ"
+
+msgid "Status"
+msgstr "حالت"
+
+msgid "Quizzes passed"
+msgstr "پاس کیے گئے کوئز"
+
+msgid "Attempts to pass"
+msgstr "پاس ہونے میں کوششیں"
+
+msgid "Best score"
+msgstr "بہترین نمبر"
+
+msgid "Seconds per question"
+msgstr "فی سوال سیکنڈ"
+
+msgid "Time spent"
+msgstr "لگایا گیا وقت"
+
+msgid "Last active"
+msgstr "آخری سرگرمی"
+
+msgid "Patterns"
+msgstr "رجحانات"
+
+msgid "%s yr"
+msgstr "%s سال"
+
+msgid "(%d failed)"
+msgstr "(%d فیل)"
+
+msgid "%d min"
+msgstr "%d منٹ"
+
+msgid "Middle value of the group"
+msgstr "گروپ کی درمیانی قیمت"
+
+msgid "Questions this group gets wrong most"
+msgstr "وہ سوال جو اس گروپ سے سب سے زیادہ غلط ہوتے ہیں"
+
+msgid "When most of the group gets a question wrong, the lesson (or the question) needs fixing, not the people."
+msgstr "جب زیادہ تر لوگ ایک ہی سوال غلط کریں تو سبق (یا سوال) کو بہتر کرنے کی ضرورت ہے، لوگوں کو نہیں۔"
+
+msgid "Question"
+msgstr "سوال"
+
+msgid "Topic"
+msgstr "موضوع"
+
+msgid "Wrong"
+msgstr "غلط"
+
+msgid "By years of experience"
+msgstr "تجربے کے سالوں کے لحاظ سے"
+
+msgid "People"
+msgstr "لوگ"
+
+msgid "Best score (average)"
+msgstr "بہترین نمبر (اوسط)"
+
+msgid "Attempts to pass (average)"
+msgstr "پاس ہونے میں کوششیں (اوسط)"
+
+msgid "Not set"
+msgstr "درج نہیں"
+
+msgid "%s years"
+msgstr "%s سال"
+
+msgid "Gets these wrong:"
+msgstr "یہ سوال غلط کرتا ہے:"
+
+msgid "Supervisor notes"
+msgstr "سپروائزر کے نوٹس"
+
+msgid "Why is this person fast or slow? Write what you learned from talking to them. Only supervisors see these notes."
+msgstr "یہ شخص تیز یا سست کیوں ہے؟ بات کر کے جو پتا چلا وہ لکھیں۔ یہ نوٹس صرف سپروائزر دیکھ سکتے ہیں۔"
+
+msgid "For example: cannot read English well, learns better on the machine; or: night shift, studies at the start of the break."
+msgstr "مثلاً: انگریزی اچھی طرح نہیں پڑھ سکتا، مشین پر بہتر سیکھتا ہے؛ یا: رات کی شفٹ، وقفے کے شروع میں پڑھتا ہے۔"
+
+msgid "Add note"
+msgstr "نوٹ شامل کریں"
+
 msgid "Report card remarks ·"
 msgstr "رپورٹ کارڈ ریمارکس ·"
 
@@ -445,9 +565,66 @@ msgstr "استاد کے ریمارکس"
 msgid "Principal"
 msgstr "پرنسپل"
 
+msgid "Not started yet"
+msgstr "ابھی شروع نہیں کیا"
+
+msgid "Strong"
+msgstr "ماہر"
+
+msgid "Passed every quiz on the first attempt (%s%% average)."
+msgstr "ہر کوئز پہلی کوشش میں پاس کیا (اوسط %s%%)۔"
+
+msgid "Rushing"
+msgstr "جلد باز"
+
+msgid "About %1$s seconds per question and %2$d failed attempt(s): probably guessing instead of reading."
+msgstr "فی سوال تقریباً %1$s سیکنڈ اور %2$d ناکام کوشش(یں): شاید پڑھنے کے بجائے اندازے لگا رہا ہے۔"
+
+msgid "Trying hard but stuck"
+msgstr "محنت مگر مشکل"
+
+msgid "Takes long (about %1$s seconds per question) and still failed %2$d time(s): explain it another way, for example on the machine."
+msgstr "زیادہ وقت لیتا ہے (فی سوال تقریباً %1$s سیکنڈ) پھر بھی %2$d بار فیل ہوا: کسی اور طریقے سے سمجھائیں، مثلاً مشین پر۔"
+
+msgid "Stopped"
+msgstr "رُک گیا"
+
+msgid "Left %d quiz attempt(s) unfinished."
+msgstr "%d کوئز ادھورے چھوڑ دیے۔"
+
+msgid "No activity for %d days, course not finished."
+msgstr "%d دن سے کوئی سرگرمی نہیں، کورس مکمل نہیں۔"
+
+msgid "Forgetting"
+msgstr "بھول رہا ہے"
+
+msgid "Passed \"%s\" before, then failed it again: needs revision."
+msgstr "پہلے \"%s\" پاس کیا، پھر دوبارہ فیل ہوا: دہرائی کی ضرورت ہے۔"
+
+msgid "Improving"
+msgstr "بہتر ہو رہا ہے"
+
+msgid "\"%1$s\": from %2$s%% to %3$s%%."
+msgstr "\"%1$s\": %2$s%% سے %3$s%% تک۔"
+
+msgid "On track"
+msgstr "ٹھیک جا رہا ہے"
+
+msgid "Needs help"
+msgstr "مدد چاہیے"
+
+msgid "Stuck"
+msgstr "اٹکا ہوا"
+
+msgid "Not started"
+msgstr "شروع نہیں کیا"
+
 msgid "Section"
 msgstr "سیکشن"
 
 msgid "Batch"
 msgstr "بیچ"
+
+msgid "Team / department"
+msgstr "ٹیم / شعبہ"
 

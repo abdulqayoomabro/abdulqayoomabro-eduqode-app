@@ -15,6 +15,34 @@ class EQS_Admin {
     public static function init() {
         add_action( 'admin_menu', array( __CLASS__, 'menu' ) );
         add_action( 'admin_post_eqs_admin', array( __CLASS__, 'save' ) );
+        // Years of experience on the user's profile (set by an admin).
+        add_action( 'show_user_profile', array( __CLASS__, 'profile_field' ) );
+        add_action( 'edit_user_profile', array( __CLASS__, 'profile_field' ) );
+        add_action( 'personal_options_update', array( __CLASS__, 'profile_save' ) );
+        add_action( 'edit_user_profile_update', array( __CLASS__, 'profile_save' ) );
+    }
+
+    public static function profile_field( $user ) {
+        if ( ! current_user_can( self::CAP ) ) {
+            return;
+        }
+        $years = EQS_Insights::experience( $user->ID );
+        echo '<h2>' . esc_html( eqs__( 'School / training' ) ) . '</h2><table class="form-table"><tr><th><label for="eqs_experience">' .
+            esc_html( eqs__( 'Years of experience' ) ) . '</label></th><td><input type="number" step="0.5" min="0" max="60" id="eqs_experience" name="eqs_experience" value="' .
+            esc_attr( null === $years ? '' : $years ) . '" class="small-text"> <span class="description">' . esc_html( eqs__( 'Counts up by itself every year.' ) ) . '</span></td></tr></table>';
+    }
+
+    public static function profile_save( $user_id ) {
+        if ( ! current_user_can( self::CAP ) || ! isset( $_POST['eqs_experience'] ) ) {
+            return;
+        }
+        $years = sanitize_text_field( wp_unslash( $_POST['eqs_experience'] ) );
+        $now   = EQS_Insights::experience( $user_id );
+        if ( '' === $years ) {
+            delete_user_meta( $user_id, 'eqs_experience_since' );
+        } elseif ( null === $now || abs( (float) $years - $now ) >= 0.05 ) {
+            EQS_Insights::set_experience( $user_id, $years );
+        }
     }
 
     public static function menu() {
@@ -84,6 +112,9 @@ class EQS_Admin {
                     $uid = self::find_user( $parts[0] );
                     if ( $uid && EQS_Model::add_student( absint( $p['group'] ), $uid, $parts[1] ?? '' ) ) {
                         $added++;
+                        if ( isset( $parts[2] ) && '' !== $parts[2] ) {
+                            EQS_Insights::set_experience( $uid, $parts[2] );   // years of experience (workers)
+                        }
                     } else {
                         $missing[] = $parts[0];
                     }
@@ -260,6 +291,7 @@ class EQS_Admin {
         }
         echo '</tbody></table>' . self::open( 'add_students', array( 'group' => $id ) ); // phpcs:ignore
         echo '<p><label>' . esc_html( eqs__( 'Add students (one per line:' ) ) . ' <code>' . esc_html( eqs__( 'email or username, roll no' ) ) . '</code>)<br><textarea name="students" rows="5" cols="60" placeholder="' . esc_attr( eqs__( 'ali@example.com, 1&#10;sara, 2' ) ) . '"></textarea></label></p>';
+        echo '<p class="description">' . esc_html( eqs__( 'For workers: the roll no can be the employee ID, and a third value adds years of experience, for example: aslam, EMP-1042, 6' ) ) . '</p>';
         submit_button( eqs__( 'Add students' ), 'secondary' );
         echo '</form>';
         self::group_form( $g, EQS_Model::groups() );

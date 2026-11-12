@@ -9,6 +9,7 @@
  *   eqs_attendance  one row per group, day and student
  *   eqs_terms       report card terms (date ranges)
  *   eqs_remarks     teacher's remark per term and student
+ *   eqs_notes       supervisor's notes about a learner (the "why" behind the numbers)
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class EQS_DB {
 
-    const DB_VERSION = 1;
+    const DB_VERSION = 2;
 
     public static function t( $name ) {
         global $wpdb;
@@ -112,6 +113,15 @@ class EQS_DB {
             updated_by BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
             updated_at DATETIME NOT NULL,
             PRIMARY KEY  (term_id,group_id,student_id)
+        ) $c;" );
+        dbDelta( 'CREATE TABLE ' . self::t( 'notes' ) . " (
+            id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            student_id BIGINT(20) UNSIGNED NOT NULL,
+            author_id BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+            note TEXT NOT NULL,
+            created_at DATETIME NOT NULL,
+            PRIMARY KEY  (id),
+            KEY student_id (student_id)
         ) $c;" );
     }
 }

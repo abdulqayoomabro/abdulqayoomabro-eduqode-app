@@ -40,3 +40,14 @@
 
 .eqs[dir=rtl]{font-family:"Noto Nastaliq Urdu",serif;line-height:2.1}
 .eqs[dir=rtl] .eqs-table td,.eqs[dir=rtl] .eqs-table th{line-height:2}
+
+/* learning insights */
+.eqs-chip{display:inline-block;padding:.1em .6em;border-radius:12px;font-size:12px;font-weight:600;white-space:nowrap}
+.eqs-st-good{background:#e6f4ea;color:#1e6b34}.eqs-st-help{background:#fef7e0;color:#8a5a00}.eqs-st-stuck{background:#fce8e6;color:#a50e0e}.eqs-st-none{background:#eceff1;color:#5f6368}
+.eqs-pattern{display:inline-block;padding:.05em .5em;border-radius:4px;font-size:12px;border:1px solid var(--eqs-line);margin:0 .2em .2em 0;white-space:nowrap}
+.eqs-p-strong,.eqs-p-improving{border-color:#81c995;background:#f1f8f3}
+.eqs-p-rushing,.eqs-p-forgetting{border-color:#fdd663;background:#fffbea}
+.eqs-p-struggling,.eqs-p-stalled{border-color:#f28b82;background:#fdf1f0}
+.eqs-table td.eqs-wrap{white-space:normal;min-width:180px}
+.eqs-insight{margin:.6em 0}
+.eqs-insight ul{margin:.2em 0 .4em 1.2em}

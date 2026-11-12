@@ -14,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class EQS_Model {
 
-    const KINDS = array( 'class' => 'Class', 'section' => 'Section', 'batch' => 'Batch' );
+    const KINDS = array( 'class' => 'Class', 'section' => 'Section', 'batch' => 'Batch', 'team' => 'Team' );
 
     /** Translated name of a group type. */
     public static function kind_label( $kind ) {
-        $labels = array( 'class' => eqs__( 'Class' ), 'section' => eqs__( 'Section' ), 'batch' => eqs__( 'Batch' ) );
+        $labels = array( 'class' => eqs__( 'Class' ), 'section' => eqs__( 'Section' ), 'batch' => eqs__( 'Batch' ), 'team' => eqs__( 'Team / department' ) );
         return $labels[ $kind ] ?? $kind;
     }
 

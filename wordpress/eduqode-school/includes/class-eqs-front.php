@@ -81,6 +81,16 @@ class EQS_Front {
             wp_safe_redirect( self::page_url( array( 'view' => 'remarks', 'group' => $group, 'term' => $term, 'saved' => $n ) ) );
             exit;
         }
+        if ( 'note' === $action ) {
+            $student = absint( $_POST['student'] ?? 0 );
+            check_admin_referer( 'eqs_note_' . $student );
+            if ( ! EQS_Insights::can_use_notes( $student, $me ) ) {
+                wp_die( eqs__( 'You cannot write notes for this person.' ), 403 );
+            }
+            EQS_Insights::add_note( $student, $me, (string) wp_unslash( $_POST['note'] ?? '' ) );
+            wp_safe_redirect( self::page_url( array( 'view' => 'student', 'id' => $student ) ) . '#eqs-notes' );
+            exit;
+        }
     }
 
     // ------------------------------------------------------------ helpers
@@ -131,6 +141,9 @@ class EQS_Front {
             case 'remarks':
                 $out = self::view_remarks( absint( $_GET['group'] ?? 0 ), absint( $_GET['term'] ?? 0 ) );
                 break;
+            case 'insights':
+                $out = self::view_insights( absint( $_GET['group'] ?? 0 ), absint( $_GET['subject'] ?? 0 ) );
+                break;
             case 'report':
                 $out = self::view_report( absint( $_GET['student'] ?? 0 ), absint( $_GET['group'] ?? 0 ), absint( $_GET['term'] ?? 0 ) );
                 break;
@@ -178,7 +191,8 @@ class EQS_Front {
                     ' <small>' . self::e( EQS_Model::kind_label( $g->kind ) ) . ( $g->session ? ' · ' . self::e( $g->session ) : '' ) . '</small></td>' .
                     '<td>' . count( EQS_Model::students( $g->id ) ) . '</td><td>' . count( EQS_Model::subjects( $g->id ) ) . '</td>' .
                     '<td>' . self::e( EQS_Stats::fmt( EQS_Attendance::today_percent( $g->id ) ) ) . '</td>' .
-                    '<td>' . self::link( eqs__( 'Attendance' ), array( 'view' => 'attendance', 'group' => $g->id ), 'eqs-btn eqs-small' ) . '</td></tr>';
+                    '<td>' . self::link( eqs__( 'Attendance' ), array( 'view' => 'attendance', 'group' => $g->id ), 'eqs-btn eqs-small' ) . ' ' .
+                    self::link( eqs__( 'Learning insights' ), array( 'view' => 'insights', 'group' => $g->id ), 'eqs-btn eqs-small' ) . '</td></tr>';
             }
             $h .= '</tbody></table></div>';
         }
@@ -199,7 +213,8 @@ class EQS_Front {
         foreach ( $subjects as $s ) {
             $h .= ' ' . self::link( EQS_Model::subject_name( $s ), array( 'view' => 'group', 'id' => $group_id, 'subject' => $s->id ), (int) $s->id === $subject_id ? 'on' : '' );
         }
-        $h .= ' · ' . self::link( eqs__( 'Take attendance' ), array( 'view' => 'attendance', 'group' => $group_id ) ) . '</p>';
+        $h .= ' · ' . self::link( eqs__( 'Take attendance' ), array( 'view' => 'attendance', 'group' => $group_id ) ) .
+            ' · ' . self::link( eqs__( 'Learning insights' ), array( 'view' => 'insights', 'group' => $group_id ) ) . '</p>';
         if ( ! $students ) {
             return $h . self::notice( eqs__( 'No students in this group yet.' ), 'info' );
         }
@@ -340,6 +355,7 @@ class EQS_Front {
                 $h .= '</p>';
             }
         }
+        $h     .= self::learner_insights( $student_id, $groups );
         $recent = EQS_Attendance::recent( $student_id, 14 );
         if ( $recent ) {
             $h .= '<h3>' . esc_html( eqs__( 'Recent attendance' ) ) . '</h3><p class="eqs-days">';
@@ -348,6 +364,149 @@ class EQS_Front {
                     self::e( date_i18n( 'j M', strtotime( $r->att_date ) ) ) . ' · ' . self::e( $r->status ) . '</span>';
             }
             $h .= '</p>';
+        }
+        return $h;
+    }
+
+    // ------------------------------------------------------------ learning insights
+
+    private static function chip( $status ) {
+        return '<span class="eqs-chip eqs-st-' . esc_attr( $status ) . '">' . self::e( EQS_Insights::status_label( $status ) ) . '</span>';
+    }
+
+    private static function patterns_html( $patterns, $with_reason = true ) {
+        $h = '';
+        foreach ( $patterns as $p ) {
+            if ( 'not_started' === $p[0] ) {
+                continue;
+            }
+            $h .= '<span class="eqs-pattern eqs-p-' . esc_attr( $p[0] ) . '" title="' . esc_attr( $p[2] ) . '">' . self::e( $p[1] ) . '</span> ';
+            if ( $with_reason && $p[2] ) {
+                $h .= '<small>' . self::e( $p[2] ) . '</small><br>';
+            }
+        }
+        return $h;
+    }
+
+    private static function ago( $ts ) {
+        if ( ! $ts ) {
+            return '—';
+        }
+        $d = (int) floor( ( time() - $ts ) / DAY_IN_SECONDS );
+        return 0 === $d ? eqs__( 'today' ) : sprintf( eqs__( '%d day(s) ago' ), $d );
+    }
+
+    private static function view_insights( $group_id, $subject_id ) {
+        $g = EQS_Model::group( $group_id );
+        if ( ! $g || ! EQS_Model::can_see_group( $group_id ) ) {
+            return self::denied();
+        }
+        $subjects = EQS_Model::subjects( $group_id );
+        $h        = self::back() . '<h2>' . self::e( EQS_Model::label( $g ) ) . ' · ' . esc_html( eqs__( 'Learning insights' ) ) . '</h2>';
+        if ( ! $subjects ) {
+            return $h . self::notice( eqs__( 'No courses linked to this group yet.' ), 'info' );
+        }
+        $s = $subject_id ? EQS_Model::subject( $subject_id ) : $subjects[0];
+        if ( ! $s || ! in_array( (int) $s->id, array_map( 'intval', wp_list_pluck( $subjects, 'id' ) ), true ) ) {
+            return self::denied();
+        }
+        $h .= '<p class="eqs-tabs">';
+        foreach ( $subjects as $x ) {
+            $h .= self::link( EQS_Model::subject_name( $x ), array( 'view' => 'insights', 'group' => $group_id, 'subject' => $x->id ), (int) $x->id === (int) $s->id ? 'on' : '' ) . ' ';
+        }
+        $h .= '</p>';
+
+        $team = EQS_Insights::team( $group_id, $s->course_id );
+        if ( ! $team['rows'] ) {
+            return $h . self::notice( eqs__( 'No students in this group yet.' ), 'info' );
+        }
+        $count = array( 'stuck' => 0, 'help' => 0, 'good' => 0, 'none' => 0 );
+        foreach ( $team['rows'] as $r ) {
+            $count[ $r['data']['status'] ]++;
+        }
+        $h .= '<p class="eqs-stats">';
+        foreach ( $count as $st => $n ) {
+            $h .= '<span>' . self::chip( $st ) . ' <strong>' . (int) $n . '</strong></span>';
+        }
+        $h .= '</p><p><small>' . esc_html( eqs__( 'Patterns are signs to look at, not judgements. Talk to the person and write what you learn as a note on their page.' ) ) . '</small></p>';
+
+        $h .= '<div class="eqs-scroll"><table class="eqs-table eqs-insights"><thead><tr><th>' . esc_html( eqs__( 'Name' ) ) . '</th><th>' . esc_html( eqs__( 'ID' ) ) . '</th><th>' . esc_html( eqs__( 'Experience' ) ) . '</th><th>' .
+            esc_html( eqs__( 'Status' ) ) . '</th><th>' . esc_html( eqs__( 'Progress' ) ) . '</th><th>' . esc_html( eqs__( 'Quizzes passed' ) ) . '</th><th>' . esc_html( eqs__( 'Attempts to pass' ) ) . '</th><th>' .
+            esc_html( eqs__( 'Best score' ) ) . '</th><th>' . esc_html( eqs__( 'Seconds per question' ) ) . '</th><th>' . esc_html( eqs__( 'Time spent' ) ) . '</th><th>' . esc_html( eqs__( 'Last active' ) ) . '</th><th>' . esc_html( eqs__( 'Patterns' ) ) . '</th></tr></thead><tbody>';
+        foreach ( $team['rows'] as $r ) {
+            $d  = $r['data'];
+            $h .= '<tr class="eqs-row-' . esc_attr( $d['status'] ) . '"><td>' . self::link( $r['name'], array( 'view' => 'student', 'id' => $r['user'] ) ) . '</td><td>' . self::e( $r['id_no'] ) . '</td>' .
+                '<td>' . self::e( null === $r['years'] ? '—' : sprintf( eqs__( '%s yr' ), EQS_Stats::fmt( $r['years'] ) ) ) . '</td><td>' . self::chip( $d['status'] ) . '</td>' .
+                '<td>' . self::bar( $d['progress'] ) . '</td><td>' . (int) $d['quizzes_passed'] . '/' . (int) $d['quizzes_total'] . '</td>' .
+                '<td>' . self::e( EQS_Stats::fmt( $d['attempts_to_pass'] ) ) . ( $d['failed'] ? ' <small>' . self::e( sprintf( eqs__( '(%d failed)' ), $d['failed'] ) ) . '</small>' : '' ) . '</td>' .
+                '<td>' . self::e( null === $d['best_avg'] ? '—' : EQS_Stats::fmt( $d['best_avg'] ) . '%' ) . '</td><td>' . self::e( EQS_Stats::fmt( $d['seconds_per_q'] ) ) . '</td>' .
+                '<td>' . self::e( sprintf( eqs__( '%d min' ), $d['minutes'] ) ) . '</td><td>' . self::e( self::ago( $d['last_activity'] ) ) . '</td>' .
+                '<td class="eqs-wrap">' . self::patterns_html( $d['patterns'], false ) . '</td></tr>';
+        }
+        $h .= '</tbody>';
+        if ( $team['median_seconds'] ) {
+            $h .= '<tfoot><tr><td colspan="8">' . esc_html( eqs__( 'Middle value of the group' ) ) . '</td><td><strong>' . self::e( EQS_Stats::fmt( $team['median_seconds'] ) ) . '</strong></td><td colspan="3"></td></tr></tfoot>';
+        }
+        $h .= '</table></div>';
+
+        $hard = EQS_Insights::hard_questions( $s->course_id, array_column( $team['rows'], 'user' ), 8 );
+        if ( $hard ) {
+            $h .= '<h3>' . esc_html( eqs__( 'Questions this group gets wrong most' ) ) . '</h3><p><small>' . esc_html( eqs__( 'When most of the group gets a question wrong, the lesson (or the question) needs fixing, not the people.' ) ) . '</small></p>';
+            $h .= '<div class="eqs-scroll"><table class="eqs-table"><thead><tr><th>' . esc_html( eqs__( 'Question' ) ) . '</th><th>' . esc_html( eqs__( 'Topic' ) ) . '</th><th>' . esc_html( eqs__( 'Wrong' ) ) . '</th></tr></thead><tbody>';
+            foreach ( $hard as $q ) {
+                $h .= '<tr><td class="eqs-wrap">' . self::e( $q['question'] ) . '<br><small>' . self::e( $q['quiz'] ) . '</small></td><td>' . self::e( $q['topic'] ) . '</td><td>' . self::bar( $q['percent'] ) . ' <small>' . (int) $q['wrong'] . '/' . (int) $q['total'] . '</small></td></tr>';
+            }
+            $h .= '</tbody></table></div>';
+        }
+
+        if ( count( $team['bands'] ) > 1 || ( $team['bands'] && '' !== $team['bands'][0]['band'] ) ) {
+            $h .= '<h3>' . esc_html( eqs__( 'By years of experience' ) ) . '</h3><div class="eqs-scroll"><table class="eqs-table"><thead><tr><th>' . esc_html( eqs__( 'Experience' ) ) . '</th><th>' . esc_html( eqs__( 'People' ) ) . '</th><th>' . esc_html( eqs__( 'Best score (average)' ) ) . '</th><th>' . esc_html( eqs__( 'Attempts to pass (average)' ) ) . '</th></tr></thead><tbody>';
+            foreach ( $team['bands'] as $b ) {
+                $h .= '<tr><td>' . self::e( '' === $b['band'] ? eqs__( 'Not set' ) : sprintf( eqs__( '%s years' ), $b['band'] ) ) . '</td><td>' . (int) $b['count'] . '</td><td>' . self::e( null === $b['score'] ? '—' : EQS_Stats::fmt( $b['score'] ) . '%' ) . '</td><td>' . self::e( EQS_Stats::fmt( $b['attempts'] ) ) . '</td></tr>';
+            }
+            $h .= '</tbody></table></div>';
+        }
+        return $h;
+    }
+
+    /** On a learner's page: status and patterns per course, questions they get wrong, supervisor notes. */
+    private static function learner_insights( $student_id, $groups ) {
+        $h    = '<h3>' . esc_html( eqs__( 'Learning insights' ) ) . '</h3>';
+        $seen = array();
+        foreach ( $groups as $g ) {
+            foreach ( EQS_Model::subjects( $g->id ) as $s ) {
+                if ( isset( $seen[ $s->course_id ] ) ) {
+                    continue;
+                }
+                $seen[ $s->course_id ] = true;
+                $d     = EQS_Insights::learner( $s->course_id, $student_id );
+                $h    .= '<div class="eqs-card eqs-insight"><h4>' . self::e( EQS_Model::subject_name( $s ) ) . ' ' . self::chip( $d['status'] ) . '</h4>';
+                $h    .= '<p class="eqs-stats"><span>' . esc_html( eqs__( 'Quizzes passed' ) ) . ' <strong>' . (int) $d['quizzes_passed'] . '/' . (int) $d['quizzes_total'] . '</strong></span>' .
+                    '<span>' . esc_html( eqs__( 'Attempts to pass' ) ) . ' <strong>' . self::e( EQS_Stats::fmt( $d['attempts_to_pass'] ) ) . '</strong></span>' .
+                    '<span>' . esc_html( eqs__( 'Seconds per question' ) ) . ' <strong>' . self::e( EQS_Stats::fmt( $d['seconds_per_q'] ) ) . '</strong></span>' .
+                    '<span>' . esc_html( eqs__( 'Time spent' ) ) . ' <strong>' . self::e( sprintf( eqs__( '%d min' ), $d['minutes'] ) ) . '</strong></span>' .
+                    '<span>' . esc_html( eqs__( 'Last active' ) ) . ' <strong>' . self::e( self::ago( $d['last_activity'] ) ) . '</strong></span></p>';
+                $h    .= '<p>' . self::patterns_html( $d['patterns'] ) . '</p>';
+                $wrong = EQS_Insights::hard_questions( $s->course_id, array( $student_id ), 5, 1 );
+                if ( $wrong ) {
+                    $h .= '<p><strong>' . esc_html( eqs__( 'Gets these wrong:' ) ) . '</strong></p><ul>';
+                    foreach ( $wrong as $q ) {
+                        $h .= '<li>' . self::e( $q['question'] ) . ' <small>(' . self::e( $q['topic'] ) . ' · ' . (int) $q['wrong'] . '/' . (int) $q['total'] . ')</small></li>';
+                    }
+                    $h .= '</ul>';
+                }
+                $h .= '</div>';
+            }
+        }
+        if ( EQS_Insights::can_use_notes( $student_id ) ) {
+            $h .= '<h3 id="eqs-notes">' . esc_html( eqs__( 'Supervisor notes' ) ) . '</h3><p><small>' . esc_html( eqs__( 'Why is this person fast or slow? Write what you learned from talking to them. Only supervisors see these notes.' ) ) . '</small></p>';
+            $h .= '<form method="post" class="eqs-remark">' . wp_nonce_field( 'eqs_note_' . $student_id, '_wpnonce', true, false ) .
+                '<input type="hidden" name="eqs_action" value="note"><input type="hidden" name="student" value="' . (int) $student_id . '">' .
+                '<textarea name="note" rows="3" placeholder="' . esc_attr( eqs__( 'For example: cannot read English well, learns better on the machine; or: night shift, studies at the start of the break.' ) ) . '"></textarea>' .
+                '<button type="submit" class="eqs-btn eqs-small">' . esc_html( eqs__( 'Add note' ) ) . '</button></form>';
+            foreach ( EQS_Insights::notes( $student_id ) as $n ) {
+                $h .= '<div class="eqs-remarkbox"><small>' . self::e( $n->author ) . ' · ' . self::e( date_i18n( 'j M Y', strtotime( $n->created_at . ' UTC' ) ) ) . '</small><br>' . nl2br( self::e( $n->note ) ) . '</div>';
+            }
         }
         return $h;
     }
