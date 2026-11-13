@@ -7,7 +7,7 @@ def load(name):
     m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m.UR
 def msgids(plugin_dir, fn):
     out = []
-    for f in sorted(glob.glob(plugin_dir + '/*.php') + glob.glob(plugin_dir + '/includes/*.php')):
+    for f in sorted(glob.glob(plugin_dir + '/*.php') + glob.glob(plugin_dir + '/includes/*.php') + glob.glob(plugin_dir + '/templates/*.php')):
         for m in re.finditer(fn + r"\( '((?:[^'\\]|\\.)*)' \)", open(f, encoding='utf-8').read()):
             t = m.group(1).replace("\\'", "'")
             if t not in out: out.append(t)

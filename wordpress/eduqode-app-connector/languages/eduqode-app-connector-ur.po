@@ -31,6 +31,15 @@ msgstr "آف لائن پیک"
 msgid "Students can download enrolled courses in the app"
 msgstr "طلبہ اپنے داخل شدہ کورس ایپ میں ڈاؤن لوڈ کر سکتے ہیں"
 
+msgid "H5P for instructors"
+msgstr "انسٹرکٹرز کے لیے H5P"
+
+msgid "Instructors can make H5P exercises from their Tutor LMS dashboard"
+msgstr "انسٹرکٹرز اپنے Tutor LMS ڈیش بورڈ سے H5P مشقیں بنا سکتے ہیں"
+
+msgid "Only their own exercises, and only with content types installed here (H5P Content → Libraries)."
+msgstr "صرف اپنی مشقیں، اور صرف وہ اقسام جو یہاں انسٹال ہیں (H5P Content → Libraries)۔"
+
 msgid "Test video URL"
 msgstr "ٹیسٹ ویڈیو کا لنک"
 
@@ -262,6 +271,15 @@ msgstr "دوبارہ چلانا محفوظ ہے: مشقیں دو بار درآم
 msgid "Restore backup"
 msgstr "بیک اپ بحال کریں"
 
+msgid "Interactive exercises (H5P)"
+msgstr "انٹرایکٹو مشقیں (H5P)"
+
+msgid "Saved. Back to my exercises"
+msgstr "محفوظ ہو گیا۔ میری مشقوں پر واپس"
+
+msgid "You can only delete your own exercises."
+msgstr "آپ صرف اپنی مشقیں حذف کر سکتے ہیں۔"
+
 msgid "New quiz: %s"
 msgstr "نیا کوئز: %s"
 
@@ -312,4 +330,70 @@ msgstr "ایک H5P سوال آف لائن استعمال کے لیے تیار ن
 
 msgid "Has question types that need the website (%s)."
 msgstr "اس میں ایسے سوال ہیں جن کے لیے ویب سائٹ ضروری ہے (%s)۔"
+
+msgid "Only approved instructors can make interactive exercises."
+msgstr "صرف منظور شدہ انسٹرکٹرز انٹرایکٹو مشقیں بنا سکتے ہیں۔"
+
+msgid "Edit exercise"
+msgstr "مشق میں ترمیم"
+
+msgid "New exercise"
+msgstr "نئی مشق"
+
+msgid "Back to my exercises"
+msgstr "میری مشقوں پر واپس"
+
+msgid "Choose a content type, fill it in, then press Create / Save at the right (on a phone: at the bottom)."
+msgstr "مشق کی قسم چنیں، اسے بھریں، پھر دائیں طرف Create / Save دبائیں (فون پر: نیچے)۔"
+
+msgid "H5P editor"
+msgstr "H5P ایڈیٹر"
+
+msgid "Saved. To use it in a lesson, paste this code into the lesson text:"
+msgstr "محفوظ ہو گیا۔ سبق میں لگانے کے لیے یہ کوڈ سبق کے متن میں لگائیں:"
+
+msgid "For a quiz, add a question of type H5P in the course builder and choose it."
+msgstr "کوئز کے لیے کورس بلڈر میں H5P قسم کا سوال شامل کر کے اسے چنیں۔"
+
+msgid "Exercise deleted."
+msgstr "مشق حذف ہو گئی۔"
+
+msgid "This exercise is used in a lesson or quiz. Remove it there first."
+msgstr "یہ مشق کسی سبق یا کوئز میں لگی ہے۔ پہلے اسے وہاں سے ہٹائیں۔"
+
+msgid "Exercises work in the website and offline in the app. You can use the content types your admin installed."
+msgstr "مشقیں ویب سائٹ پر اور ایپ میں آف لائن چلتی ہیں۔ آپ وہ اقسام استعمال کر سکتے ہیں جو ایڈمن نے انسٹال کی ہیں۔"
+
+msgid "No exercises yet. Make your first one: quiz, drag and drop, fill in the blanks, image hotspots and more."
+msgstr "ابھی کوئی مشق نہیں۔ اپنی پہلی مشق بنائیں: کوئز، ڈریگ اینڈ ڈراپ، خالی جگہ پُر کریں، تصویر پر نشانات اور بہت کچھ۔"
+
+msgid "Title"
+msgstr "عنوان"
+
+msgid "Type"
+msgstr "قسم"
+
+msgid "Code for lessons"
+msgstr "سبق کے لیے کوڈ"
+
+msgid "Used in"
+msgstr "کہاں استعمال"
+
+msgid "Updated"
+msgstr "اپ ڈیٹ"
+
+msgid "%d lesson(s) / question(s)"
+msgstr "%d سبق / سوال"
+
+msgid "Edit"
+msgstr "ترمیم"
+
+msgid "Delete this exercise? Students' results for it are kept."
+msgstr "یہ مشق حذف کریں؟ طلبہ کے نتائج محفوظ رہیں گے۔"
+
+msgid "Used in a lesson or quiz"
+msgstr "کسی سبق یا کوئز میں لگی ہے"
+
+msgid "Delete"
+msgstr "حذف کریں"
 

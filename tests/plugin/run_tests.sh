@@ -326,6 +326,38 @@ check "new password: app tokens on all phones stop working" "$(api -o /dev/null 
 curl -s -c $J -b "wordpress_test_cookie=WP%20Cookie%20check" -A "$UA" -o /dev/null -d "log=student&pwd=student&wp-submit=Log+In&testcookie=1" $B/wp-login.php
 TOKEN=$(curl -s -b $J -A "$UA" -H "X-EduQode-App: 1" -X POST -d "device_id=dev-1" "$B/?eduqode_app=issue_token" | python3 -c "import json,sys;print(json.load(sys.stdin)['token'])")
 
+# H5P for instructors (Tutor LMS dashboard → Interactive exercises)
+INST=$($WPC eval '$u=wp_insert_user(["user_login"=>"inst1","user_pass"=>"inst1pass","user_email"=>"inst1@example.com","role"=>"subscriber"]); update_user_meta($u,"_is_tutor_instructor",time()); update_user_meta($u,"_tutor_instructor_status","approved"); (new WP_User($u))->add_role(tutor()->instructor_role); echo $u;')
+check "h5p studio: instructor can make own H5P, nothing more" "$($WPC eval '$u='$INST'; foreach(["edit_h5p_contents","edit_others_h5p_contents","manage_h5p_libraries","install_recommended_h5p_libraries","disable_h5p_security"] as $c) echo (int)user_can($u,$c);')" "10000"
+check "h5p studio: students cannot" "$($WPC eval 'echo (int)user_can(get_user_by("login","student")->ID,"edit_h5p_contents");')" "0"
+IJ=$PWD/inst.jar
+curl -s -c $IJ -b "wordpress_test_cookie=WP%20Cookie%20check" -o /dev/null -d "log=inst1&pwd=inst1pass&wp-submit=Log+In&testcookie=1" $B/wp-login.php
+DASH=$($WPC eval 'echo get_permalink((int)tutor_utils()->get_option("tutor_dashboard_page_id"));')
+page=$(curl -s -b $IJ "$DASH?tutor_dashboard_page=h5p-exercises&new=1")
+check "h5p studio: editor page in the dashboard" "$(echo "$page" | grep -c 'page=h5p_new&amp;eduqode_frame=1\|page=h5p_new&#038;eduqode_frame=1')" "1"
+frame=$(curl -s -b $IJ "$B/wp-admin/admin.php?page=h5p_new&eduqode_frame=1")
+check "h5p studio: H5P editor opens for the instructor, without wp-admin menus" "$(echo "$frame" | grep -c 'id="h5p-content-form"\|id="eduqode-h5p-frame"')" "2"
+NONCE=$(echo "$frame" | grep -o 'name="yes_sir_will_do" value="[^"]*"' | sed 's/.*value="//;s/"//')
+LIB=$($WPC eval 'global $wpdb; $l=$wpdb->get_row("SELECT name,major_version,minor_version FROM {$wpdb->prefix}h5p_libraries WHERE name=\"H5P.TrueFalse\""); echo "$l->name $l->major_version.$l->minor_version";')
+PARAMS='{"params":{"question":"<p>Is cotton a natural fibre?</p>","correct":"true","behaviour":{"enableRetry":true,"enableSolutionsButton":true,"enableCheckButton":true,"confirmCheckDialog":false,"confirmRetryDialog":false,"autoCheck":false}},"metadata":{"title":"Instructor exercise","license":"U"}}'
+loc=$(curl -s -o /dev/null -w "%{redirect_url}" -b $IJ --data-urlencode "yes_sir_will_do=$NONCE" --data-urlencode "action=create" --data-urlencode "title=Instructor exercise" --data-urlencode "library=$LIB" --data-urlencode "parameters=$PARAMS" "$B/wp-admin/admin.php?page=h5p_new&eduqode_frame=1")
+NEWID=$(echo "$loc" | grep -o 'eduqode_h5p_saved=[0-9]*' | cut -d= -f2)
+check "h5p studio: instructor creates an exercise with the H5P editor" "$($WPC eval 'global $wpdb; echo $wpdb->get_var("SELECT user_id FROM {$wpdb->prefix}h5p_contents WHERE id=".(int)"'$NEWID'");')" "$INST"
+check "h5p studio: after saving, the frame tells the dashboard (no wp-admin page)" "$(curl -s -b $IJ "$loc" | grep -c 'eduqodeH5P:\"saved\",id:'$NEWID)" "1"
+list=$(curl -s -b $IJ "$DASH?tutor_dashboard_page=h5p-exercises")
+check "h5p studio: list shows own exercise with its lesson code" "$(echo "$list" | grep -c "\[h5p id=&quot;$NEWID&quot;\]\|\[h5p id=\"$NEWID\"\]")" "1"
+check "h5p studio: list does not show other people's exercises" "$(echo "$list" | grep -c 'Is the sky blue?')" "0"
+other=$(curl -s -b $IJ "$B/wp-admin/admin.php?page=h5p_new&eduqode_frame=1&id=$HID")
+check "h5p studio: cannot edit someone else's exercise" "$(echo "$other" | grep -c 'not allowed to edit this content')" "1"
+DN=$(echo "$list" | grep -o 'name="_wpnonce" value="[^"]*"' | head -1 | sed 's/.*value="//;s/"//')
+code=$(curl -s -o /dev/null -w "%{http_code}" -b $IJ --data "eduqode_h5p_delete=$HID&_wpnonce=$DN" "$DASH?tutor_dashboard_page=h5p-exercises")
+check "h5p studio: cannot delete someone else's exercise" "$code" "403"
+curl -s -o /dev/null -b $IJ --data "eduqode_h5p_delete=$NEWID&_wpnonce=$DN" "$DASH?tutor_dashboard_page=h5p-exercises"
+check "h5p studio: deletes own exercise" "$($WPC eval 'global $wpdb; echo (int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}h5p_contents WHERE id=".(int)"'$NEWID'");')" "0"
+$WPC option update eduqode_app_instructor_h5p 0 >/dev/null
+check "h5p studio: admin can switch it off" "$($WPC eval 'echo (int)user_can('$INST',"edit_others_h5p_contents"), (int)EduQode_App_H5P_Studio::enabled();')" "00"
+$WPC option update eduqode_app_instructor_h5p 1 >/dev/null
+
 # Homepage = Tutor login page: a logged-in user goes to the dashboard
 LP=$($WPC eval '$id=wp_insert_post(["post_type"=>"page","post_status"=>"publish","post_title"=>"Login","post_name"=>"tutor-login","post_content"=>"[tutor_login]"]); update_option("show_on_front","page"); update_option("page_on_front",$id); echo $id;')
 check "login page: logged-in user goes to the dashboard" "$(curl -s -o /dev/null -w "%{redirect_url}" -b $J "$B/")" "$($WPC eval 'echo tutor_utils()->tutor_dashboard_url();')"

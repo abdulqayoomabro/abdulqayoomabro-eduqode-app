@@ -15,6 +15,7 @@ Also offline: quizzes (instant result), H5P exercises and H5P quizzes, assignmen
 Plus course-news notifications, saved certificates, and a backup/restore add-on for moving to another site.
 School features (classes/sections/batches, teacher and parent dashboards, attendance, report cards): [docs/SCHOOL.md](docs/SCHOOL.md).
 Urdu (اردو) for the website, Tutor LMS screens, admin pages and the app: [docs/URDU.md](docs/URDU.md).
+Instructors make H5P exercises from their Tutor LMS dashboard: [docs/H5P-INSTRUCTORS.md](docs/H5P-INSTRUCTORS.md).
 Setup, how it works, and the REST API: [docs/OFFLINE.md](docs/OFFLINE.md). Test results: [docs/TESTING.md](docs/TESTING.md).
 Needs the WordPress plugin `eduqode-app-connector` version 2 (zip on the Releases page).
 

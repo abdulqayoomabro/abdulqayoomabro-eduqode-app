@@ -2,7 +2,7 @@
 /**
  * Plugin Name: EduQode App Connector
  * Description: Connects the EduQode Android app to Tutor LMS: offline course packs, offline progress sync, offline video links, and Google login hand-off. Does not change Tutor LMS or WordPress core files.
- * Version: 2.9.2
+ * Version: 2.10.0
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * Author: EduQode
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'EDUQODE_APP_VERSION', '2.9.2' );
+define( 'EDUQODE_APP_VERSION', '2.10.0' );
 define( 'EDUQODE_APP_DIR', plugin_dir_path( __FILE__ ) );
 
 /** True when the request comes from the EduQode Android app's web view. */
@@ -80,6 +80,7 @@ require_once EDUQODE_APP_DIR . 'includes/optimizer-compat.php';
 require_once EDUQODE_APP_DIR . 'includes/class-eduqode-app-auth.php';
 require_once EDUQODE_APP_DIR . 'includes/class-eduqode-app-sync.php';
 require_once EDUQODE_APP_DIR . 'includes/class-eduqode-app-h5p.php';
+require_once EDUQODE_APP_DIR . 'includes/class-eduqode-app-h5p-studio.php';
 require_once EDUQODE_APP_DIR . 'includes/class-eduqode-app-quiz.php';
 require_once EDUQODE_APP_DIR . 'includes/class-eduqode-app-assignments.php';
 require_once EDUQODE_APP_DIR . 'includes/class-eduqode-app-notifications.php';
@@ -94,3 +95,4 @@ EduQode_App_Auth::init();
 EduQode_App_Rest::init();
 EduQode_App_Admin::init();
 EduQode_App_Backup_Admin::init();
+EduQode_App_H5P_Studio::init();
