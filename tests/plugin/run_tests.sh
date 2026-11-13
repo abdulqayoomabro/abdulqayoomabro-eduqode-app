@@ -368,6 +368,24 @@ $WPC option update eduqode_app_instructor_h5p 0 >/dev/null
 check "h5p studio: admin can switch it off" "$($WPC eval 'echo (int)user_can('$INST',"edit_others_h5p_contents"), (int)EduQode_App_H5P_Studio::enabled();')" "00"
 $WPC option update eduqode_app_instructor_h5p 1 >/dev/null
 
+# Company training: no earnings in the Tutor LMS dashboard (instructors and students; admins see all)
+NE() { $WPC eval 'wp_set_current_user('$1'); $o=[];
+  $c=\TUTOR\DashboardSectionManager::render_section("current_stats",["user_id"=>'$1']); $o[]=(int)(false!==strpos($c["html"],"Total Earnings"));
+  $ch=\TUTOR\DashboardSectionManager::render_section("overview_chart",["user_id"=>'$1']); $o[]=(int)!empty($ch["has_data"]);
+  $t=\TUTOR\DashboardSectionManager::render_section("top_performing_courses",["user_id"=>'$1']); $o[]=(int)(false!==strpos($t["html"],"Revenue"));
+  $p=apply_filters("tutor_dashboard_account_pages",["withdrawals"=>1,"billing"=>1,"profile"=>1]); $o[]=implode("+",array_keys($p));
+  $tb=apply_filters("tutor_dashboard/nav_items/settings/nav_items",["withdraw"=>1,"profile"=>1]); $o[]=implode("+",array_keys($tb));
+  $cp=apply_filters("tutor/user/profile/completion",["_tutor_withdraw_method_data"=>1,"_tutor_profile_bio"=>1]); $o[]=implode("+",array_keys($cp));
+  $nv=apply_filters("tutor_dashboard/instructor_nav_items",["analytics"=>1,"my-courses"=>1]); $o[]=implode("+",array_keys($nv));
+  echo implode(" ",$o);' 2>&1 | tail -1; }
+check "no earnings: instructor sees no earnings anywhere" "$(NE $INST)" "0 0 0 profile profile _tutor_profile_bio my-courses+h5p-exercises"
+check "no earnings: admin still sees them" "$(NE 1 | cut -d' ' -f1,4-)" "1 withdrawals+billing+profile withdraw+profile+billing-address _tutor_withdraw_method_data+_tutor_profile_bio analytics+my-courses+h5p-exercises"
+check "no earnings: withdrawals page address goes to the dashboard" "$(curl -s -o /dev/null -w "%{redirect_url}" -b $IJ "$DASH?tutor_dashboard_page=account&tutor_dashboard_sub_page=withdrawals")" "$($WPC eval 'echo tutor_utils()->tutor_dashboard_url();')"
+check "no earnings: analytics address goes to the dashboard" "$(curl -s -o /dev/null -w "%{http_code}" -b $IJ "$DASH?tutor_dashboard_page=analytics")" "302"
+$WPC option update eduqode_app_hide_earnings 0 >/dev/null
+check "no earnings: switch off shows Tutor's normal dashboard" "$(NE $INST | cut -d' ' -f1)" "1"
+$WPC option update eduqode_app_hide_earnings 1 >/dev/null
+
 # Homepage = Tutor login page: a logged-in user goes to the dashboard
 LP=$($WPC eval '$id=wp_insert_post(["post_type"=>"page","post_status"=>"publish","post_title"=>"Login","post_name"=>"tutor-login","post_content"=>"[tutor_login]"]); update_option("show_on_front","page"); update_option("page_on_front",$id); echo $id;')
 check "login page: logged-in user goes to the dashboard" "$(curl -s -o /dev/null -w "%{redirect_url}" -b $J "$B/")" "$($WPC eval 'echo tutor_utils()->tutor_dashboard_url();')"

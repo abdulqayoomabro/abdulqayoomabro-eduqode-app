@@ -131,4 +131,7 @@ UR = {
 "Delete this exercise? Students' results for it are kept.": 'یہ مشق حذف کریں؟ طلبہ کے نتائج محفوظ رہیں گے۔',
 'Used in a lesson or quiz': 'کسی سبق یا کوئز میں لگی ہے',
 'Delete': 'حذف کریں',
+'Company training': 'کمپنی کی تربیت',
+'Hide earnings, withdrawals and billing in the Tutor LMS dashboard': 'Tutor LMS ڈیش بورڈ میں آمدنی، رقم نکلوانا اور بلنگ چھپائیں',
+"For instructors and students (admins still see everything). Also hides Tutor LMS Pro's Analytics menu, which is mostly about earnings.": 'انسٹرکٹرز اور طلبہ کے لیے (ایڈمن سب کچھ دیکھ سکتے ہیں)۔ Tutor LMS Pro کا Analytics مینیو بھی چھپ جاتا ہے، جو زیادہ تر آمدنی کے بارے میں ہے۔',
 }

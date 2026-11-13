@@ -40,6 +40,15 @@ msgstr "انسٹرکٹرز اپنے Tutor LMS ڈیش بورڈ سے H5P مشقی�
 msgid "Only their own exercises, and only with content types installed here (H5P Content → Libraries)."
 msgstr "صرف اپنی مشقیں، اور صرف وہ اقسام جو یہاں انسٹال ہیں (H5P Content → Libraries)۔"
 
+msgid "Company training"
+msgstr "کمپنی کی تربیت"
+
+msgid "Hide earnings, withdrawals and billing in the Tutor LMS dashboard"
+msgstr "Tutor LMS ڈیش بورڈ میں آمدنی، رقم نکلوانا اور بلنگ چھپائیں"
+
+msgid "For instructors and students (admins still see everything). Also hides Tutor LMS Pro's Analytics menu, which is mostly about earnings."
+msgstr "انسٹرکٹرز اور طلبہ کے لیے (ایڈمن سب کچھ دیکھ سکتے ہیں)۔ Tutor LMS Pro کا Analytics مینیو بھی چھپ جاتا ہے، جو زیادہ تر آمدنی کے بارے میں ہے۔"
+
 msgid "Test video URL"
 msgstr "ٹیسٹ ویڈیو کا لنک"
 

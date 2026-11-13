@@ -41,6 +41,7 @@ class EduQode_App_Admin {
         if ( 'general' === $section ) {
             update_option( 'eduqode_app_offline_enabled', empty( $_POST['offline_enabled'] ) ? '0' : '1' );
             update_option( EduQode_App_H5P_Studio::OPTION, empty( $_POST['instructor_h5p'] ) ? '0' : '1' );
+            update_option( EduQode_App_No_Earnings::OPTION, empty( $_POST['hide_earnings'] ) ? '0' : '1' );
             $url = isset( $_POST['test_video_url'] ) ? esc_url_raw( trim( wp_unslash( $_POST['test_video_url'] ) ) ) : '';
             update_option( 'eduqode_app_test_video_url', $url );
             $ids = isset( $_POST['test_lesson_ids'] ) ? wp_unslash( $_POST['test_lesson_ids'] ) : '';
@@ -107,6 +108,11 @@ class EduQode_App_Admin {
                         <th scope="row"><?php echo esc_html( eqa__( 'H5P for instructors' ) ); ?></th>
                         <td><label><input type="checkbox" name="instructor_h5p" value="1" <?php checked( '1' === get_option( EduQode_App_H5P_Studio::OPTION, '1' ) ); ?>> <?php echo esc_html( eqa__( 'Instructors can make H5P exercises from their Tutor LMS dashboard' ) ); ?></label>
                         <p class="description"><?php echo esc_html( eqa__( 'Only their own exercises, and only with content types installed here (H5P Content → Libraries).' ) ); ?></p></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php echo esc_html( eqa__( 'Company training' ) ); ?></th>
+                        <td><label><input type="checkbox" name="hide_earnings" value="1" <?php checked( EduQode_App_No_Earnings::enabled() ); ?>> <?php echo esc_html( eqa__( 'Hide earnings, withdrawals and billing in the Tutor LMS dashboard' ) ); ?></label>
+                        <p class="description"><?php echo esc_html( eqa__( 'For instructors and students (admins still see everything). Also hides Tutor LMS Pro\'s Analytics menu, which is mostly about earnings.' ) ); ?></p></td>
                     </tr>
                     <tr>
                         <th scope="row"><label for="eq-test-url"><?php echo esc_html( eqa__( 'Test video URL' ) ); ?></label></th>
