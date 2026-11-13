@@ -42,6 +42,8 @@ class EduQode_App_Admin {
             update_option( 'eduqode_app_offline_enabled', empty( $_POST['offline_enabled'] ) ? '0' : '1' );
             update_option( EduQode_App_H5P_Studio::OPTION, empty( $_POST['instructor_h5p'] ) ? '0' : '1' );
             update_option( EduQode_App_No_Earnings::OPTION, empty( $_POST['hide_earnings'] ) ? '0' : '1' );
+            update_option( EduQode_App_White_Label::OPTION_ON, empty( $_POST['white_label'] ) ? '0' : '1' );
+            update_option( EduQode_App_White_Label::OPTION_BRAND, sanitize_text_field( wp_unslash( $_POST['brand'] ?? '' ) ) );
             $url = isset( $_POST['test_video_url'] ) ? esc_url_raw( trim( wp_unslash( $_POST['test_video_url'] ) ) ) : '';
             update_option( 'eduqode_app_test_video_url', $url );
             $ids = isset( $_POST['test_lesson_ids'] ) ? wp_unslash( $_POST['test_lesson_ids'] ) : '';
@@ -113,6 +115,12 @@ class EduQode_App_Admin {
                         <th scope="row"><?php echo esc_html( eqa__( 'Company training' ) ); ?></th>
                         <td><label><input type="checkbox" name="hide_earnings" value="1" <?php checked( EduQode_App_No_Earnings::enabled() ); ?>> <?php echo esc_html( eqa__( 'Hide earnings, withdrawals and billing in the Tutor LMS dashboard' ) ); ?></label>
                         <p class="description"><?php echo esc_html( eqa__( 'For everyone in the front-end dashboard, admins too (Tutor LMS reports in wp-admin stay). Also hides Tutor LMS Pro\'s Analytics menu, which is mostly about earnings.' ) ); ?></p></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php echo esc_html( eqa__( 'White label' ) ); ?></th>
+                        <td><label><input type="checkbox" name="white_label" value="1" <?php checked( EduQode_App_White_Label::enabled() ); ?>> <?php echo esc_html( eqa__( 'Show our brand instead of WordPress and Tutor LMS' ) ); ?></label>
+                        <p><label><?php echo esc_html( eqa__( 'Brand name' ) ); ?> <input type="text" class="regular-text" name="brand" value="<?php echo esc_attr( EduQode_App_White_Label::brand() ); ?>"></label></p>
+                        <p class="description"><?php echo esc_html( eqa__( 'Replaces "Tutor LMS (Pro)" in its texts, menus and e-mails; login page with the site logo; no WordPress logo, footer or generator tags. Set the logo in Appearance → Customize → Site Identity.' ) ); ?></p></td>
                     </tr>
                     <tr>
                         <th scope="row"><label for="eq-test-url"><?php echo esc_html( eqa__( 'Test video URL' ) ); ?></label></th>

@@ -29,3 +29,14 @@ EduQode App → General → **Company training** (on by default). For everyone i
 | Analytics menu of Tutor LMS Pro (its pages are mostly earnings; learners' progress is in the School page's learning insights) | dashboard menu |
 
 Old links to those pages lead to the dashboard. Turn it off to get Tutor LMS's normal dashboard back (for example if courses are sold later).
+
+# White label (our brand instead of WordPress / Tutor LMS)
+
+EduQode App → General → **White label** (on by default) and **Brand name** (default "Customised LMS by Abro").
+
+- "Tutor LMS Pro" / "Tutor LMS" / "Tutor Pro" in Tutor LMS's texts, menus and e-mails show the brand name (also in Urdu texts).
+- Login page: the site logo (Appearance → Customize → Site Identity), the brand name, no "Powered by WordPress", no "— WordPress" in the tab title.
+- wp-admin and the admin bar: no WordPress logo, footer text, version or news box.
+- Page source: no generator tags (WordPress, Elementor …), no WordPress version on files, no wp-json/shortlink/RSD links; e-mails not "from WordPress"; the REST API's user list is closed to visitors.
+
+What it cannot hide: file addresses (`/wp-content/…`), `wp-login.php` and `/wp-json/` exist on every WordPress site, so a developer with detection tools can still tell. Renaming plugin folders would break updates. For more: SiteGround Security → *Custom login URL* and *Hide WordPress version*. Keep the plugins' license files (GPL); rebranding is allowed, removing the license is not.

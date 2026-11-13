@@ -393,6 +393,22 @@ $WPC option update eduqode_app_hide_earnings 0 >/dev/null
 check "no earnings: switch off shows Tutor's normal dashboard" "$(NE $INST | cut -d' ' -f1)" "1"
 $WPC option update eduqode_app_hide_earnings 1 >/dev/null
 
+# White label: our brand instead of WordPress / Tutor LMS
+check "white label: Tutor LMS texts show the brand" "$($WPC eval 'echo __("Tutor LMS","tutor"), " | ", __("Connect Tutor LMS with Zoom","tutor-pro"), " | ", __("Tutor LMS Pro","tutor-pro");')" "Customised LMS by Abro | Connect Customised LMS by Abro with Zoom | Customised LMS by Abro"
+front=$(curl -s -D $PWD/front.h "$B/?p=1")
+check "white label: no generator tags in the page" "$(echo "$front" | grep -ci '<meta name="generator"')" "0"
+check "white label: no wp-json link header" "$(grep -ci 'api.w.org' $PWD/front.h)" "0"
+check "white label: no WordPress version on files" "$(echo "$front" | grep -c "ver=$($WPC eval 'global $wp_version; echo $wp_version;')")" "0"
+login=$(curl -s "$B/wp-login.php")
+check "white label: login page title without WordPress" "$(echo "$login" | grep -o '<title>[^<]*' | grep -c WordPress)" "0"
+check "white label: login page shows the brand, not Powered by WordPress" "$(echo "$login" | grep -c 'Customised LMS by Abro'),$(echo "$login" | grep -c 'Powered by WordPress')" "1,0"
+check "white label: user list of the REST API closed to visitors" "$(curl -s -o /dev/null -w "%{http_code}" "$B/?rest_route=/wp/v2/users")" "404"
+$WPC option update eduqode_app_brand "Abro Academy" >/dev/null
+check "white label: brand name from the settings" "$($WPC eval 'echo __("Tutor LMS","tutor");')" "Abro Academy"
+$WPC option update eduqode_app_white_label 0 >/dev/null
+check "white label: switch off gives the normal names back" "$($WPC eval 'echo __("Tutor LMS","tutor"), ",", (int) has_action("wp_head","wp_generator");')" "Tutor LMS,10"
+$WPC option update eduqode_app_white_label 1 >/dev/null; $WPC option delete eduqode_app_brand >/dev/null
+
 # Homepage = Tutor login page: a logged-in user goes to the dashboard
 LP=$($WPC eval '$id=wp_insert_post(["post_type"=>"page","post_status"=>"publish","post_title"=>"Login","post_name"=>"tutor-login","post_content"=>"[tutor_login]"]); update_option("show_on_front","page"); update_option("page_on_front",$id); echo $id;')
 check "login page: logged-in user goes to the dashboard" "$(curl -s -o /dev/null -w "%{redirect_url}" -b $J "$B/")" "$($WPC eval 'echo tutor_utils()->tutor_dashboard_url();')"

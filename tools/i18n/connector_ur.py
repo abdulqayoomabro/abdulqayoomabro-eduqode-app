@@ -134,4 +134,8 @@ UR = {
 'Company training': 'کمپنی کی تربیت',
 'Hide earnings, withdrawals and billing in the Tutor LMS dashboard': 'Tutor LMS ڈیش بورڈ میں آمدنی، رقم نکلوانا اور بلنگ چھپائیں',
 "For everyone in the front-end dashboard, admins too (Tutor LMS reports in wp-admin stay). Also hides Tutor LMS Pro's Analytics menu, which is mostly about earnings.": 'ڈیش بورڈ میں سب کے لیے، ایڈمن کے لیے بھی (wp-admin میں Tutor LMS کی رپورٹس رہیں گی)۔ Tutor LMS Pro کا Analytics مینیو بھی چھپ جاتا ہے، جو زیادہ تر آمدنی کے بارے میں ہے۔',
+'White label': 'وائٹ لیبل',
+'Show our brand instead of WordPress and Tutor LMS': 'WordPress اور Tutor LMS کی جگہ ہمارا برانڈ دکھائیں',
+'Brand name': 'برانڈ کا نام',
+'Replaces "Tutor LMS (Pro)" in its texts, menus and e-mails; login page with the site logo; no WordPress logo, footer or generator tags. Set the logo in Appearance → Customize → Site Identity.': '"Tutor LMS (Pro)" کو اس کے متن، مینیو اور ای میلز میں بدل دیتا ہے؛ لاگ اِن صفحے پر سائٹ کا لوگو؛ WordPress کا لوگو، فوٹر اور generator ٹیگ نہیں۔ لوگو Appearance → Customize → Site Identity میں لگائیں۔',
 }

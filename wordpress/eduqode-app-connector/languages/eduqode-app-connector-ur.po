@@ -49,6 +49,18 @@ msgstr "Tutor LMS ڈیش بورڈ میں آمدنی، رقم نکلوانا او
 msgid "For everyone in the front-end dashboard, admins too (Tutor LMS reports in wp-admin stay). Also hides Tutor LMS Pro's Analytics menu, which is mostly about earnings."
 msgstr "ڈیش بورڈ میں سب کے لیے، ایڈمن کے لیے بھی (wp-admin میں Tutor LMS کی رپورٹس رہیں گی)۔ Tutor LMS Pro کا Analytics مینیو بھی چھپ جاتا ہے، جو زیادہ تر آمدنی کے بارے میں ہے۔"
 
+msgid "White label"
+msgstr "وائٹ لیبل"
+
+msgid "Show our brand instead of WordPress and Tutor LMS"
+msgstr "WordPress اور Tutor LMS کی جگہ ہمارا برانڈ دکھائیں"
+
+msgid "Brand name"
+msgstr "برانڈ کا نام"
+
+msgid "Replaces \"Tutor LMS (Pro)\" in its texts, menus and e-mails; login page with the site logo; no WordPress logo, footer or generator tags. Set the logo in Appearance → Customize → Site Identity."
+msgstr "\"Tutor LMS (Pro)\" کو اس کے متن، مینیو اور ای میلز میں بدل دیتا ہے؛ لاگ اِن صفحے پر سائٹ کا لوگو؛ WordPress کا لوگو، فوٹر اور generator ٹیگ نہیں۔ لوگو Appearance → Customize → Site Identity میں لگائیں۔"
+
 msgid "Test video URL"
 msgstr "ٹیسٹ ویڈیو کا لنک"
 
