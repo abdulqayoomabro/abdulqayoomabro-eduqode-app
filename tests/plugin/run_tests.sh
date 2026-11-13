@@ -370,16 +370,23 @@ $WPC option update eduqode_app_instructor_h5p 1 >/dev/null
 
 # Company training: no earnings in the Tutor LMS dashboard (instructors and students; admins see all)
 NE() { $WPC eval 'wp_set_current_user('$1'); $o=[];
-  $c=\TUTOR\DashboardSectionManager::render_section("current_stats",["user_id"=>'$1']); $o[]=(int)(false!==strpos($c["html"],"Total Earnings"));
-  $ch=\TUTOR\DashboardSectionManager::render_section("overview_chart",["user_id"=>'$1']); $o[]=(int)!empty($ch["has_data"]);
-  $t=\TUTOR\DashboardSectionManager::render_section("top_performing_courses",["user_id"=>'$1']); $o[]=(int)(false!==strpos($t["html"],"Revenue"));
+  if (class_exists("\TUTOR\DashboardSectionManager")) {   // Tutor LMS 4.1+: home sections by AJAX
+    $c=\TUTOR\DashboardSectionManager::render_section("current_stats",["user_id"=>'$1']); $o[]=(int)(false!==strpos($c["html"],"Total Earnings"));
+    $ch=\TUTOR\DashboardSectionManager::render_section("overview_chart",["user_id"=>'$1']); $o[]=(int)!empty($ch["has_data"]);
+    $t=\TUTOR\DashboardSectionManager::render_section("top_performing_courses",["user_id"=>'$1']); $o[]=(int)(false!==strpos($t["html"],"Revenue"));
+  } else {                                                   // Tutor LMS 4.0: the same templates, loaded directly
+    ob_start(); tutor_load_template("dashboard.instructor.analytics.stat-card",["card_title"=>__("Total Earnings","tutor"),"icon"=>"earning","value"=>"$9","variation"=>"brand"]); $o[]=(int)(""!==trim(ob_get_clean()));
+    ob_start(); tutor_load_template("dashboard.instructor.home.overview-chart",["overview_chart_data"=>["earnings"=>[1]]]); $o[]=(int)(""!==trim(ob_get_clean()));
+    ob_start(); tutor_load_template("dashboard.instructor.home.top-performing-course-item",["item_key"=>0,"item"=>["name"=>"C","revenue"=>"$9","students"=>3]]); $o[]=(int)(false!==strpos(ob_get_clean(),"Revenue"));
+  }
   $p=apply_filters("tutor_dashboard_account_pages",["withdrawals"=>1,"billing"=>1,"profile"=>1]); $o[]=implode("+",array_keys($p));
   $tb=apply_filters("tutor_dashboard/nav_items/settings/nav_items",["withdraw"=>1,"profile"=>1]); $o[]=implode("+",array_keys($tb));
   $cp=apply_filters("tutor/user/profile/completion",["_tutor_withdraw_method_data"=>1,"_tutor_profile_bio"=>1]); $o[]=implode("+",array_keys($cp));
   $nv=apply_filters("tutor_dashboard/instructor_nav_items",["analytics"=>1,"my-courses"=>1]); $o[]=implode("+",array_keys($nv));
   echo implode(" ",$o);' 2>&1 | tail -1; }
-check "no earnings: instructor sees no earnings anywhere" "$(NE $INST)" "0 0 0 profile profile _tutor_profile_bio my-courses+h5p-exercises"
-check "no earnings: admin still sees them" "$(NE 1 | cut -d' ' -f1,4-)" "1 withdrawals+billing+profile withdraw+profile+billing-address _tutor_withdraw_method_data+_tutor_profile_bio analytics+my-courses+h5p-exercises"
+check "no earnings: instructor sees no earnings anywhere" "$(NE $INST | sed 's/+billing-address//')" "0 0 0 profile profile _tutor_profile_bio my-courses+h5p-exercises"
+check "no earnings: admin still sees them" "$(NE 1 | cut -d' ' -f1,4- | sed 's/+billing-address//')" "1 withdrawals+billing+profile withdraw+profile _tutor_withdraw_method_data+_tutor_profile_bio analytics+my-courses+h5p-exercises"
+check "no earnings: instructor home page has no earnings card" "$(curl -s -b $IJ "$DASH" | grep -c 'Total Earnings')" "0"
 check "no earnings: withdrawals page address goes to the dashboard" "$(curl -s -o /dev/null -w "%{redirect_url}" -b $IJ "$DASH?tutor_dashboard_page=account&tutor_dashboard_sub_page=withdrawals")" "$($WPC eval 'echo tutor_utils()->tutor_dashboard_url();')"
 check "no earnings: analytics address goes to the dashboard" "$(curl -s -o /dev/null -w "%{http_code}" -b $IJ "$DASH?tutor_dashboard_page=analytics")" "302"
 $WPC option update eduqode_app_hide_earnings 0 >/dev/null

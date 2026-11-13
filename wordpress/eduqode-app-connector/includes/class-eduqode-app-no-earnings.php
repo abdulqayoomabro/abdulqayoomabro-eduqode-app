@@ -20,6 +20,9 @@ class EduQode_App_No_Earnings {
 
     const OPTION = 'eduqode_app_hide_earnings';
 
+    /** Tutor LMS's own stat card template, used by our wrapper for every card except earnings. */
+    public static $stat_card = '';
+
     public static function init() {
         add_filter( 'tutor_dashboard/instructor_nav_items', array( __CLASS__, 'nav' ), 99 );
         add_filter( 'tutor_dashboard_account_pages', array( __CLASS__, 'account_pages' ), 99 );
@@ -29,6 +32,7 @@ class EduQode_App_No_Earnings {
         add_filter( 'tutor_get_template_path', array( __CLASS__, 'template' ), 99, 2 );
         add_action( 'template_redirect', array( __CLASS__, 'block_pages' ), 3 );
         add_action( 'wp_head', array( __CLASS__, 'style' ) );
+        add_action( 'template_redirect', array( __CLASS__, 'sort_by_students' ), 4 );
     }
 
     public static function enabled() {
@@ -103,6 +107,14 @@ class EduQode_App_No_Earnings {
             return $path;
         }
         $t = str_replace( '\\', '/', (string) $template );
+        // Works the same in Tutor LMS 4.0 (home built in one template) and 4.1+ (sections by AJAX).
+        if ( 'dashboard/instructor/analytics/stat-card' === $t ) {
+            self::$stat_card = $path;
+            return EDUQODE_APP_DIR . 'templates/tutor/stat-card.php';
+        }
+        if ( 'dashboard/instructor/home/overview-chart' === $t ) {
+            return EDUQODE_APP_DIR . 'templates/tutor/empty.php';
+        }
         if ( 'dashboard/instructor/home/top-performing-course-item' === $t ) {
             return EDUQODE_APP_DIR . 'templates/tutor/top-performing-course-item.php';
         }
@@ -130,9 +142,30 @@ class EduQode_App_No_Earnings {
         }
     }
 
+    /** Is this stat card about money? */
+    public static function is_money_card( $title, $icon ) {
+        $earning_icon = defined( '\TUTOR\Icon::EARNING' ) ? \TUTOR\Icon::EARNING : 'earning';
+        $titles       = array( 'Total Earnings', 'Total Earning', 'Earnings', 'Revenue', 'Total Revenue' );
+        foreach ( $titles as $t ) {
+            if ( $title === $t || $title === __( $t, 'tutor' ) || $title === __( $t, 'tutor-pro' ) ) { // phpcs:ignore
+                return true;
+            }
+        }
+        return $icon === $earning_icon;
+    }
+
     public static function style() {
         if ( self::applies() && function_exists( 'tutor_utils' ) && tutor_utils()->is_tutor_frontend_dashboard() ) {
-            echo '<style id="eduqode-no-earnings">.tutor-popover-menu-item[data-id="overview_chart"],[data-section-id="overview_chart"]{display:none!important}</style>';
+            // The earnings chart's section and its switch; the empty box left where the earnings card was.
+            echo '<style id="eduqode-no-earnings">.tutor-popover-menu-item[data-id="overview_chart"],[data-section-id="overview_chart"]{display:none!important}' .
+                '[data-section-id="current_stats"] .tutor-flex-1:not(:has(*)){display:none!important}</style>';
+        }
+    }
+
+    /** Tutor LMS 4.0 sorts "Top Performing Courses" by revenue unless told otherwise. */
+    public static function sort_by_students() {
+        if ( self::applies() && ! isset( $_GET['type'] ) && function_exists( 'tutor_utils' ) && tutor_utils()->is_tutor_frontend_dashboard() ) { // phpcs:ignore
+            $_GET['type'] = 'student'; // phpcs:ignore
         }
     }
 }

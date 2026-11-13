@@ -37,6 +37,13 @@ jobs:
       - name: Backup and restore between two sites
         shell: bash
         run: tests/backup/run_backup_test.sh "$RUNNER_TEMP/wp" | tee "$RUNNER_TEMP/wp/backup-results.txt"
+      - name: Plugin tests again with Tutor LMS 4.0 (the version on the live site)
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/wp40"
+          git clone -q --depth 1 --branch v4.0.2 https://github.com/themeum/tutor.git "$RUNNER_TEMP/wp40/tutor"
+          cp "$RUNNER_TEMP/wp/wp-cli.phar" "$RUNNER_TEMP/wp40/" 2>/dev/null || true
+          tests/plugin/setup_and_run.sh "$RUNNER_TEMP/wp40" | tail -3
       - name: Upload plugin test results
         if: always()
         uses: actions/upload-artifact@v4
