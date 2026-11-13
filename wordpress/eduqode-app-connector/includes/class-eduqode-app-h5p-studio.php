@@ -31,6 +31,9 @@ class EduQode_App_H5P_Studio {
         add_filter( 'wp_redirect', array( __CLASS__, 'frame_redirect' ), 20 );
         add_action( 'template_redirect', array( __CLASS__, 'delete' ), 2 );
         add_action( 'template_redirect', array( __CLASS__, 'saved_page' ), 1 );
+        // Course builder (Tutor LMS Pro): its H5P lists show only the current user's own exercises.
+        add_action( 'wp_ajax_tutor_h5p_list_lesson_contents', array( __CLASS__, 'builder_list_lesson' ), 1 );
+        add_action( 'wp_ajax_tutor_h5p_list_quiz_contents', array( __CLASS__, 'builder_list_quiz' ), 1 );
         // New dashboard page: Tutor LMS's pretty URLs need the rewrite rules once.
         add_action( 'init', function () {
             if ( EDUQODE_APP_VERSION !== get_option( 'eduqode_app_h5p_rules' ) ) {
@@ -181,6 +184,64 @@ class EduQode_App_H5P_Studio {
             'try{if(window.parent!==window){window.parent.postMessage({eduqodeH5P:"saved",id:' . (int) $id . '},' . wp_json_encode( home_url() ) . '.replace(/^(https?:\/\/[^\/]+).*$/,"$1"));}else{location.href=' . wp_json_encode( $back ) . ';}}catch(e){location.href=' . wp_json_encode( $back ) . ';}' .
             '</script><p><a href="' . esc_url( $back ) . '">' . esc_html( eqa__( 'Saved. Back to my exercises' ) ) . '</a></p>';
         exit;
+    }
+
+    // ------------------------------------------------------------ course builder lists
+
+    /**
+     * The exercises the course builder offers: an admin sees everyone's (with the author's name),
+     * an instructor their own. Same content type limits as Tutor LMS Pro.
+     */
+    public static function builder_rows( $user_id, $search, array $skip_types ) {
+        global $wpdb;
+        $all  = user_can( $user_id, 'edit_others_h5p_contents' );
+        $rows = $wpdb->get_results(
+            "SELECT c.id, c.title, l.title AS content_type, u.display_name AS user_name, '' AS tags, c.updated_at, c.user_id
+             FROM {$wpdb->prefix}h5p_contents c
+             LEFT JOIN {$wpdb->prefix}h5p_libraries l ON l.id = c.library_id
+             LEFT JOIN {$wpdb->users} u ON u.ID = c.user_id" .
+            ( $all ? '' : $wpdb->prepare( ' WHERE c.user_id = %d', $user_id ) ) . ' ORDER BY c.updated_at DESC LIMIT 1000'
+        );
+        $search = mb_strtolower( trim( (string) $search ) );
+        $out    = array();
+        foreach ( (array) $rows as $r ) {
+            if ( in_array( (string) $r->content_type, $skip_types, true ) ) {
+                continue;
+            }
+            if ( '' !== $search && false === mb_strpos( mb_strtolower( $r->title . ' ' . $r->content_type ), $search ) ) {
+                continue;
+            }
+            if ( (int) $r->user_id !== (int) $user_id && $r->user_name ) {
+                $r->title .= ' — ' . $r->user_name;
+            }
+            $out[] = $r;
+        }
+        return $out;
+    }
+
+    private static function builder_reply( array $skip_types ) {
+        if ( ! self::enabled() || ! function_exists( 'tutor_utils' ) ) {
+            return;   // let Tutor LMS Pro answer as usual
+        }
+        tutor_utils()->checking_nonce();
+        $uid = get_current_user_id();
+        if ( ! user_can( $uid, 'edit_h5p_contents' ) && ! user_can( $uid, 'edit_others_h5p_contents' ) ) {
+            return;
+        }
+        $search = isset( $_POST['search_filter'] ) ? sanitize_text_field( wp_unslash( $_POST['search_filter'] ) ) : ''; // phpcs:ignore
+        wp_send_json_success( array( 'output' => self::builder_rows( $uid, $search, $skip_types ) ) );
+    }
+
+    public static function builder_list_lesson() {
+        $skip = array( 'Personality Quiz' );
+        if ( tutor_utils()->get_option( 'disable_complete_lesson_button' ) ) {
+            $skip[] = 'Interactive Book';
+        }
+        self::builder_reply( $skip );
+    }
+
+    public static function builder_list_quiz() {
+        self::builder_reply( array( 'Game Map', 'Question Set', 'Interactive Book', 'Interactive Video', 'Course Presentation', 'Personality Quiz' ) );
     }
 
     // ------------------------------------------------------------ delete

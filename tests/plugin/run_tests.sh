@@ -349,6 +349,16 @@ check "h5p studio: list shows own exercise with its lesson code" "$(echo "$list"
 check "h5p studio: list does not show other people's exercises" "$(echo "$list" | grep -c 'Is the sky blue?')" "0"
 other=$(curl -s -b $IJ "$B/wp-admin/admin.php?page=h5p_new&eduqode_frame=1&id=$HID")
 check "h5p studio: cannot edit someone else's exercise" "$(echo "$other" | grep -c 'not allowed to edit this content')" "1"
+# Course builder (Tutor LMS Pro) H5P lists
+tnonce() { curl -s -b "$1" "$DASH" | grep -o '"_tutor_nonce":"[^"]*"' | head -1 | cut -d'"' -f4; }
+AJ=$PWD/admin.jar
+curl -s -c $AJ -b "wordpress_test_cookie=WP%20Cookie%20check" -o /dev/null -d "log=admin&pwd=admin&wp-submit=Log+In&testcookie=1" $B/wp-login.php
+AN=$(tnonce $AJ); IN=$(tnonce $IJ)
+blist() { curl -s -b "$1" --data "action=$2&_tutor_nonce=$3&search_filter=$4" "$B/wp-admin/admin-ajax.php"; }
+check "course builder: admin's lesson list has the instructor's new exercise" "$(blist $AJ tutor_h5p_list_lesson_contents "$AN" "" | python3 -c "import json,sys;d=json.load(sys.stdin)['data']['output'];print([r['title'] for r in d if str(r['id'])=='$NEWID'])")" "['Instructor exercise — inst1']"
+check "course builder: admin's quiz list has it too" "$(blist $AJ tutor_h5p_list_quiz_contents "$AN" "instructor" | python3 -c "import json,sys;print(len(json.load(sys.stdin)['data']['output']))")" "1"
+check "course builder: instructor's list has only own exercises" "$(blist $IJ tutor_h5p_list_lesson_contents "$IN" "" | python3 -c "import json,sys;print(sorted({str(r['user_id']) for r in json.load(sys.stdin)['data']['output']}))")" "['$INST']"
+check "course builder: wrong nonce refused" "$(blist $IJ tutor_h5p_list_lesson_contents bad "" | python3 -c "import json,sys;d=json.load(sys.stdin);print(d['success'], 'output' in (d.get('data') or {}))")" "False False"
 DN=$(echo "$list" | grep -o 'name="_wpnonce" value="[^"]*"' | head -1 | sed 's/.*value="//;s/"//')
 code=$(curl -s -o /dev/null -w "%{http_code}" -b $IJ --data "eduqode_h5p_delete=$HID&_wpnonce=$DN" "$DASH?tutor_dashboard_page=h5p-exercises")
 check "h5p studio: cannot delete someone else's exercise" "$code" "403"
