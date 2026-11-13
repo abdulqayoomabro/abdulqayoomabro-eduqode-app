@@ -18,7 +18,7 @@ How it works: instructors get the H5P plugin's `edit_h5p_contents`, `view_h5p_co
 
 # Company training: no earnings in the dashboard
 
-EduQode App → General → **Company training** (on by default). For instructors and students (admins still see everything):
+EduQode App → General → **Company training** (on by default). For everyone in the front-end dashboard, admins too (Tutor LMS's reports in wp-admin stay):
 
 | Hidden | Where |
 |---|---|

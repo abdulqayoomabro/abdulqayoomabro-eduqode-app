@@ -133,5 +133,5 @@ UR = {
 'Delete': 'حذف کریں',
 'Company training': 'کمپنی کی تربیت',
 'Hide earnings, withdrawals and billing in the Tutor LMS dashboard': 'Tutor LMS ڈیش بورڈ میں آمدنی، رقم نکلوانا اور بلنگ چھپائیں',
-"For instructors and students (admins still see everything). Also hides Tutor LMS Pro's Analytics menu, which is mostly about earnings.": 'انسٹرکٹرز اور طلبہ کے لیے (ایڈمن سب کچھ دیکھ سکتے ہیں)۔ Tutor LMS Pro کا Analytics مینیو بھی چھپ جاتا ہے، جو زیادہ تر آمدنی کے بارے میں ہے۔',
+"For everyone in the front-end dashboard, admins too (Tutor LMS reports in wp-admin stay). Also hides Tutor LMS Pro's Analytics menu, which is mostly about earnings.": 'ڈیش بورڈ میں سب کے لیے، ایڈمن کے لیے بھی (wp-admin میں Tutor LMS کی رپورٹس رہیں گی)۔ Tutor LMS Pro کا Analytics مینیو بھی چھپ جاتا ہے، جو زیادہ تر آمدنی کے بارے میں ہے۔',
 }

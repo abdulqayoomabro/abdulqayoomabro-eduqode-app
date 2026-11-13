@@ -112,7 +112,7 @@ class EduQode_App_Admin {
                     <tr>
                         <th scope="row"><?php echo esc_html( eqa__( 'Company training' ) ); ?></th>
                         <td><label><input type="checkbox" name="hide_earnings" value="1" <?php checked( EduQode_App_No_Earnings::enabled() ); ?>> <?php echo esc_html( eqa__( 'Hide earnings, withdrawals and billing in the Tutor LMS dashboard' ) ); ?></label>
-                        <p class="description"><?php echo esc_html( eqa__( 'For instructors and students (admins still see everything). Also hides Tutor LMS Pro\'s Analytics menu, which is mostly about earnings.' ) ); ?></p></td>
+                        <p class="description"><?php echo esc_html( eqa__( 'For everyone in the front-end dashboard, admins too (Tutor LMS reports in wp-admin stay). Also hides Tutor LMS Pro\'s Analytics menu, which is mostly about earnings.' ) ); ?></p></td>
                     </tr>
                     <tr>
                         <th scope="row"><label for="eq-test-url"><?php echo esc_html( eqa__( 'Test video URL' ) ); ?></label></th>

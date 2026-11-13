@@ -46,8 +46,8 @@ msgstr "کمپنی کی تربیت"
 msgid "Hide earnings, withdrawals and billing in the Tutor LMS dashboard"
 msgstr "Tutor LMS ڈیش بورڈ میں آمدنی، رقم نکلوانا اور بلنگ چھپائیں"
 
-msgid "For instructors and students (admins still see everything). Also hides Tutor LMS Pro's Analytics menu, which is mostly about earnings."
-msgstr "انسٹرکٹرز اور طلبہ کے لیے (ایڈمن سب کچھ دیکھ سکتے ہیں)۔ Tutor LMS Pro کا Analytics مینیو بھی چھپ جاتا ہے، جو زیادہ تر آمدنی کے بارے میں ہے۔"
+msgid "For everyone in the front-end dashboard, admins too (Tutor LMS reports in wp-admin stay). Also hides Tutor LMS Pro's Analytics menu, which is mostly about earnings."
+msgstr "ڈیش بورڈ میں سب کے لیے، ایڈمن کے لیے بھی (wp-admin میں Tutor LMS کی رپورٹس رہیں گی)۔ Tutor LMS Pro کا Analytics مینیو بھی چھپ جاتا ہے، جو زیادہ تر آمدنی کے بارے میں ہے۔"
 
 msgid "Test video URL"
 msgstr "ٹیسٹ ویڈیو کا لنک"

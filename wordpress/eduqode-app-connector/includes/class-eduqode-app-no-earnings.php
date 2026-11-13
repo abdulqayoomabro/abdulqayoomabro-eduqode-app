@@ -1,7 +1,8 @@
 <?php
 /**
  * Company training: no money in the Tutor LMS dashboard (EduQode App → General → "Company
- * training: hide earnings", on by default). For everyone except admins:
+ * training: hide earnings", on by default). For everyone, admins too (Tutor LMS's reports in
+ * wp-admin stay):
  *   - instructor home: no "Total Earnings" card, no "Earnings Over Time" chart, top courses by
  *     students without the revenue column or the Revenue/Students switch,
  *   - no Withdrawals page, no Withdraw tab in settings, no "Set Withdraw Method" in profile
@@ -9,7 +10,6 @@
  *   - no Analytics menu of Tutor LMS Pro (its pages are full of earnings; learners' progress is in
  *     the School page's learning insights),
  *   - those pages' addresses lead back to the dashboard.
- * Admins still see everything in wp-admin and the dashboard.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -39,9 +39,9 @@ class EduQode_App_No_Earnings {
         return '1' === get_option( self::OPTION, '1' );
     }
 
-    /** Applies to the current visitor (not to admins). */
+    /** Applies to every visitor of the front-end dashboard (admins keep Tutor LMS's reports in wp-admin). */
     public static function applies() {
-        return self::enabled() && ! current_user_can( 'manage_options' );
+        return self::enabled();
     }
 
     public static function nav( $items ) {

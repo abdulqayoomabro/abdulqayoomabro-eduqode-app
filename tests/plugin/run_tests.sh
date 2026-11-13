@@ -385,7 +385,7 @@ NE() { $WPC eval 'wp_set_current_user('$1'); $o=[];
   $nv=apply_filters("tutor_dashboard/instructor_nav_items",["analytics"=>1,"my-courses"=>1]); $o[]=implode("+",array_keys($nv));
   echo implode(" ",$o);' 2>&1 | tail -1; }
 check "no earnings: instructor sees no earnings anywhere" "$(NE $INST | sed 's/+billing-address//')" "0 0 0 profile profile _tutor_profile_bio my-courses+h5p-exercises"
-check "no earnings: admin still sees them" "$(NE 1 | cut -d' ' -f1,4- | sed 's/+billing-address//')" "1 withdrawals+billing+profile withdraw+profile _tutor_withdraw_method_data+_tutor_profile_bio analytics+my-courses+h5p-exercises"
+check "no earnings: admin's dashboard has none either" "$(NE 1 | sed 's/+billing-address//')" "0 0 0 profile profile _tutor_profile_bio my-courses+h5p-exercises"
 check "no earnings: instructor home page has no earnings card" "$(curl -s -b $IJ "$DASH" | grep -c 'Total Earnings')" "0"
 check "no earnings: withdrawals page address goes to the dashboard" "$(curl -s -o /dev/null -w "%{redirect_url}" -b $IJ "$DASH?tutor_dashboard_page=account&tutor_dashboard_sub_page=withdrawals")" "$($WPC eval 'echo tutor_utils()->tutor_dashboard_url();')"
 check "no earnings: analytics address goes to the dashboard" "$(curl -s -o /dev/null -w "%{http_code}" -b $IJ "$DASH?tutor_dashboard_page=analytics")" "302"
