@@ -10,7 +10,11 @@ foreach ($d['posts'] as $p) {
         'post_status' => $p['status'], 'menu_order' => $p['order'], 'post_parent' => $p['parent'] ? ($map[$p['parent']] ?? 0) : 0, 'post_author' => 1]);
 }
 $qmap = [];
+// Only columns site B has (a newer Tutor LMS on site A can have more, e.g. content_id).
+$wpdb->get_results("SELECT * FROM {$wpdb->prefix}tutor_quiz_questions LIMIT 0");
+$cols = (array) $wpdb->get_col_info('name');
 foreach ($d['questions'] as $q) {
+    if ($cols) { $q = array_intersect_key($q, array_flip($cols)); }
     $old = $q['question_id']; unset($q['question_id']); $q['quiz_id'] = $map[$q['quiz_id']];
     $wpdb->insert($wpdb->prefix . 'tutor_quiz_questions', $q); $qmap[$old] = (int) $wpdb->insert_id;
 }
